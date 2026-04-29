@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   addDressInstagramPostAction,
+  addDressPhotoAction,
   addDressPhotoFolderAction,
   assignModelToDressAction,
   updateDressStatusesAction,
@@ -14,6 +15,8 @@ import {
   getWorkflowStatusBadgeClasses,
   instagramPostTypeLabels,
   instagramStatusLabels,
+  photoTypeLabels,
+  photoTypeOptions,
   workflowStatusLabels,
 } from "@/lib/dresses";
 
@@ -24,6 +27,7 @@ type DressDetailPageProps = {
   searchParams?: Promise<{
     folderSaved?: string;
     instagramSaved?: string;
+    photoSaved?: string;
     statusSaved?: string;
     assignmentSaved?: string;
     demo?: string;
@@ -125,6 +129,12 @@ export default async function DressDetailPage({
           </div>
         ) : null}
 
+        {query?.photoSaved === "1" ? (
+          <div className="mt-6 rounded-[1.5rem] border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm text-emerald-900">
+            La foto interna se registró correctamente.
+          </div>
+        ) : null}
+
         {query?.statusSaved === "1" ? (
           <div className="mt-6 rounded-[1.5rem] border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm text-emerald-900">
             Los estados del vestido se actualizaron correctamente.
@@ -174,6 +184,106 @@ export default async function DressDetailPage({
               {formatCurrency(dress.price)}
             </p>
           </article>
+        </div>
+      </section>
+
+      <section className="mt-8 rounded-[2rem] border border-line bg-white/80 p-6">
+        <div className="flex items-center justify-between border-b border-line pb-4">
+          <div>
+            <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
+              Galería interna
+            </p>
+            <h2 className="font-heading text-4xl text-foreground">Fotos y video del sistema</h2>
+          </div>
+        </div>
+
+        <form action={addDressPhotoAction} className="mt-6 grid gap-4">
+          <input type="hidden" name="dressId" value={dress.id} />
+          <div className="grid gap-4 sm:grid-cols-[1fr_1.4fr_0.7fr]">
+            <label className="grid gap-2 text-sm text-foreground/75">
+              Tipo
+              <select
+                name="photoType"
+                defaultValue="COVER"
+                className="rounded-2xl border border-line bg-surface px-4 py-3 outline-none transition focus:border-accent"
+              >
+                {photoTypeOptions.map((photoType) => (
+                  <option key={photoType} value={photoType}>
+                    {photoTypeLabels[photoType]}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="grid gap-2 text-sm text-foreground/75">
+              URL de imagen o video
+              <input
+                required
+                type="url"
+                name="imageUrl"
+                placeholder="https://..."
+                className="rounded-2xl border border-line bg-surface px-4 py-3 outline-none transition focus:border-accent"
+              />
+            </label>
+            <label className="grid gap-2 text-sm text-foreground/75">
+              Orden
+              <input
+                type="number"
+                name="sortOrder"
+                placeholder="1"
+                className="rounded-2xl border border-line bg-surface px-4 py-3 outline-none transition focus:border-accent"
+              />
+            </label>
+          </div>
+          <label className="grid gap-2 text-sm text-foreground/75">
+            Descripción corta
+            <input
+              name="altText"
+              placeholder="Ejemplo: frente del vestido con luz natural."
+              className="rounded-2xl border border-line bg-surface px-4 py-3 outline-none transition focus:border-accent"
+            />
+          </label>
+          <button
+            type="submit"
+            className="w-full rounded-full bg-accent px-5 py-3 text-sm font-medium text-white transition hover:bg-[#6f3b28] sm:w-auto"
+          >
+            Guardar foto interna
+          </button>
+        </form>
+
+        <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {dress.photos.map((photo) => (
+            <div
+              key={photo.id}
+              className="rounded-[1.35rem] border border-line bg-surface px-4 py-4"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <p className="font-medium text-foreground">{photoTypeLabels[photo.photoType]}</p>
+                <span className="rounded-full bg-stone-200 px-3 py-1 text-xs text-stone-700">
+                  #{photo.sortOrder}
+                </span>
+              </div>
+              <p className="mt-2 break-all text-sm leading-7 text-foreground/72">
+                {photo.imageUrl}
+              </p>
+              <p className="text-sm leading-7 text-foreground/72">
+                {photo.altText ?? "Sin descripción"}
+              </p>
+              <a
+                href={photo.imageUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-3 inline-flex text-sm font-medium text-accent underline-offset-4 hover:underline"
+              >
+                Abrir archivo
+              </a>
+            </div>
+          ))}
+
+          {dress.photos.length === 0 ? (
+            <div className="rounded-[1.35rem] border border-dashed border-line bg-surface px-4 py-6 text-sm text-foreground/72 md:col-span-2 xl:col-span-3">
+              Todavía no hay fotos internas registradas para este vestido.
+            </div>
+          ) : null}
         </div>
       </section>
 

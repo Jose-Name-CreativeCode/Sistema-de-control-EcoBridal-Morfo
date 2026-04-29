@@ -129,6 +129,38 @@ export async function addDressInstagramPostAction(formData: FormData) {
   redirect(`/vestidos/${dressId}?instagramSaved=1`);
 }
 
+export async function addDressPhotoAction(formData: FormData) {
+  const dressId = String(formData.get("dressId") ?? "").trim();
+
+  if (!isDatabaseConfigured()) {
+    redirect(`/vestidos/${dressId}?demo=1`);
+  }
+
+  const photoType = String(formData.get("photoType") ?? "COVER");
+  const imageUrl = String(formData.get("imageUrl") ?? "").trim();
+  const altText = parseOptionalString(formData.get("altText"));
+  const sortOrder = parseOptionalNumber(formData.get("sortOrder")) ?? 0;
+
+  await prisma.dressPhoto.create({
+    data: {
+      dressId,
+      photoType: photoType as
+        | "COVER"
+        | "FRONT"
+        | "BACK"
+        | "DETAIL"
+        | "WORN_BY_MODEL"
+        | "VIDEO",
+      imageUrl,
+      altText,
+      sortOrder,
+    },
+  });
+
+  revalidatePath(`/vestidos/${dressId}`);
+  redirect(`/vestidos/${dressId}?photoSaved=1`);
+}
+
 export async function updateDressStatusesAction(formData: FormData) {
   const dressId = String(formData.get("dressId") ?? "").trim();
 
@@ -203,4 +235,36 @@ export async function assignModelToDressAction(formData: FormData) {
   revalidatePath("/vestidos");
   revalidatePath("/asignaciones");
   redirect(`/vestidos/${dressId}?assignmentSaved=1`);
+}
+
+export async function updateDressBasicsAction(formData: FormData) {
+  const dressId = String(formData.get("dressId") ?? "").trim();
+
+  if (!isDatabaseConfigured()) {
+    redirect("/vestidos/edicion-rapida?demo=1");
+  }
+
+  const brand = parseOptionalString(formData.get("brand"));
+  const size = parseOptionalString(formData.get("size")) ?? "Por definir";
+  const color = parseOptionalString(formData.get("color"));
+  const condition = String(formData.get("condition") ?? "USED");
+  const price = parseOptionalNumber(formData.get("price"));
+  const notes = parseOptionalString(formData.get("notes"));
+
+  await prisma.dress.update({
+    where: { id: dressId },
+    data: {
+      brand,
+      size,
+      color,
+      condition: condition as "USED" | "NEW" | "SAMPLE",
+      price,
+      notes,
+    },
+  });
+
+  revalidatePath("/vestidos");
+  revalidatePath(`/vestidos/${dressId}`);
+  revalidatePath("/vestidos/edicion-rapida");
+  redirect("/vestidos/edicion-rapida?saved=1");
 }

@@ -65,6 +65,14 @@ export type DressPhotoFolderItem = {
   createdAt: Date;
 };
 
+export type DressPhotoItem = {
+  id: string;
+  photoType: "COVER" | "FRONT" | "BACK" | "DETAIL" | "WORN_BY_MODEL" | "VIDEO";
+  imageUrl: string;
+  altText: string | null;
+  sortOrder: number;
+};
+
 export type DressInstagramPostItem = {
   id: string;
   postType: "POST" | "REEL" | "STORY" | "CAROUSEL";
@@ -81,10 +89,17 @@ export type DressDetailData = {
     condition: "USED" | "NEW" | "SAMPLE";
     price: number | null;
     notes: string | null;
+    photos: DressPhotoItem[];
     photoFolders: DressPhotoFolderItem[];
     instagramPosts: DressInstagramPostItem[];
     photoCount: number;
   };
+};
+
+export type DressQuickEditRow = DressListItem & {
+  condition: "USED" | "NEW" | "SAMPLE";
+  price: number | null;
+  notes: string | null;
 };
 
 const importedDressNames = [
@@ -303,6 +318,68 @@ export const instagramPostTypeLabels = {
   CAROUSEL: "Carrusel",
 } as const;
 
+export const photoTypeLabels = {
+  COVER: "Portada",
+  FRONT: "Frente",
+  BACK: "Espalda",
+  DETAIL: "Detalle",
+  WORN_BY_MODEL: "Modelo usando vestido",
+  VIDEO: "Video",
+} as const;
+
+export const photoTypeOptions = Object.keys(photoTypeLabels) as Array<keyof typeof photoTypeLabels>;
+
+export const demoDressPhotos: Record<string, DressPhotoItem[]> = {
+  "demo-1": [
+    {
+      id: "photo-1",
+      photoType: "COVER",
+      imageUrl: "https://example.com/demo/adriana-cover.jpg",
+      altText: "Portada del vestido Adriana",
+      sortOrder: 1,
+    },
+    {
+      id: "photo-2",
+      photoType: "FRONT",
+      imageUrl: "https://example.com/demo/adriana-front.jpg",
+      altText: "Frente del vestido Adriana",
+      sortOrder: 2,
+    },
+    {
+      id: "photo-3",
+      photoType: "BACK",
+      imageUrl: "https://example.com/demo/adriana-back.jpg",
+      altText: "Espalda del vestido Adriana",
+      sortOrder: 3,
+    },
+  ],
+  "demo-34": [
+    {
+      id: "photo-4",
+      photoType: "COVER",
+      imageUrl: "https://example.com/demo/elena-cover.jpg",
+      altText: "Portada del vestido Elena",
+      sortOrder: 1,
+    },
+    {
+      id: "photo-5",
+      photoType: "WORN_BY_MODEL",
+      imageUrl: "https://example.com/demo/elena-model.jpg",
+      altText: "Modelo usando el vestido Elena",
+      sortOrder: 2,
+    },
+  ],
+  "demo-95": [
+    {
+      id: "photo-6",
+      photoType: "VIDEO",
+      imageUrl: "https://example.com/demo/sofia-reel.mp4",
+      altText: "Video del vestido Sofía",
+      sortOrder: 1,
+    },
+  ],
+};
+
 export const demoDressFolders: Record<string, DressPhotoFolderItem[]> = {
   "demo-1": [
     {
@@ -489,8 +566,15 @@ export async function getDressDetailData(id: string): Promise<DressDetailData | 
           },
         },
         photos: {
+          orderBy: {
+            sortOrder: "asc",
+          },
           select: {
             id: true,
+            photoType: true,
+            imageUrl: true,
+            altText: true,
+            sortOrder: true,
           },
         },
       },
@@ -516,6 +600,13 @@ export async function getDressDetailData(id: string): Promise<DressDetailData | 
         condition: dress.condition,
         price: dress.price ? Number(dress.price) : null,
         notes: dress.notes,
+        photos: dress.photos.map((photo) => ({
+          id: photo.id,
+          photoType: photo.photoType,
+          imageUrl: photo.imageUrl,
+          altText: photo.altText,
+          sortOrder: photo.sortOrder,
+        })),
         photoFolders: dress.photoFolders.map((folder) => ({
           id: folder.id,
           provider: folder.provider,
@@ -538,6 +629,52 @@ export async function getDressDetailData(id: string): Promise<DressDetailData | 
     };
   } catch {
     return buildDemoDressDetail(id);
+  }
+}
+
+export async function getDressQuickEditRows(): Promise<{
+  databaseReady: boolean;
+  dresses: DressQuickEditRow[];
+}> {
+  if (!isDatabaseConfigured()) {
+    return {
+      databaseReady: false,
+      dresses: demoDresses.map((dress) => buildDemoQuickEditRow(dress)),
+    };
+  }
+
+  try {
+    const dresses = await prisma.dress.findMany({
+      orderBy: [{ isNew: "desc" }, { createdAt: "desc" }],
+      select: {
+        id: true,
+        internalCode: true,
+        name: true,
+        brand: true,
+        size: true,
+        color: true,
+        isNew: true,
+        workflowStatus: true,
+        instagramStatus: true,
+        receivedAt: true,
+        condition: true,
+        price: true,
+        notes: true,
+      },
+    });
+
+    return {
+      databaseReady: true,
+      dresses: dresses.map((dress) => ({
+        ...dress,
+        price: dress.price ? Number(dress.price) : null,
+      })),
+    };
+  } catch {
+    return {
+      databaseReady: false,
+      dresses: demoDresses.map((dress) => buildDemoQuickEditRow(dress)),
+    };
   }
 }
 
@@ -572,30 +709,37 @@ function buildDemoDressDetail(id: string): DressDetailData | null {
   return {
     databaseReady: false,
     dress: {
-      ...dress,
-      condition: dress.isNew ? "NEW" : "USED",
-      price: {
-        "demo-1": 18900,
-        "demo-14": 16600,
-        "demo-28": 15400,
-        "demo-34": 14900,
-        "demo-49": 17100,
-        "demo-79": 17800,
-        "demo-95": 18200,
-      }[dress.id] ?? null,
-      notes: {
-        "demo-1": "Vestido editorial fuerte para feed principal y portada.",
-        "demo-14": "Esperando confirmación final de modelo y detalles de prueba.",
-        "demo-28": "Recién llegado. Falta sesión completa y selección de modelo.",
-        "demo-34": "Contenido casi listo para publicar.",
-        "demo-49": "Material avanzado para programación en Instagram.",
-        "demo-79": "Sesión en curso con cambios de styling.",
-        "demo-95": "Publicación ya validada y enlazada.",
-      }[dress.id] ?? null,
+      ...buildDemoQuickEditRow(dress),
+      photos: demoDressPhotos[dress.id] ?? [],
       photoFolders: demoDressFolders[dress.id] ?? [],
       instagramPosts: demoInstagramPosts[dress.id] ?? [],
       photoCount: demoPhotoCounts[dress.id] ?? 0,
     },
+  };
+}
+
+function buildDemoQuickEditRow(dress: DressListItem): DressQuickEditRow {
+  return {
+    ...dress,
+    condition: dress.isNew ? "NEW" : "USED",
+    price: {
+      "demo-1": 18900,
+      "demo-14": 16600,
+      "demo-28": 15400,
+      "demo-34": 14900,
+      "demo-49": 17100,
+      "demo-79": 17800,
+      "demo-95": 18200,
+    }[dress.id] ?? null,
+    notes: {
+      "demo-1": "Vestido editorial fuerte para feed principal y portada.",
+      "demo-14": "Esperando confirmación final de modelo y detalles de prueba.",
+      "demo-28": "Recién llegado. Falta sesión completa y selección de modelo.",
+      "demo-34": "Contenido casi listo para publicar.",
+      "demo-49": "Material avanzado para programación en Instagram.",
+      "demo-79": "Sesión en curso con cambios de styling.",
+      "demo-95": "Publicación ya validada y enlazada.",
+    }[dress.id] ?? null,
   };
 }
 

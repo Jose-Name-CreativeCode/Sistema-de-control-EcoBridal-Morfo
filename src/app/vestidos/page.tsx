@@ -78,6 +78,12 @@ export default async function DressesPage({ searchParams }: DressesPageProps) {
               Volver al inicio
             </Link>
             <Link
+              href="/vestidos/edicion-rapida"
+              className="rounded-full border border-line bg-white px-5 py-3 text-center text-sm font-medium text-foreground transition hover:bg-background"
+            >
+              Edición rápida
+            </Link>
+            <Link
               href="/vestidos/nuevo"
               className="rounded-full bg-accent px-5 py-3 text-center text-sm font-medium text-white transition hover:bg-[#6f3b28]"
             >
