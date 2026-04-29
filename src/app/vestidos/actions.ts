@@ -268,3 +268,62 @@ export async function updateDressBasicsAction(formData: FormData) {
   revalidatePath("/vestidos/edicion-rapida");
   redirect("/vestidos/edicion-rapida?saved=1");
 }
+
+export async function bulkUpdateDressStatusesAction(formData: FormData) {
+  const dressIds = formData
+    .getAll("dressIds")
+    .map((value) => String(value).trim())
+    .filter(Boolean);
+
+  if (!isDatabaseConfigured()) {
+    redirect("/vestidos/actualizacion-masiva?demo=1");
+  }
+
+  if (dressIds.length === 0) {
+    redirect("/vestidos/actualizacion-masiva?empty=1");
+  }
+
+  const workflowStatus = parseOptionalString(formData.get("workflowStatus"));
+  const instagramStatus = parseOptionalString(formData.get("instagramStatus"));
+
+  if (!workflowStatus && !instagramStatus) {
+    redirect("/vestidos/actualizacion-masiva?empty=1");
+  }
+
+  await prisma.dress.updateMany({
+    where: {
+      id: {
+        in: dressIds,
+      },
+    },
+    data: {
+      ...(workflowStatus
+        ? {
+            workflowStatus: workflowStatus as
+              | "DRAFT"
+              | "PENDING_PHOTOS"
+              | "MODEL_ASSIGNED"
+              | "IN_SESSION"
+              | "PHOTOGRAPHED"
+              | "EDITED"
+              | "READY_TO_POST"
+              | "PUBLISHED",
+          }
+        : {}),
+      ...(instagramStatus
+        ? {
+            instagramStatus: instagramStatus as
+              | "NOT_PUBLISHED"
+              | "SCHEDULED"
+              | "PUBLISHED"
+              | "ARCHIVED",
+          }
+        : {}),
+    },
+  });
+
+  revalidatePath("/vestidos");
+  revalidatePath("/");
+  revalidatePath("/vestidos/actualizacion-masiva");
+  redirect("/vestidos/actualizacion-masiva?saved=1");
+}
