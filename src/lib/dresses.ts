@@ -56,7 +56,38 @@ export type DressCatalogData = {
   sizes: string[];
 };
 
-const demoDresses: DressListItem[] = [
+export type DressPhotoFolderItem = {
+  id: string;
+  provider: "OUTLOOK_ONEDRIVE" | "SHAREPOINT" | "GOOGLE_DRIVE" | "OTHER";
+  folderUrl: string;
+  versionLabel: string | null;
+  notes: string | null;
+  createdAt: Date;
+};
+
+export type DressInstagramPostItem = {
+  id: string;
+  postType: "POST" | "REEL" | "STORY" | "CAROUSEL";
+  instagramUrl: string;
+  instagramShortcode: string | null;
+  accountName: string | null;
+  publishedAt: Date | null;
+  captionNotes: string | null;
+};
+
+export type DressDetailData = {
+  databaseReady: boolean;
+  dress: DressListItem & {
+    condition: "USED" | "NEW" | "SAMPLE";
+    price: number | null;
+    notes: string | null;
+    photoFolders: DressPhotoFolderItem[];
+    instagramPosts: DressInstagramPostItem[];
+    photoCount: number;
+  };
+};
+
+export const demoDresses: DressListItem[] = [
   {
     id: "demo-1",
     internalCode: "ECO-001",
@@ -155,6 +186,77 @@ export const instagramStatusLabels: Record<InstagramStatus, string> = {
   ARCHIVED: "Archivado",
 };
 
+export const folderProviderLabels = {
+  OUTLOOK_ONEDRIVE: "Outlook / OneDrive",
+  SHAREPOINT: "SharePoint",
+  GOOGLE_DRIVE: "Google Drive",
+  OTHER: "Otro",
+} as const;
+
+export const instagramPostTypeLabels = {
+  POST: "Post",
+  REEL: "Reel",
+  STORY: "Story",
+  CAROUSEL: "Carrusel",
+} as const;
+
+const demoDressFolders: Record<string, DressPhotoFolderItem[]> = {
+  "demo-1": [
+    {
+      id: "folder-1",
+      provider: "OUTLOOK_ONEDRIVE",
+      folderUrl: "https://outlook.office.com/demo/ariadna-editadas",
+      versionLabel: "Edición final abril",
+      notes: "Incluye portada, frente, espalda y close-ups.",
+      createdAt: new Date("2026-04-08"),
+    },
+  ],
+  "demo-3": [
+    {
+      id: "folder-2",
+      provider: "SHAREPOINT",
+      folderUrl: "https://sharepoint.com/demo/celeste",
+      versionLabel: "Selección aprobada",
+      notes: "Lista para programar reel.",
+      createdAt: new Date("2026-04-01"),
+    },
+  ],
+};
+
+const demoInstagramPosts: Record<string, DressInstagramPostItem[]> = {
+  "demo-1": [
+    {
+      id: "ig-1",
+      postType: "POST",
+      instagramUrl: "https://instagram.com/p/demo-ariadna",
+      instagramShortcode: "demo-ariadna",
+      accountName: "@ecobridalmorfo",
+      publishedAt: new Date("2026-04-10"),
+      captionNotes: "Post principal del vestido Ariadna.",
+    },
+  ],
+  "demo-3": [
+    {
+      id: "ig-2",
+      postType: "REEL",
+      instagramUrl: "https://instagram.com/reel/demo-celeste",
+      instagramShortcode: "demo-celeste",
+      accountName: "@ecobridalmorfo",
+      publishedAt: new Date("2026-04-03"),
+      captionNotes: "Video con transición de frente a espalda.",
+    },
+  ],
+};
+
+const demoPhotoCounts: Record<string, number> = {
+  "demo-1": 5,
+  "demo-2": 0,
+  "demo-3": 4,
+  "demo-4": 1,
+  "demo-5": 3,
+  "demo-6": 2,
+};
+
 export function getWorkflowStatusBadgeClasses(status: WorkflowStatus) {
   if (status === "PENDING_PHOTOS") return "bg-amber-100 text-amber-900";
   if (status === "MODEL_ASSIGNED") return "bg-orange-100 text-orange-900";
@@ -174,30 +276,21 @@ export async function getDressCatalogData(
   filters: DressFilters = {},
 ): Promise<DressCatalogData> {
   if (!isDatabaseConfigured()) {
-    const dresses = applyDemoFilters(demoDresses, filters);
-
-    return {
-      databaseReady: false,
-      dresses,
-      totalCount: demoDresses.length,
-      pendingPhotoCount: demoDresses.filter((dress) =>
-        pendingWorkflowStatuses.includes(dress.workflowStatus),
-      ).length,
-      publishedCount: demoDresses.filter(
-        (dress) => dress.instagramStatus === "PUBLISHED",
-      ).length,
-      newCount: demoDresses.filter((dress) => dress.isNew).length,
-      brands: Array.from(
-        new Set(demoDresses.map((dress) => dress.brand).filter(Boolean)),
-      ) as string[],
-      sizes: Array.from(new Set(demoDresses.map((dress) => dress.size))).sort(),
-    };
+    return buildDemoDressCatalogData(filters);
   }
 
-  const where = buildDressWhere(filters);
+  try {
+    const where = buildDressWhere(filters);
 
-  const [dresses, totalCount, pendingPhotoCount, publishedCount, newCount, brands, sizes] =
-    await Promise.all([
+    const [
+      dresses,
+      totalCount,
+      pendingPhotoCount,
+      publishedCount,
+      newCount,
+      brands,
+      sizes,
+    ] = await Promise.all([
       prisma.dress.findMany({
         where,
         orderBy: [{ isNew: "desc" }, { createdAt: "desc" }],
@@ -257,15 +350,146 @@ export async function getDressCatalogData(
       }),
     ]);
 
+    return {
+      databaseReady: true,
+      dresses,
+      totalCount,
+      pendingPhotoCount,
+      publishedCount,
+      newCount,
+      brands: brands.map((item) => item.brand).filter(Boolean) as string[],
+      sizes: sizes.map((item) => item.size),
+    };
+  } catch {
+    return buildDemoDressCatalogData(filters);
+  }
+}
+
+export async function getDressDetailData(id: string): Promise<DressDetailData | null> {
+  if (!isDatabaseConfigured()) {
+    return buildDemoDressDetail(id);
+  }
+
+  try {
+    const dress = await prisma.dress.findUnique({
+      where: { id },
+      include: {
+        photoFolders: {
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
+        instagramPosts: {
+          orderBy: {
+            publishedAt: "desc",
+          },
+        },
+        photos: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+
+    if (!dress) {
+      return null;
+    }
+
+    return {
+      databaseReady: true,
+      dress: {
+        id: dress.id,
+        internalCode: dress.internalCode,
+        name: dress.name,
+        brand: dress.brand,
+        size: dress.size,
+        color: dress.color,
+        isNew: dress.isNew,
+        workflowStatus: dress.workflowStatus,
+        instagramStatus: dress.instagramStatus,
+        receivedAt: dress.receivedAt,
+        condition: dress.condition,
+        price: dress.price ? Number(dress.price) : null,
+        notes: dress.notes,
+        photoFolders: dress.photoFolders.map((folder) => ({
+          id: folder.id,
+          provider: folder.provider,
+          folderUrl: folder.folderUrl,
+          versionLabel: folder.versionLabel,
+          notes: folder.notes,
+          createdAt: folder.createdAt,
+        })),
+        instagramPosts: dress.instagramPosts.map((post) => ({
+          id: post.id,
+          postType: post.postType,
+          instagramUrl: post.instagramUrl,
+          instagramShortcode: post.instagramShortcode,
+          accountName: post.accountName,
+          publishedAt: post.publishedAt,
+          captionNotes: post.captionNotes,
+        })),
+        photoCount: dress.photos.length,
+      },
+    };
+  } catch {
+    return buildDemoDressDetail(id);
+  }
+}
+
+function buildDemoDressCatalogData(filters: DressFilters): DressCatalogData {
+  const dresses = applyDemoFilters(demoDresses, filters);
+
   return {
-    databaseReady: true,
+    databaseReady: false,
     dresses,
-    totalCount,
-    pendingPhotoCount,
-    publishedCount,
-    newCount,
-    brands: brands.map((item) => item.brand).filter(Boolean) as string[],
-    sizes: sizes.map((item) => item.size),
+    totalCount: demoDresses.length,
+    pendingPhotoCount: demoDresses.filter((dress) =>
+      pendingWorkflowStatuses.includes(dress.workflowStatus),
+    ).length,
+    publishedCount: demoDresses.filter(
+      (dress) => dress.instagramStatus === "PUBLISHED",
+    ).length,
+    newCount: demoDresses.filter((dress) => dress.isNew).length,
+    brands: Array.from(
+      new Set(demoDresses.map((dress) => dress.brand).filter(Boolean)),
+    ) as string[],
+    sizes: Array.from(new Set(demoDresses.map((dress) => dress.size))).sort(),
+  };
+}
+
+function buildDemoDressDetail(id: string): DressDetailData | null {
+  const dress = demoDresses.find((item) => item.id === id);
+
+  if (!dress) {
+    return null;
+  }
+
+  return {
+    databaseReady: false,
+    dress: {
+      ...dress,
+      condition: dress.isNew ? "NEW" : "USED",
+      price: {
+        "demo-1": 18900,
+        "demo-2": 15400,
+        "demo-3": 17100,
+        "demo-4": 16600,
+        "demo-5": 14900,
+        "demo-6": 17800,
+      }[dress.id] ?? null,
+      notes: {
+        "demo-1": "Vestido editorial fuerte para feed principal y portada.",
+        "demo-2": "Recién llegado. Falta sesión completa y selección de modelo.",
+        "demo-3": "Ya tiene material listo para publicar en video.",
+        "demo-4": "Esperando confirmación final de modelo talla 8.",
+        "demo-5": "Contenido aprobado para próxima semana.",
+        "demo-6": "Sesión en curso con cambios de styling.",
+      }[dress.id] ?? null,
+      photoFolders: demoDressFolders[dress.id] ?? [],
+      instagramPosts: demoInstagramPosts[dress.id] ?? [],
+      photoCount: demoPhotoCounts[dress.id] ?? 0,
+    },
   };
 }
 

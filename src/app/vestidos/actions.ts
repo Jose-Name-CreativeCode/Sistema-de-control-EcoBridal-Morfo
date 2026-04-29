@@ -14,6 +14,15 @@ function parseOptionalNumber(value: FormDataEntryValue | null) {
   return Number.isFinite(parsed) ? parsed : undefined;
 }
 
+function parseOptionalString(value: FormDataEntryValue | null) {
+  if (typeof value !== "string") {
+    return null;
+  }
+
+  const trimmed = value.trim();
+  return trimmed ? trimmed : null;
+}
+
 export async function createDressAction(formData: FormData) {
   if (!isDatabaseConfigured()) {
     redirect("/vestidos/nuevo?demo=1");
@@ -63,4 +72,135 @@ export async function createDressAction(formData: FormData) {
 
   revalidatePath("/vestidos");
   redirect("/vestidos?created=1");
+}
+
+export async function addDressPhotoFolderAction(formData: FormData) {
+  const dressId = String(formData.get("dressId") ?? "").trim();
+
+  if (!isDatabaseConfigured()) {
+    redirect(`/vestidos/${dressId}?demo=1`);
+  }
+
+  const provider = String(formData.get("provider") ?? "OUTLOOK_ONEDRIVE");
+  const folderUrl = String(formData.get("folderUrl") ?? "").trim();
+  const versionLabel = parseOptionalString(formData.get("versionLabel"));
+  const notes = parseOptionalString(formData.get("notes"));
+
+  await prisma.dressPhotoFolder.create({
+    data: {
+      dressId,
+      provider: provider as "OUTLOOK_ONEDRIVE" | "SHAREPOINT" | "GOOGLE_DRIVE" | "OTHER",
+      folderUrl,
+      versionLabel,
+      notes,
+    },
+  });
+
+  revalidatePath(`/vestidos/${dressId}`);
+  redirect(`/vestidos/${dressId}?folderSaved=1`);
+}
+
+export async function addDressInstagramPostAction(formData: FormData) {
+  const dressId = String(formData.get("dressId") ?? "").trim();
+
+  if (!isDatabaseConfigured()) {
+    redirect(`/vestidos/${dressId}?demo=1`);
+  }
+
+  const postType = String(formData.get("postType") ?? "POST");
+  const instagramUrl = String(formData.get("instagramUrl") ?? "").trim();
+  const accountName = parseOptionalString(formData.get("accountName"));
+  const captionNotes = parseOptionalString(formData.get("captionNotes"));
+  const publishedAtValue = String(formData.get("publishedAt") ?? "").trim();
+
+  await prisma.dressInstagramPost.create({
+    data: {
+      dressId,
+      postType: postType as "POST" | "REEL" | "STORY" | "CAROUSEL",
+      instagramUrl,
+      accountName,
+      captionNotes,
+      publishedAt: publishedAtValue ? new Date(publishedAtValue) : null,
+    },
+  });
+
+  revalidatePath(`/vestidos/${dressId}`);
+  revalidatePath("/vestidos");
+  redirect(`/vestidos/${dressId}?instagramSaved=1`);
+}
+
+export async function updateDressStatusesAction(formData: FormData) {
+  const dressId = String(formData.get("dressId") ?? "").trim();
+
+  if (!isDatabaseConfigured()) {
+    redirect(`/vestidos/${dressId}?demo=1`);
+  }
+
+  const workflowStatus = String(formData.get("workflowStatus") ?? "PENDING_PHOTOS");
+  const instagramStatus = String(formData.get("instagramStatus") ?? "NOT_PUBLISHED");
+
+  await prisma.dress.update({
+    where: { id: dressId },
+    data: {
+      workflowStatus: workflowStatus as
+        | "DRAFT"
+        | "PENDING_PHOTOS"
+        | "MODEL_ASSIGNED"
+        | "IN_SESSION"
+        | "PHOTOGRAPHED"
+        | "EDITED"
+        | "READY_TO_POST"
+        | "PUBLISHED",
+      instagramStatus: instagramStatus as
+        | "NOT_PUBLISHED"
+        | "SCHEDULED"
+        | "PUBLISHED"
+        | "ARCHIVED",
+    },
+  });
+
+  revalidatePath(`/vestidos/${dressId}`);
+  revalidatePath("/vestidos");
+  redirect(`/vestidos/${dressId}?statusSaved=1`);
+}
+
+export async function assignModelToDressAction(formData: FormData) {
+  const dressId = String(formData.get("dressId") ?? "").trim();
+
+  if (!isDatabaseConfigured()) {
+    redirect(`/vestidos/${dressId}?demo=1`);
+  }
+
+  const modelId = String(formData.get("modelId") ?? "").trim();
+  const assignmentStatus = String(formData.get("assignmentStatus") ?? "SUGGESTED");
+  const scheduledDateValue = String(formData.get("scheduledDate") ?? "").trim();
+  const costAgreed = parseOptionalNumber(formData.get("costAgreed"));
+  const notes = parseOptionalString(formData.get("notes"));
+
+  await prisma.dressAssignment.create({
+    data: {
+      dressId,
+      modelId: modelId || null,
+      assignmentStatus: assignmentStatus as
+        | "SUGGESTED"
+        | "CONFIRMED"
+        | "COMPLETED"
+        | "CANCELLED",
+      scheduledDate: scheduledDateValue ? new Date(scheduledDateValue) : null,
+      costAgreed,
+      notes,
+    },
+  });
+
+  await prisma.dress.update({
+    where: { id: dressId },
+    data: {
+      workflowStatus: "MODEL_ASSIGNED",
+    },
+  });
+
+  revalidatePath(`/vestidos/${dressId}`);
+  revalidatePath("/vestidos");
+  revalidatePath("/asignaciones");
+  redirect(`/vestidos/${dressId}?assignmentSaved=1`);
 }

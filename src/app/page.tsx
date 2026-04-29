@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 const summaryCards = [
   { label: "Vestidos totales", value: "104", note: "Catálogo activo" },
   { label: "Pendientes de foto", value: "10", note: "Listos para programar" },
@@ -74,18 +76,24 @@ export default function Home() {
             </div>
 
             <div className="flex flex-col gap-3 sm:flex-row">
-              <a
+              <Link
                 href="/vestidos"
                 className="rounded-full bg-accent px-6 py-3 text-center text-sm font-medium text-white transition hover:bg-[#6f3b28]"
               >
                 Abrir módulo de vestidos
-              </a>
-              <a
+              </Link>
+              <Link
                 href="/vestidos/nuevo"
                 className="rounded-full border border-line bg-white px-6 py-3 text-center text-sm font-medium text-foreground transition hover:bg-background"
               >
                 Registrar nuevo vestido
-              </a>
+              </Link>
+              <Link
+                href="/modelos"
+                className="rounded-full border border-line bg-white px-6 py-3 text-center text-sm font-medium text-foreground transition hover:bg-background"
+              >
+                Abrir modelos
+              </Link>
             </div>
           </div>
 

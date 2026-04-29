@@ -236,7 +236,12 @@ export default async function DressesPage({ searchParams }: DressesPageProps) {
             >
               <div>
                 <div className="flex flex-wrap items-center gap-3">
-                  <p className="font-heading text-3xl text-foreground">{dress.name}</p>
+                  <Link
+                    href={`/vestidos/${dress.id}`}
+                    className="font-heading text-3xl text-foreground underline-offset-4 hover:underline"
+                  >
+                    {dress.name}
+                  </Link>
                   <span className="rounded-full bg-stone-200 px-3 py-1 text-xs uppercase tracking-[0.2em] text-stone-700">
                     {dress.internalCode}
                   </span>
@@ -250,6 +255,12 @@ export default async function DressesPage({ searchParams }: DressesPageProps) {
                   {dress.brand ?? "Marca pendiente"} · Talla {dress.size} ·{" "}
                   {dress.color ?? "Color pendiente"}
                 </p>
+                <Link
+                  href={`/vestidos/${dress.id}`}
+                  className="mt-3 inline-flex text-sm font-medium text-accent underline-offset-4 hover:underline"
+                >
+                  Ver detalle del vestido
+                </Link>
               </div>
 
               <div>
