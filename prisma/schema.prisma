@@ -1,0 +1,192 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum DressCondition {
+  USED
+  NEW
+  SAMPLE
+}
+
+enum WorkflowStatus {
+  DRAFT
+  PENDING_PHOTOS
+  MODEL_ASSIGNED
+  IN_SESSION
+  PHOTOGRAPHED
+  EDITED
+  READY_TO_POST
+  PUBLISHED
+}
+
+enum AssignmentStatus {
+  SUGGESTED
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+enum PhotoType {
+  COVER
+  FRONT
+  BACK
+  DETAIL
+  WORN_BY_MODEL
+  VIDEO
+}
+
+enum FolderProvider {
+  OUTLOOK_ONEDRIVE
+  SHAREPOINT
+  GOOGLE_DRIVE
+  OTHER
+}
+
+enum InstagramStatus {
+  NOT_PUBLISHED
+  SCHEDULED
+  PUBLISHED
+  ARCHIVED
+}
+
+enum InstagramPostType {
+  POST
+  REEL
+  STORY
+  CAROUSEL
+}
+
+model Dress {
+  id               String               @id @default(cuid())
+  internalCode     String               @unique
+  name             String
+  brand            String?
+  size             String
+  color            String?
+  condition        DressCondition       @default(USED)
+  price            Decimal?             @db.Decimal(10, 2)
+  isNew            Boolean              @default(false)
+  workflowStatus   WorkflowStatus       @default(PENDING_PHOTOS)
+  instagramStatus  InstagramStatus      @default(NOT_PUBLISHED)
+  notes            String?
+  receivedAt       DateTime?
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+  assignments      DressAssignment[]
+  photos           DressPhoto[]
+  photoFolders     DressPhotoFolder[]
+  instagramPosts   DressInstagramPost[]
+
+  @@index([name])
+  @@index([brand])
+  @@index([size])
+  @@index([workflowStatus])
+  @@index([instagramStatus])
+}
+
+model ModelProfile {
+  id             String            @id @default(cuid())
+  name           String
+  contactPhone   String?
+  contactEmail   String?
+  instagramHandle String?
+  hourlyRate     Decimal?          @db.Decimal(10, 2)
+  perDressRate   Decimal?          @db.Decimal(10, 2)
+  availability   String?
+  notes          String?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  sizes          ModelSize[]
+  assignments    DressAssignment[]
+
+  @@index([name])
+}
+
+model ModelSize {
+  id        String       @id @default(cuid())
+  modelId   String
+  size      String
+  createdAt DateTime     @default(now())
+  model     ModelProfile @relation(fields: [modelId], references: [id], onDelete: Cascade)
+
+  @@unique([modelId, size])
+  @@index([size])
+}
+
+model DressAssignment {
+  id               String             @id @default(cuid())
+  dressId          String
+  modelId          String?
+  assignmentStatus AssignmentStatus   @default(SUGGESTED)
+  scheduledDate    DateTime?
+  costAgreed       Decimal?           @db.Decimal(10, 2)
+  notes            String?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  dress            Dress              @relation(fields: [dressId], references: [id], onDelete: Cascade)
+  model            ModelProfile?      @relation(fields: [modelId], references: [id], onDelete: SetNull)
+  photos           DressPhoto[]
+  photoFolders     DressPhotoFolder[]
+  instagramPosts   DressInstagramPost[]
+
+  @@index([dressId])
+  @@index([modelId])
+  @@index([assignmentStatus])
+}
+
+model DressPhoto {
+  id           String           @id @default(cuid())
+  dressId      String
+  assignmentId String?
+  photoType    PhotoType
+  imageUrl     String
+  altText      String?
+  sortOrder    Int              @default(0)
+  createdAt    DateTime         @default(now())
+  dress        Dress            @relation(fields: [dressId], references: [id], onDelete: Cascade)
+  assignment   DressAssignment? @relation(fields: [assignmentId], references: [id], onDelete: SetNull)
+
+  @@index([dressId, photoType])
+  @@index([assignmentId])
+}
+
+model DressPhotoFolder {
+  id           String           @id @default(cuid())
+  dressId      String
+  assignmentId String?
+  provider     FolderProvider
+  folderUrl    String
+  versionLabel String?
+  notes        String?
+  createdAt    DateTime         @default(now())
+  dress        Dress            @relation(fields: [dressId], references: [id], onDelete: Cascade)
+  assignment   DressAssignment? @relation(fields: [assignmentId], references: [id], onDelete: SetNull)
+
+  @@index([dressId])
+  @@index([assignmentId])
+}
+
+model DressInstagramPost {
+  id                 String             @id @default(cuid())
+  dressId            String
+  assignmentId       String?
+  postType           InstagramPostType
+  instagramUrl       String
+  instagramShortcode String?
+  accountName        String?
+  publishedAt        DateTime?
+  captionNotes       String?
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+  dress              Dress              @relation(fields: [dressId], references: [id], onDelete: Cascade)
+  assignment         DressAssignment?   @relation(fields: [assignmentId], references: [id], onDelete: SetNull)
+
+  @@index([dressId])
+  @@index([assignmentId])
+  @@index([publishedAt])
+}
