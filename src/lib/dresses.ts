@@ -87,80 +87,183 @@ export type DressDetailData = {
   };
 };
 
-export const demoDresses: DressListItem[] = [
+const importedDressNames = [
+  "ADRIANA",
+  "ALBIONIX",
+  "ALEGRIA",
+  "ALEJANDRA",
+  "ALEXA",
+  "ALLU",
+  "AMALFI",
+  "AMPARO",
+  "ANA",
+  "ANALEE",
+  "ANGELA",
+  "ANGELICA",
+  "ANNIE",
+  "ARIADNA",
+  "BAIKAL",
+  "BANGIOC",
+  "BEGOÑA",
+  "BRADY",
+  "CAITY",
+  "CAROL",
+  "CAROLINA",
+  "CECILIA",
+  "CESS",
+  "CINTHYA",
+  "CLARA",
+  "CLOÉ",
+  "CONJUNTO_ENCAJE",
+  "DALIA",
+  "DANIELA",
+  "DENISSE",
+  "DESDEMONA",
+  "DIANA",
+  "DULCE",
+  "ELENA",
+  "ELEONORA",
+  "ELOISA",
+  "ELYSE",
+  "EMA",
+  "EMILY",
+  "EMMA",
+  "ERICA",
+  "ERIKA",
+  "ESTEFANIA-MEDIANO",
+  "ESTRELLA",
+  "EVA",
+  "EVANY",
+  "EVELYN",
+  "FERNANDA",
+  "FRANCIA",
+  "GEMMA",
+  "GLORIA",
+  "GRANITO",
+  "GYPSY",
+  "HALIXA",
+  "HELENA",
+  "HILLARY",
+  "IMELDA",
+  "IRINA",
+  "ISABEL",
+  "ISSA",
+  "IVETTE",
+  "JANETH",
+  "JESSIE",
+  "JOLENE",
+  "JUMPSUIT_MANGAS_RE...",
+  "KAREN",
+  "KARLA",
+  "KAY",
+  "LA DIVINE",
+  "LAPIS",
+  "LOLA",
+  "LOREA",
+  "LORENA",
+  "LOURDES",
+  "LUCIA",
+  "LUCRECIA",
+  "LÚLU",
+  "MARCELA",
+  "MARCIA",
+  "MIRELLE",
+  "MIRIAM",
+  "NAHUATL",
+  "NICOLE_MILANO",
+  "PAOLA",
+  "PEIKY",
+  "PEIKY-MEDIANO",
+  "PERLA",
+  "REBECA",
+  "ROLLAND",
+  "ROXANA",
+  "ROZÉ",
+  "SANDRA",
+  "SENEGAL",
+  "SEVILLE",
+  "SOFIA",
+  "SOL",
+  "SUSAN",
+  "TANIA",
+  "TORERO",
+  "VENECIA",
+  "VERONICA",
+  "VICTORIA",
+  "VIVIAN",
+  "YOLANDA",
+] as const;
+
+const demoDressStateMap: Record<
+  string,
   {
-    id: "demo-1",
-    internalCode: "ECO-001",
-    name: "Ariadna",
-    brand: "Pronovias",
-    size: "8",
-    color: "Ivory",
-    isNew: false,
+    workflowStatus: WorkflowStatus;
+    instagramStatus: InstagramStatus;
+    isNew?: boolean;
+    receivedAt?: string;
+  }
+> = {
+  ADRIANA: {
     workflowStatus: "PHOTOGRAPHED",
     instagramStatus: "PUBLISHED",
-    receivedAt: new Date("2026-04-05"),
+    receivedAt: "2026-04-05",
   },
-  {
-    id: "demo-2",
-    internalCode: "ECO-002",
-    name: "Bianca",
-    brand: "Mori Lee",
-    size: "6",
-    color: "Off White",
-    isNew: true,
-    workflowStatus: "PENDING_PHOTOS",
-    instagramStatus: "NOT_PUBLISHED",
-    receivedAt: new Date("2026-04-20"),
-  },
-  {
-    id: "demo-3",
-    internalCode: "ECO-003",
-    name: "Celeste",
-    brand: "Allure",
-    size: "10",
-    color: "Ivory",
-    isNew: false,
-    workflowStatus: "EDITED",
-    instagramStatus: "SCHEDULED",
-    receivedAt: new Date("2026-03-29"),
-  },
-  {
-    id: "demo-4",
-    internalCode: "ECO-004",
-    name: "Dafne",
-    brand: "Rosa Clara",
-    size: "8",
-    color: "Champagne",
-    isNew: true,
+  ARIADNA: {
     workflowStatus: "MODEL_ASSIGNED",
     instagramStatus: "NOT_PUBLISHED",
-    receivedAt: new Date("2026-04-24"),
+    isNew: true,
+    receivedAt: "2026-04-24",
   },
-  {
-    id: "demo-5",
-    internalCode: "ECO-005",
-    name: "Elena",
-    brand: "Pronovias",
-    size: "4",
-    color: "Ivory",
-    isNew: false,
+  ELENA: {
     workflowStatus: "READY_TO_POST",
     instagramStatus: "SCHEDULED",
-    receivedAt: new Date("2026-02-18"),
+    receivedAt: "2026-02-18",
   },
-  {
-    id: "demo-6",
-    internalCode: "ECO-006",
-    name: "Florencia",
-    brand: "Sottero",
-    size: "12",
-    color: "White",
-    isNew: false,
+  DALIA: {
+    workflowStatus: "PENDING_PHOTOS",
+    instagramStatus: "NOT_PUBLISHED",
+    isNew: true,
+    receivedAt: "2026-04-26",
+  },
+  FRANCIA: {
+    workflowStatus: "EDITED",
+    instagramStatus: "SCHEDULED",
+    receivedAt: "2026-04-27",
+  },
+  MARCIA: {
     workflowStatus: "IN_SESSION",
     instagramStatus: "NOT_PUBLISHED",
-    receivedAt: new Date("2026-04-11"),
+    receivedAt: "2026-04-12",
   },
-];
+  SOFIA: {
+    workflowStatus: "PUBLISHED",
+    instagramStatus: "PUBLISHED",
+    receivedAt: "2026-04-06",
+  },
+  YOLANDA: {
+    workflowStatus: "PENDING_PHOTOS",
+    instagramStatus: "NOT_PUBLISHED",
+    isNew: true,
+    receivedAt: "2026-04-28",
+  },
+};
+
+export const demoDresses: DressListItem[] = importedDressNames.map((name, index) => {
+  const state = demoDressStateMap[name];
+
+  return {
+    id: `demo-${index + 1}`,
+    internalCode: `ECO-${String(index + 1).padStart(3, "0")}`,
+    name,
+    brand: null,
+    size: "Por definir",
+    color: null,
+    isNew: state?.isNew ?? false,
+    workflowStatus: state?.workflowStatus ?? "PENDING_PHOTOS",
+    instagramStatus: state?.instagramStatus ?? "NOT_PUBLISHED",
+    receivedAt: state?.receivedAt ? new Date(state.receivedAt) : new Date("2026-03-06"),
+  };
+});
 
 const pendingWorkflowStatuses: WorkflowStatus[] = [
   "PENDING_PHOTOS",
@@ -200,7 +303,7 @@ export const instagramPostTypeLabels = {
   CAROUSEL: "Carrusel",
 } as const;
 
-const demoDressFolders: Record<string, DressPhotoFolderItem[]> = {
+export const demoDressFolders: Record<string, DressPhotoFolderItem[]> = {
   "demo-1": [
     {
       id: "folder-1",
@@ -211,11 +314,11 @@ const demoDressFolders: Record<string, DressPhotoFolderItem[]> = {
       createdAt: new Date("2026-04-08"),
     },
   ],
-  "demo-3": [
+  "demo-34": [
     {
       id: "folder-2",
       provider: "SHAREPOINT",
-      folderUrl: "https://sharepoint.com/demo/celeste",
+      folderUrl: "https://sharepoint.com/demo/elena",
       versionLabel: "Selección aprobada",
       notes: "Lista para programar reel.",
       createdAt: new Date("2026-04-01"),
@@ -223,7 +326,7 @@ const demoDressFolders: Record<string, DressPhotoFolderItem[]> = {
   ],
 };
 
-const demoInstagramPosts: Record<string, DressInstagramPostItem[]> = {
+export const demoInstagramPosts: Record<string, DressInstagramPostItem[]> = {
   "demo-1": [
     {
       id: "ig-1",
@@ -235,12 +338,12 @@ const demoInstagramPosts: Record<string, DressInstagramPostItem[]> = {
       captionNotes: "Post principal del vestido Ariadna.",
     },
   ],
-  "demo-3": [
+  "demo-95": [
     {
       id: "ig-2",
       postType: "REEL",
-      instagramUrl: "https://instagram.com/reel/demo-celeste",
-      instagramShortcode: "demo-celeste",
+      instagramUrl: "https://instagram.com/reel/demo-sofia",
+      instagramShortcode: "demo-sofia",
       accountName: "@ecobridalmorfo",
       publishedAt: new Date("2026-04-03"),
       captionNotes: "Video con transición de frente a espalda.",
@@ -248,13 +351,14 @@ const demoInstagramPosts: Record<string, DressInstagramPostItem[]> = {
   ],
 };
 
-const demoPhotoCounts: Record<string, number> = {
+export const demoPhotoCounts: Record<string, number> = {
   "demo-1": 5,
-  "demo-2": 0,
-  "demo-3": 4,
-  "demo-4": 1,
-  "demo-5": 3,
-  "demo-6": 2,
+  "demo-14": 1,
+  "demo-28": 0,
+  "demo-34": 4,
+  "demo-49": 3,
+  "demo-79": 2,
+  "demo-95": 5,
 };
 
 export function getWorkflowStatusBadgeClasses(status: WorkflowStatus) {
@@ -472,19 +576,21 @@ function buildDemoDressDetail(id: string): DressDetailData | null {
       condition: dress.isNew ? "NEW" : "USED",
       price: {
         "demo-1": 18900,
-        "demo-2": 15400,
-        "demo-3": 17100,
-        "demo-4": 16600,
-        "demo-5": 14900,
-        "demo-6": 17800,
+        "demo-14": 16600,
+        "demo-28": 15400,
+        "demo-34": 14900,
+        "demo-49": 17100,
+        "demo-79": 17800,
+        "demo-95": 18200,
       }[dress.id] ?? null,
       notes: {
         "demo-1": "Vestido editorial fuerte para feed principal y portada.",
-        "demo-2": "Recién llegado. Falta sesión completa y selección de modelo.",
-        "demo-3": "Ya tiene material listo para publicar en video.",
-        "demo-4": "Esperando confirmación final de modelo talla 8.",
-        "demo-5": "Contenido aprobado para próxima semana.",
-        "demo-6": "Sesión en curso con cambios de styling.",
+        "demo-14": "Esperando confirmación final de modelo y detalles de prueba.",
+        "demo-28": "Recién llegado. Falta sesión completa y selección de modelo.",
+        "demo-34": "Contenido casi listo para publicar.",
+        "demo-49": "Material avanzado para programación en Instagram.",
+        "demo-79": "Sesión en curso con cambios de styling.",
+        "demo-95": "Publicación ya validada y enlazada.",
       }[dress.id] ?? null,
       photoFolders: demoDressFolders[dress.id] ?? [],
       instagramPosts: demoInstagramPosts[dress.id] ?? [],

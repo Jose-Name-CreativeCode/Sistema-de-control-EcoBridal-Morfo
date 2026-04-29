@@ -43,7 +43,7 @@ export type AssignmentSuggestion = {
   }>;
 };
 
-const demoModels: ModelListItem[] = [
+export const demoModels: ModelListItem[] = [
   {
     id: "model-1",
     name: "Sofía Ramírez",
@@ -90,7 +90,7 @@ const demoModels: ModelListItem[] = [
   },
 ];
 
-const demoDressAssignments: Record<
+export const demoDressAssignments: Record<
   string,
   Array<{
     id: string;
@@ -101,7 +101,7 @@ const demoDressAssignments: Record<
     model: ModelListItem | null;
   }>
 > = {
-  "demo-4": [
+  "demo-14": [
     {
       id: "assignment-1",
       assignmentStatus: "CONFIRMED",
@@ -111,7 +111,7 @@ const demoDressAssignments: Record<
       model: demoModels[0],
     },
   ],
-  "demo-6": [
+  "demo-79": [
     {
       id: "assignment-2",
       assignmentStatus: "SUGGESTED",
