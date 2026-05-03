@@ -1,5 +1,6 @@
 import Link from "next/link";
 import {
+  dressSortOptions,
   getDressCatalogData,
   getInstagramStatusBadgeClasses,
   getWorkflowStatusBadgeClasses,
@@ -17,6 +18,7 @@ type DressesPageProps = {
     workflowStatus?: string;
     instagramStatus?: string;
     novelty?: string;
+    sort?: string;
     created?: string;
   }>;
 };
@@ -40,127 +42,118 @@ export default async function DressesPage({ searchParams }: DressesPageProps) {
     search: params?.search,
     brand: params?.brand,
     size: params?.size,
-    workflowStatus: (params?.workflowStatus as
-      | (typeof workflowStatusOptions)[number]
-      | ""
-      | undefined) ?? "",
-    instagramStatus: (params?.instagramStatus as
-      | (typeof instagramStatusOptions)[number]
-      | ""
-      | undefined) ?? "",
+    workflowStatus:
+      (params?.workflowStatus as
+        | (typeof workflowStatusOptions)[number]
+        | ""
+        | undefined) ?? "",
+    instagramStatus:
+      (params?.instagramStatus as
+        | (typeof instagramStatusOptions)[number]
+        | ""
+        | undefined) ?? "",
     novelty:
       params?.novelty === "new" || params?.novelty === "existing"
         ? params.novelty
         : "all",
+    sort:
+      params?.sort &&
+      dressSortOptions.includes(
+        params.sort as (typeof dressSortOptions)[number],
+      )
+        ? (params.sort as (typeof dressSortOptions)[number])
+        : "name-asc",
   });
 
   return (
-    <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-6 pb-12 pt-6 sm:px-10 lg:px-12">
-      <section className="rounded-[2rem] border border-line bg-surface p-6 shadow-[0_20px_80px_rgba(64,34,24,0.08)]">
-        <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+    <main className="flex w-full flex-1 flex-col gap-6">
+      <section className="app-page">
+        <div className="flex flex-col gap-6 border-b border-line pb-6 xl:flex-row xl:items-end xl:justify-between">
           <div className="max-w-3xl">
-            <p className="text-sm uppercase tracking-[0.3em] text-accent">Módulo 01</p>
-            <h1 className="font-heading text-5xl leading-none text-foreground sm:text-6xl">
+            <p className="text-sm uppercase tracking-[0.28em] text-accent-strong">
+              Módulo 01
+            </p>
+            <h1 className="mt-3 font-heading text-5xl leading-[0.95] text-foreground sm:text-6xl">
               Vestidos
             </h1>
-            <p className="mt-4 text-lg leading-8 text-foreground/75">
-              Filtra por nombre, marca, talla, estado de fotografía o estado de
-              Instagram. Aquí es donde tu equipo puede ver qué vestidos faltan y cuáles
-              ya tienen evidencia de publicación.
+            <p className="mt-4 text-lg leading-8 text-foreground/78">
+              Filtra por nombre, marca, talla, estado de fotografía y estado de
+              Instagram. Aquí puedes detectar qué vestidos faltan por
+              fotografiar y cuáles ya tienen evidencia y publicación.
             </p>
           </div>
 
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <Link
-              href="/"
-              className="rounded-full border border-line bg-white px-5 py-3 text-center text-sm font-medium text-foreground transition hover:bg-background"
-            >
-              Volver al inicio
-            </Link>
-            <Link
-              href="/vestidos/edicion-rapida"
-              className="rounded-full border border-line bg-white px-5 py-3 text-center text-sm font-medium text-foreground transition hover:bg-background"
-            >
-              Edición rápida
-            </Link>
-            <Link
-              href="/vestidos/actualizacion-masiva"
-              className="rounded-full border border-line bg-white px-5 py-3 text-center text-sm font-medium text-foreground transition hover:bg-background"
-            >
-              Actualización masiva
-            </Link>
-            <Link
-              href="/vestidos/nuevo"
-              className="rounded-full bg-accent px-5 py-3 text-center text-sm font-medium text-white transition hover:bg-[#6f3b28]"
-            >
+          <div className="flex flex-wrap gap-3">
+            <Link href="/vestidos/nuevo" className="app-button-primary">
               Registrar vestido
             </Link>
           </div>
         </div>
 
         {!data.databaseReady ? (
-          <div className="mt-6 rounded-[1.5rem] border border-dashed border-accent/30 bg-accent/8 px-5 py-4 text-sm leading-7 text-foreground/78">
-            Estás viendo el módulo en modo demo porque todavía no hay una base PostgreSQL
-            conectada. La interfaz ya está lista; en cuanto configures `DATABASE_URL`,
-            este listado empezará a trabajar con datos reales.
+          <div className="mt-6 rounded-2xl border border-dashed border-accent-strong/30 bg-accent-strong/6 px-5 py-4 text-sm leading-7 text-foreground/78">
+            Estás viendo este módulo en modo demo. En cuanto la base real no
+            tenga ningún problema de conexión, el catálogo se leerá desde
+            PostgreSQL.
           </div>
         ) : null}
 
         {params?.created === "1" ? (
-          <div className="mt-6 rounded-[1.5rem] border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm text-emerald-900">
+          <div className="mt-6 rounded-2xl border border-lime-300 bg-lime-50 px-5 py-4 text-sm text-lime-950">
             El vestido se registró correctamente.
           </div>
         ) : null}
 
-        <div className="mt-8 grid gap-4 md:grid-cols-4">
+        <div className="mt-6 grid gap-4 md:grid-cols-2 2xl:grid-cols-4">
           {[
             { label: "Vestidos totales", value: data.totalCount },
             { label: "Pendientes de foto", value: data.pendingPhotoCount },
             { label: "Publicados", value: data.publishedCount },
             { label: "Nuevos", value: data.newCount },
           ].map((item) => (
-            <article
-              key={item.label}
-              className="rounded-[1.35rem] border border-line bg-white/80 p-5"
-            >
+            <article key={item.label} className="app-card h-full p-5">
               <p className="text-sm uppercase tracking-[0.2em] text-foreground/55">
                 {item.label}
               </p>
-              <p className="mt-3 font-heading text-5xl text-accent">{item.value}</p>
+              <p className="mt-3 font-heading text-5xl leading-none text-accent-strong">
+                {item.value}
+              </p>
             </article>
           ))}
         </div>
       </section>
 
-      <section className="mt-8 rounded-[2rem] border border-line bg-white/75 p-6">
-        <div className="flex items-center justify-between border-b border-line pb-4">
+      <section className="app-page">
+        <div className="flex flex-col gap-4 border-b border-line pb-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
               Filtros
             </p>
-            <h2 className="font-heading text-4xl text-foreground">Busca rápido</h2>
+            <h2 className="mt-2 font-heading text-4xl leading-none text-foreground">
+              Busca rápido
+            </h2>
           </div>
           <Link
             href="/vestidos"
-            className="text-sm font-medium text-accent underline-offset-4 hover:underline"
+            className="text-sm font-semibold text-accent-strong underline-offset-4 hover:underline"
           >
             Limpiar filtros
           </Link>
         </div>
 
-        <form className="mt-6 grid gap-4 lg:grid-cols-6">
+        <form className="mt-6 grid gap-4 xl:grid-cols-6">
           <input
             type="text"
             name="search"
             defaultValue={params?.search ?? ""}
             placeholder="Nombre, marca o código"
-            className="rounded-2xl border border-line bg-surface px-4 py-3 text-sm outline-none transition focus:border-accent lg:col-span-2"
+            className="app-field xl:col-span-2"
           />
 
           <select
             name="brand"
             defaultValue={params?.brand ?? ""}
-            className="rounded-2xl border border-line bg-surface px-4 py-3 text-sm outline-none transition focus:border-accent"
+            className="app-field"
           >
             <option value="">Todas las marcas</option>
             {data.brands.map((brand) => (
@@ -173,7 +166,7 @@ export default async function DressesPage({ searchParams }: DressesPageProps) {
           <select
             name="size"
             defaultValue={params?.size ?? ""}
-            className="rounded-2xl border border-line bg-surface px-4 py-3 text-sm outline-none transition focus:border-accent"
+            className="app-field"
           >
             <option value="">Todas las tallas</option>
             {data.sizes.map((size) => (
@@ -186,7 +179,7 @@ export default async function DressesPage({ searchParams }: DressesPageProps) {
           <select
             name="workflowStatus"
             defaultValue={params?.workflowStatus ?? ""}
-            className="rounded-2xl border border-line bg-surface px-4 py-3 text-sm outline-none transition focus:border-accent"
+            className="app-field"
           >
             <option value="">Todos los estados de foto</option>
             {workflowStatusOptions.map((status) => (
@@ -199,7 +192,7 @@ export default async function DressesPage({ searchParams }: DressesPageProps) {
           <select
             name="instagramStatus"
             defaultValue={params?.instagramStatus ?? ""}
-            className="rounded-2xl border border-line bg-surface px-4 py-3 text-sm outline-none transition focus:border-accent"
+            className="app-field"
           >
             <option value="">Todos los estados de Instagram</option>
             {instagramStatusOptions.map((status) => (
@@ -212,108 +205,128 @@ export default async function DressesPage({ searchParams }: DressesPageProps) {
           <select
             name="novelty"
             defaultValue={params?.novelty ?? "all"}
-            className="rounded-2xl border border-line bg-surface px-4 py-3 text-sm outline-none transition focus:border-accent"
+            className="app-field xl:col-span-2"
           >
             <option value="all">Todos</option>
             <option value="new">Solo nuevos</option>
             <option value="existing">Solo existentes</option>
           </select>
 
-          <button
-            type="submit"
-            className="rounded-2xl bg-accent px-4 py-3 text-sm font-medium text-white transition hover:bg-[#6f3b28]"
+          <select
+            name="sort"
+            defaultValue={params?.sort ?? "name-asc"}
+            className="app-field xl:col-span-2"
           >
+            <option value="name-asc">Nombre A a Z</option>
+            <option value="name-desc">Nombre Z a A</option>
+            <option value="code-asc">ID ECO menor a mayor</option>
+            <option value="code-desc">ID ECO mayor a menor</option>
+          </select>
+
+          <button type="submit" className="app-button-primary xl:col-span-2">
             Aplicar filtros
           </button>
         </form>
       </section>
 
-      <section className="mt-8 rounded-[2rem] border border-line bg-surface p-6">
-        <div className="flex items-center justify-between border-b border-line pb-4">
-          <div>
-            <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
-              Resultado
-            </p>
-            <h2 className="font-heading text-4xl text-foreground">
-              {data.dresses.length} vestidos encontrados
-            </h2>
-          </div>
+      <section className="app-page">
+        <div className="border-b border-line pb-4">
+          <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
+            Resultado
+          </p>
+          <h2 className="mt-2 font-heading text-4xl leading-none text-foreground">
+            {data.dresses.length} vestidos encontrados
+          </h2>
         </div>
 
-        <div className="mt-6 grid gap-4">
+        <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           {data.dresses.map((dress) => (
-            <article
-              key={dress.id}
-              className="grid gap-4 rounded-[1.5rem] border border-line bg-white/80 p-5 lg:grid-cols-[1.4fr_0.7fr_0.7fr_0.6fr]"
-            >
-              <div>
-                <div className="flex flex-wrap items-center gap-3">
+            <article key={dress.id} className="app-card overflow-hidden">
+              <Link href={`/vestidos/${dress.id}`} className="block">
+                <div className="relative h-72 overflow-hidden bg-surface-strong">
+                  {dress.previewPhotoUrl ? (
+                    <img
+                      src={dress.previewPhotoUrl}
+                      alt={dress.name}
+                      className="h-full w-full object-cover object-[center_10%] transition duration-300 hover:scale-[1.04]"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center bg-[linear-gradient(135deg,#eef3ff,#dce6fb)] px-8 text-center">
+                      <p className="font-heading text-4xl text-accent-strong">
+                        {dress.name}
+                      </p>
+                    </div>
+                  )}
+                  <div className="absolute left-4 top-4 flex flex-wrap gap-2">
+                    <span className="app-badge bg-white/90 text-slate-700">
+                      {dress.internalCode}
+                    </span>
+                    {dress.isNew ? (
+                      <span className="app-badge bg-accent-strong text-white">
+                        Nuevo
+                      </span>
+                    ) : null}
+                  </div>
+                </div>
+              </Link>
+
+              <div className="grid gap-4 p-5">
+                <div>
                   <Link
                     href={`/vestidos/${dress.id}`}
-                    className="font-heading text-3xl text-foreground underline-offset-4 hover:underline"
+                    className="font-heading text-3xl leading-none text-foreground underline-offset-4 hover:text-accent-strong hover:underline"
                   >
                     {dress.name}
                   </Link>
-                  <span className="rounded-full bg-stone-200 px-3 py-1 text-xs uppercase tracking-[0.2em] text-stone-700">
-                    {dress.internalCode}
-                  </span>
-                  {dress.isNew ? (
-                    <span className="rounded-full bg-accent px-3 py-1 text-xs uppercase tracking-[0.2em] text-white">
-                      Nuevo
-                    </span>
-                  ) : null}
+                  <p className="mt-3 text-sm leading-7 text-foreground/72">
+                    {dress.brand ?? "Marca pendiente"} · Talla {dress.size}
+                  </p>
                 </div>
-                <p className="mt-2 text-sm leading-7 text-foreground/72">
-                  {dress.brand ?? "Marca pendiente"} · Talla {dress.size} ·{" "}
-                  {dress.color ?? "Color pendiente"}
-                </p>
+
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">
+                      Fotografía
+                    </p>
+                    <span
+                      className={`mt-2 inline-flex rounded-lg px-3 py-2 text-sm font-semibold ${getWorkflowStatusBadgeClasses(
+                        dress.workflowStatus,
+                      )}`}
+                    >
+                      {workflowStatusLabels[dress.workflowStatus]}
+                    </span>
+                  </div>
+
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">
+                      Instagram
+                    </p>
+                    <span
+                      className={`mt-2 inline-flex rounded-lg px-3 py-2 text-sm font-semibold ${getInstagramStatusBadgeClasses(
+                        dress.instagramStatus,
+                      )}`}
+                    >
+                      {instagramStatusLabels[dress.instagramStatus]}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="grid gap-2 text-sm text-foreground/75">
+                  <p>Ingreso: {formatDate(dress.receivedAt)}</p>
+                </div>
+
                 <Link
                   href={`/vestidos/${dress.id}`}
-                  className="mt-3 inline-flex text-sm font-medium text-accent underline-offset-4 hover:underline"
+                  className="app-button-secondary"
                 >
-                  Ver detalle del vestido
+                  Ver detalle
                 </Link>
-              </div>
-
-              <div>
-                <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">
-                  Fotografía
-                </p>
-                <span
-                  className={`mt-2 inline-flex rounded-full px-3 py-2 text-sm font-medium ${getWorkflowStatusBadgeClasses(
-                    dress.workflowStatus,
-                  )}`}
-                >
-                  {workflowStatusLabels[dress.workflowStatus]}
-                </span>
-              </div>
-
-              <div>
-                <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">
-                  Instagram
-                </p>
-                <span
-                  className={`mt-2 inline-flex rounded-full px-3 py-2 text-sm font-medium ${getInstagramStatusBadgeClasses(
-                    dress.instagramStatus,
-                  )}`}
-                >
-                  {instagramStatusLabels[dress.instagramStatus]}
-                </span>
-              </div>
-
-              <div>
-                <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">
-                  Ingreso
-                </p>
-                <p className="mt-2 text-sm text-foreground/75">
-                  {formatDate(dress.receivedAt)}
-                </p>
               </div>
             </article>
           ))}
 
           {data.dresses.length === 0 ? (
-            <div className="rounded-[1.5rem] border border-dashed border-line bg-white/70 px-5 py-10 text-center text-sm text-foreground/70">
+            <div className="rounded-2xl border border-dashed border-line bg-white/70 px-5 py-10 text-center text-sm text-foreground/70 md:col-span-2 xl:col-span-3">
               No se encontraron vestidos con esos filtros.
             </div>
           ) : null}

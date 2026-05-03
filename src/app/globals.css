@@ -1,13 +1,16 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f6f0e8;
-  --foreground: #241915;
-  --surface: #fffaf3;
-  --surface-strong: #f0e1d2;
-  --accent: #8d4b32;
-  --accent-soft: #d8a98c;
-  --line: rgba(36, 25, 21, 0.12);
+  --background: #252525;
+  --foreground: #1f2430;
+  --surface: #f7f9fe;
+  --surface-strong: #eef3ff;
+  --accent: #5783d0;
+  --accent-soft: #48c0c1;
+  --accent-strong: #3f6fc6;
+  --support-coral: #f6757a;
+  --support-lime: #afda5a;
+  --line: rgba(31, 36, 48, 0.12);
   --font-body:
     "Avenir Next", "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --font-heading:
@@ -21,6 +24,9 @@
   --color-surface-strong: var(--surface-strong);
   --color-accent: var(--accent);
   --color-accent-soft: var(--accent-soft);
+  --color-accent-strong: var(--accent-strong);
+  --color-support-coral: var(--support-coral);
+  --color-support-lime: var(--support-lime);
   --color-line: var(--line);
   --font-sans: var(--font-body);
   --font-heading: var(--font-heading);
@@ -32,8 +38,9 @@
 
 html {
   background:
-    radial-gradient(circle at top, rgba(216, 169, 140, 0.35), transparent 30%),
-    linear-gradient(180deg, #fbf6ef 0%, #f6f0e8 55%, #efe4d8 100%);
+    radial-gradient(circle at 18% 18%, rgba(87, 131, 208, 0.22), transparent 18%),
+    radial-gradient(circle at 82% 14%, rgba(72, 192, 193, 0.18), transparent 16%),
+    linear-gradient(180deg, #252525 0%, #1d1d1f 52%, #141416 100%);
 }
 
 body {
@@ -48,9 +55,65 @@ a {
 }
 
 ::selection {
-  background: rgba(141, 75, 50, 0.16);
+  background: rgba(87, 131, 208, 0.22);
 }
 
 .font-heading {
   font-family: var(--font-heading), serif;
+}
+
+@layer components {
+  .app-shell-panel {
+    @apply rounded-[28px] border border-white/10 bg-white/6 shadow-[0_20px_60px_rgba(0,0,0,0.30)] backdrop-blur;
+  }
+
+  .app-page {
+    @apply rounded-[28px] border border-white/16 bg-[rgba(247,249,254,0.98)] p-6 shadow-[0_24px_80px_rgba(0,0,0,0.22)] sm:p-8;
+  }
+
+  .app-card {
+    @apply rounded-2xl border border-line bg-white shadow-[0_8px_24px_rgba(17,30,59,0.06)];
+  }
+
+  .app-card-soft {
+    @apply rounded-2xl border border-white/35 bg-white/70 shadow-[0_8px_24px_rgba(17,30,59,0.06)];
+  }
+
+  .app-button-primary {
+    @apply inline-flex items-center justify-center rounded-xl bg-accent px-4 py-3 text-sm font-semibold text-white transition hover:bg-accent-strong;
+  }
+
+  .app-button-secondary {
+    @apply inline-flex items-center justify-center rounded-xl border border-line bg-white px-4 py-3 text-sm font-semibold text-foreground transition;
+  }
+
+  .app-badge {
+    @apply inline-flex items-center rounded-lg px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em];
+  }
+
+  .app-field {
+    @apply rounded-xl border border-line bg-white px-4 py-3 text-sm outline-none transition focus:border-accent;
+  }
+}
+
+.app-button-primary,
+.app-button-primary:visited {
+  color: #ffffff;
+}
+
+.app-button-primary:hover,
+.app-button-primary:focus-visible {
+  color: #ffffff;
+}
+
+.app-button-secondary,
+.app-button-secondary:visited {
+  color: var(--foreground);
+}
+
+.app-button-secondary:hover,
+.app-button-secondary:focus-visible {
+  border-color: var(--foreground);
+  background: var(--foreground);
+  color: #ffffff;
 }

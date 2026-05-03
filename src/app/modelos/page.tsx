@@ -30,7 +30,7 @@ export default async function ModelsPage({ searchParams }: ModelsPageProps) {
 
   return (
     <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-6 pb-12 pt-6 sm:px-10 lg:px-12">
-      <section className="rounded-[2rem] border border-line bg-surface p-6 shadow-[0_20px_80px_rgba(64,34,24,0.08)]">
+      <section className="rounded-[2rem] border border-line bg-surface p-6 shadow-[0_20px_80px_rgba(37,37,37,0.08)]">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-3xl">
             <p className="text-sm uppercase tracking-[0.3em] text-accent">Módulo 02</p>
@@ -45,16 +45,10 @@ export default async function ModelsPage({ searchParams }: ModelsPageProps) {
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row">
-            <Link
-              href="/asignaciones"
-              className="rounded-full border border-line bg-white px-5 py-3 text-center text-sm font-medium text-foreground transition hover:bg-background"
-            >
+            <Link href="/asignaciones" className="app-button-secondary">
               Ver asignaciones
             </Link>
-            <Link
-              href="/modelos/nuevo"
-              className="rounded-full bg-accent px-5 py-3 text-center text-sm font-medium text-white transition hover:bg-[#6f3b28]"
-            >
+            <Link href="/modelos/nuevo" className="app-button-primary">
               Registrar modelo
             </Link>
           </div>
@@ -129,10 +123,7 @@ export default async function ModelsPage({ searchParams }: ModelsPageProps) {
               </option>
             ))}
           </select>
-          <button
-            type="submit"
-            className="rounded-2xl bg-accent px-4 py-3 text-sm font-medium text-white transition hover:bg-[#6f3b28]"
-          >
+          <button type="submit" className="app-button-primary">
             Aplicar
           </button>
         </form>
@@ -142,7 +133,7 @@ export default async function ModelsPage({ searchParams }: ModelsPageProps) {
         {data.models.map((model) => (
           <article
             key={model.id}
-            className="rounded-[1.6rem] border border-line bg-surface p-6 shadow-[0_10px_30px_rgba(64,34,24,0.05)]"
+            className="rounded-[1.6rem] border border-line bg-surface p-6 shadow-[0_10px_30px_rgba(37,37,37,0.05)]"
           >
             <div className="grid gap-5 lg:grid-cols-[1.2fr_0.8fr_0.8fr_0.8fr]">
               <div>

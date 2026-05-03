@@ -14,7 +14,7 @@ export default async function NewModelPage({ searchParams }: NewModelPageProps) 
 
   return (
     <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-6 pb-12 pt-6 sm:px-10 lg:px-12">
-      <section className="rounded-[2rem] border border-line bg-surface p-6 shadow-[0_20px_80px_rgba(64,34,24,0.08)]">
+      <section className="rounded-[2rem] border border-line bg-surface p-6 shadow-[0_20px_80px_rgba(37,37,37,0.08)]">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-sm uppercase tracking-[0.3em] text-accent">Alta de modelo</p>
@@ -23,10 +23,7 @@ export default async function NewModelPage({ searchParams }: NewModelPageProps) 
             </h1>
           </div>
 
-          <Link
-            href="/modelos"
-            className="rounded-full border border-line bg-white px-5 py-3 text-center text-sm font-medium text-foreground transition hover:bg-background"
-          >
+          <Link href="/modelos" className="app-button-secondary">
             Volver al listado
           </Link>
         </div>
@@ -136,16 +133,10 @@ export default async function NewModelPage({ searchParams }: NewModelPageProps) 
           </label>
 
           <div className="col-span-full flex flex-col gap-3 sm:flex-row">
-            <button
-              type="submit"
-              className="rounded-full bg-accent px-6 py-3 text-sm font-medium text-white transition hover:bg-[#6f3b28]"
-            >
+            <button type="submit" className="app-button-primary">
               Guardar modelo
             </button>
-            <Link
-              href="/modelos"
-              className="rounded-full border border-line bg-white px-6 py-3 text-center text-sm font-medium text-foreground transition hover:bg-background"
-            >
+            <Link href="/modelos" className="app-button-secondary">
               Cancelar
             </Link>
           </div>

@@ -265,6 +265,8 @@ export async function getAssignmentSuggestions(): Promise<{
       workflowStatus: dress.workflowStatus,
       instagramStatus: "NOT_PUBLISHED",
       receivedAt: null,
+      previewPhotoUrl: null,
+      previewPhotoType: null,
     }));
 
     const normalizedModels: ModelListItem[] = models.map((model) => ({

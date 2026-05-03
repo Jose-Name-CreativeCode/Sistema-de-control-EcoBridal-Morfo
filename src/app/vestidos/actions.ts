@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { getNextInternalCode } from "@/lib/internal-codes";
 import { prisma } from "@/lib/prisma";
 import { isDatabaseConfigured } from "@/lib/database";
 
@@ -28,11 +29,10 @@ export async function createDressAction(formData: FormData) {
     redirect("/vestidos/nuevo?demo=1");
   }
 
-  const internalCode = String(formData.get("internalCode") ?? "").trim();
+  const internalCode = await getNextInternalCode();
   const name = String(formData.get("name") ?? "").trim();
   const brand = String(formData.get("brand") ?? "").trim();
   const size = String(formData.get("size") ?? "").trim();
-  const color = String(formData.get("color") ?? "").trim();
   const condition = String(formData.get("condition") ?? "USED");
   const workflowStatus = String(formData.get("workflowStatus") ?? "PENDING_PHOTOS");
   const instagramStatus = String(formData.get("instagramStatus") ?? "NOT_PUBLISHED");
@@ -41,13 +41,16 @@ export async function createDressAction(formData: FormData) {
   const price = parseOptionalNumber(formData.get("price"));
   const isNew = formData.get("isNew") === "on";
 
+  if (!name || !size) {
+    redirect("/vestidos/nuevo?missing=1");
+  }
+
   await prisma.dress.create({
     data: {
       internalCode,
       name,
       brand: brand || null,
       size,
-      color: color || null,
       condition: condition as "USED" | "NEW" | "SAMPLE",
       workflowStatus: workflowStatus as
         | "DRAFT"
@@ -72,6 +75,45 @@ export async function createDressAction(formData: FormData) {
 
   revalidatePath("/vestidos");
   redirect("/vestidos?created=1");
+}
+
+export async function updateDressDetailAction(formData: FormData) {
+  const dressId = String(formData.get("dressId") ?? "").trim();
+
+  if (!isDatabaseConfigured()) {
+    redirect(`/vestidos/${dressId}?demo=1`);
+  }
+
+  const name = String(formData.get("name") ?? "").trim();
+  const brand = parseOptionalString(formData.get("brand"));
+  const size = parseOptionalString(formData.get("size")) ?? "Por definir";
+  const condition = String(formData.get("condition") ?? "USED");
+  const price = parseOptionalNumber(formData.get("price"));
+  const notes = parseOptionalString(formData.get("notes"));
+  const receivedAtValue = String(formData.get("receivedAt") ?? "").trim();
+  const isNew = formData.get("isNew") === "on";
+
+  if (!name) {
+    redirect(`/vestidos/${dressId}?missing=1`);
+  }
+
+  await prisma.dress.update({
+    where: { id: dressId },
+    data: {
+      name,
+      brand,
+      size,
+      condition: condition as "USED" | "NEW" | "SAMPLE",
+      price,
+      notes,
+      receivedAt: receivedAtValue ? new Date(receivedAtValue) : null,
+      isNew,
+    },
+  });
+
+  revalidatePath("/vestidos");
+  revalidatePath(`/vestidos/${dressId}`);
+  redirect(`/vestidos/${dressId}?detailsSaved=1`);
 }
 
 export async function addDressPhotoFolderAction(formData: FormData) {
@@ -137,9 +179,14 @@ export async function addDressPhotoAction(formData: FormData) {
   }
 
   const photoType = String(formData.get("photoType") ?? "COVER");
-  const imageUrl = String(formData.get("imageUrl") ?? "").trim();
+  const imageDataUrl = String(formData.get("imageDataUrl") ?? "").trim();
+  const imageUrl = imageDataUrl || String(formData.get("imageUrl") ?? "").trim();
   const altText = parseOptionalString(formData.get("altText"));
   const sortOrder = parseOptionalNumber(formData.get("sortOrder")) ?? 0;
+
+  if (!imageUrl) {
+    redirect(`/vestidos/${dressId}?demo=1`);
+  }
 
   await prisma.dressPhoto.create({
     data: {
@@ -159,6 +206,118 @@ export async function addDressPhotoAction(formData: FormData) {
 
   revalidatePath(`/vestidos/${dressId}`);
   redirect(`/vestidos/${dressId}?photoSaved=1`);
+}
+
+export async function updateDressPhotoAction(formData: FormData) {
+  const dressId = String(formData.get("dressId") ?? "").trim();
+  const photoId = String(formData.get("photoId") ?? "").trim();
+
+  if (!isDatabaseConfigured()) {
+    redirect(`/vestidos/${dressId}?demo=1`);
+  }
+
+  const existingPhoto = await prisma.dressPhoto.findUnique({
+    where: { id: photoId },
+    select: {
+      id: true,
+      dressId: true,
+      imageUrl: true,
+    },
+  });
+
+  if (!existingPhoto || existingPhoto.dressId !== dressId) {
+    redirect(`/vestidos/${dressId}?demo=1`);
+  }
+
+  const photoType = String(formData.get("photoType") ?? "COVER");
+  const imageDataUrl = String(formData.get("imageDataUrl") ?? "").trim();
+  const imageUrlInput = String(formData.get("imageUrl") ?? "").trim();
+  const altText = parseOptionalString(formData.get("altText"));
+  const sortOrder = parseOptionalNumber(formData.get("sortOrder")) ?? 0;
+  const nextImageUrl = imageDataUrl || imageUrlInput || existingPhoto.imageUrl;
+
+  await prisma.dressPhoto.update({
+    where: { id: photoId },
+    data: {
+      photoType: photoType as
+        | "COVER"
+        | "FRONT"
+        | "BACK"
+        | "DETAIL"
+        | "WORN_BY_MODEL"
+        | "VIDEO",
+      imageUrl: nextImageUrl,
+      altText,
+      sortOrder,
+    },
+  });
+
+  revalidatePath(`/vestidos/${dressId}`);
+  redirect(`/vestidos/${dressId}?photoUpdated=1`);
+}
+
+export async function saveDressGalleryLinksAction(formData: FormData) {
+  const dressId = String(formData.get("dressId") ?? "").trim();
+
+  if (!isDatabaseConfigured()) {
+    redirect(`/vestidos/${dressId}?demo=1`);
+  }
+
+  const slots = [
+    { field: "coverUrl", type: "COVER" as const },
+    { field: "frontUrl", type: "FRONT" as const },
+    { field: "backUrl", type: "BACK" as const },
+    { field: "detailUrl", type: "DETAIL" as const },
+  ];
+
+  const existingPhotos = await prisma.dressPhoto.findMany({
+    where: {
+      dressId,
+      photoType: {
+        in: slots.map((slot) => slot.type),
+      },
+    },
+    orderBy: {
+      createdAt: "asc",
+    },
+  });
+
+  for (const [index, slot] of slots.entries()) {
+    const imageUrl = String(formData.get(slot.field) ?? "").trim();
+    const existingPhoto = existingPhotos.find((photo) => photo.photoType === slot.type);
+
+    if (!imageUrl) {
+      if (existingPhoto) {
+        await prisma.dressPhoto.delete({
+          where: { id: existingPhoto.id },
+        });
+      }
+
+      continue;
+    }
+
+    if (existingPhoto) {
+      await prisma.dressPhoto.update({
+        where: { id: existingPhoto.id },
+        data: {
+          imageUrl,
+          sortOrder: index + 1,
+        },
+      });
+    } else {
+      await prisma.dressPhoto.create({
+        data: {
+          dressId,
+          photoType: slot.type,
+          imageUrl,
+          sortOrder: index + 1,
+        },
+      });
+    }
+  }
+
+  revalidatePath(`/vestidos/${dressId}`);
+  redirect(`/vestidos/${dressId}?gallerySaved=1`);
 }
 
 export async function updateDressStatusesAction(formData: FormData) {

@@ -23,6 +23,15 @@ export const instagramStatusOptions = [
 
 export type WorkflowStatus = (typeof workflowStatusOptions)[number];
 export type InstagramStatus = (typeof instagramStatusOptions)[number];
+export type DressCondition = "USED" | "NEW" | "SAMPLE";
+export type DressSortOption = "name-asc" | "name-desc" | "code-asc" | "code-desc";
+
+export const dressSortOptions = [
+  "name-asc",
+  "name-desc",
+  "code-asc",
+  "code-desc",
+] as const;
 
 export type DressFilters = {
   search?: string;
@@ -31,6 +40,7 @@ export type DressFilters = {
   workflowStatus?: WorkflowStatus | "";
   instagramStatus?: InstagramStatus | "";
   novelty?: "all" | "new" | "existing";
+  sort?: DressSortOption;
 };
 
 export type DressListItem = {
@@ -44,6 +54,8 @@ export type DressListItem = {
   workflowStatus: WorkflowStatus;
   instagramStatus: InstagramStatus;
   receivedAt: Date | null;
+  previewPhotoUrl: string | null;
+  previewPhotoType: "COVER" | "FRONT" | "BACK" | "DETAIL" | "WORN_BY_MODEL" | "VIDEO" | null;
 };
 
 export type DressCatalogData = {
@@ -87,7 +99,7 @@ export type DressInstagramPostItem = {
 export type DressDetailData = {
   databaseReady: boolean;
   dress: DressListItem & {
-    condition: "USED" | "NEW" | "SAMPLE";
+    condition: DressCondition;
     price: number | null;
     notes: string | null;
     photos: DressPhotoItem[];
@@ -98,7 +110,7 @@ export type DressDetailData = {
 };
 
 export type DressQuickEditRow = DressListItem & {
-  condition: "USED" | "NEW" | "SAMPLE";
+  condition: DressCondition;
   price: number | null;
   notes: string | null;
 };
@@ -171,6 +183,8 @@ export const demoDresses: DressListItem[] = importedDressNames.map((name, index)
     workflowStatus: state?.workflowStatus ?? "PENDING_PHOTOS",
     instagramStatus: state?.instagramStatus ?? "NOT_PUBLISHED",
     receivedAt: state?.receivedAt ? new Date(state.receivedAt) : new Date("2026-03-06"),
+    previewPhotoUrl: null,
+    previewPhotoType: null,
   };
 });
 
@@ -198,6 +212,12 @@ export const instagramStatusLabels: Record<InstagramStatus, string> = {
   ARCHIVED: "Archivado",
 };
 
+export const dressConditionLabels: Record<DressCondition, string> = {
+  USED: "Usado",
+  NEW: "Nuevo",
+  SAMPLE: "Propio de EcoBridal",
+};
+
 export const folderProviderLabels = {
   OUTLOOK_ONEDRIVE: "Outlook / OneDrive",
   SHAREPOINT: "SharePoint",
@@ -213,8 +233,8 @@ export const instagramPostTypeLabels = {
 } as const;
 
 export const photoTypeLabels = {
-  COVER: "Portada",
-  FRONT: "Frente",
+  COVER: "Principal",
+  FRONT: "Medio cuerpo",
   BACK: "Espalda",
   DETAIL: "Detalle",
   WORN_BY_MODEL: "Modelo usando vestido",
@@ -368,7 +388,7 @@ export async function getDressCatalogData(
     ] = await Promise.all([
       prisma.dress.findMany({
         where,
-        orderBy: [{ isNew: "desc" }, { createdAt: "desc" }],
+        orderBy: buildDressOrderBy(filters.sort),
         select: {
           id: true,
           internalCode: true,
@@ -380,6 +400,14 @@ export async function getDressCatalogData(
           workflowStatus: true,
           instagramStatus: true,
           receivedAt: true,
+          photos: {
+            orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+            take: 1,
+            select: {
+              imageUrl: true,
+              photoType: true,
+            },
+          },
         },
       }),
       prisma.dress.count(),
@@ -427,7 +455,20 @@ export async function getDressCatalogData(
 
     return {
       databaseReady: true,
-      dresses,
+      dresses: dresses.map((dress) => ({
+        id: dress.id,
+        internalCode: dress.internalCode,
+        name: dress.name,
+        brand: dress.brand,
+        size: dress.size,
+        color: dress.color,
+        isNew: dress.isNew,
+        workflowStatus: dress.workflowStatus,
+        instagramStatus: dress.instagramStatus,
+        receivedAt: dress.receivedAt,
+        previewPhotoUrl: dress.photos[0]?.imageUrl ?? null,
+        previewPhotoType: dress.photos[0]?.photoType ?? null,
+      })),
       totalCount,
       pendingPhotoCount,
       publishedCount,
@@ -491,6 +532,8 @@ export async function getDressDetailData(id: string): Promise<DressDetailData | 
         workflowStatus: dress.workflowStatus,
         instagramStatus: dress.instagramStatus,
         receivedAt: dress.receivedAt,
+        previewPhotoUrl: dress.photos[0]?.imageUrl ?? null,
+        previewPhotoType: dress.photos[0]?.photoType ?? null,
         condition: dress.condition,
         price: dress.price ? Number(dress.price) : null,
         notes: dress.notes,
@@ -562,6 +605,8 @@ export async function getDressQuickEditRows(): Promise<{
       dresses: dresses.map((dress) => ({
         ...dress,
         price: dress.price ? Number(dress.price) : null,
+        previewPhotoUrl: null,
+        previewPhotoType: null,
       })),
     };
   } catch {
@@ -573,7 +618,7 @@ export async function getDressQuickEditRows(): Promise<{
 }
 
 function buildDemoDressCatalogData(filters: DressFilters): DressCatalogData {
-  const dresses = applyDemoFilters(demoDresses, filters);
+  const dresses = applyDemoSort(applyDemoFilters(demoDresses, filters), filters.sort);
 
   return {
     databaseReady: false,
@@ -613,8 +658,12 @@ function buildDemoDressDetail(id: string): DressDetailData | null {
 }
 
 function buildDemoQuickEditRow(dress: DressListItem): DressQuickEditRow {
+  const preview = (demoDressPhotos[dress.id] ?? []).find((photo) => photo.photoType !== "VIDEO");
+
   return {
     ...dress,
+    previewPhotoUrl: preview?.imageUrl ?? null,
+    previewPhotoType: preview?.photoType ?? null,
     condition: dress.isNew ? "NEW" : "USED",
     price: {
       "demo-1": 18900,
@@ -635,6 +684,20 @@ function buildDemoQuickEditRow(dress: DressListItem): DressQuickEditRow {
       "demo-95": "Publicación ya validada y enlazada.",
     }[dress.id] ?? null,
   };
+}
+
+function buildDressOrderBy(sort: DressSortOption | undefined): Prisma.DressOrderByWithRelationInput[] {
+  switch (sort) {
+    case "name-desc":
+      return [{ name: "desc" }];
+    case "code-asc":
+      return [{ internalCode: "asc" }];
+    case "code-desc":
+      return [{ internalCode: "desc" }];
+    case "name-asc":
+    default:
+      return [{ name: "asc" }];
+  }
 }
 
 function buildDressWhere(filters: DressFilters): Prisma.DressWhereInput {
@@ -730,4 +793,33 @@ function applyDemoFilters(dresses: DressListItem[], filters: DressFilters) {
 
     return true;
   });
+}
+
+function applyDemoSort(dresses: DressListItem[], sort: DressSortOption | undefined) {
+  const items = dresses.map((dress) => {
+    const preview = (demoDressPhotos[dress.id] ?? []).find((photo) => photo.photoType !== "VIDEO");
+    return {
+      ...dress,
+      previewPhotoUrl: preview?.imageUrl ?? null,
+      previewPhotoType: preview?.photoType ?? null,
+    };
+  });
+
+  items.sort((left, right) => {
+    if (sort === "name-desc") {
+      return right.name.localeCompare(left.name, "es");
+    }
+
+    if (sort === "code-asc") {
+      return left.internalCode.localeCompare(right.internalCode, "es");
+    }
+
+    if (sort === "code-desc") {
+      return right.internalCode.localeCompare(left.internalCode, "es");
+    }
+
+    return left.name.localeCompare(right.name, "es");
+  });
+
+  return items;
 }

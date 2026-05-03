@@ -24,7 +24,7 @@ export default async function QuickEditPage({ searchParams }: QuickEditPageProps
 
   return (
     <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-6 pb-12 pt-6 sm:px-10 lg:px-12">
-      <section className="rounded-[2rem] border border-line bg-surface p-6 shadow-[0_20px_80px_rgba(64,34,24,0.08)]">
+      <section className="rounded-[2rem] border border-line bg-surface p-6 shadow-[0_20px_80px_rgba(37,37,37,0.08)]">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-3xl">
             <p className="text-sm uppercase tracking-[0.3em] text-accent">Módulo 01B</p>
@@ -38,10 +38,7 @@ export default async function QuickEditPage({ searchParams }: QuickEditPageProps
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row">
-            <Link
-              href="/vestidos"
-              className="rounded-full border border-line bg-white px-5 py-3 text-center text-sm font-medium text-foreground transition hover:bg-background"
-            >
+            <Link href="/vestidos" className="app-button-secondary">
               Volver a vestidos
             </Link>
           </div>
@@ -72,7 +69,7 @@ export default async function QuickEditPage({ searchParams }: QuickEditPageProps
           <form
             key={dress.id}
             action={updateDressBasicsAction}
-            className="rounded-[1.6rem] border border-line bg-white/85 p-5 shadow-[0_10px_30px_rgba(64,34,24,0.05)]"
+            className="rounded-[1.6rem] border border-line bg-white/85 p-5 shadow-[0_10px_30px_rgba(37,37,37,0.05)]"
           >
             <input type="hidden" name="dressId" value={dress.id} />
             <div className="flex flex-col gap-4 border-b border-line pb-4 lg:flex-row lg:items-end lg:justify-between">
@@ -148,10 +145,7 @@ export default async function QuickEditPage({ searchParams }: QuickEditPageProps
                 />
               </label>
               <div className="flex items-end">
-                <button
-                  type="submit"
-                  className="w-full rounded-2xl bg-accent px-4 py-3 text-sm font-medium text-white transition hover:bg-[#6f3b28]"
-                >
+                <button type="submit" className="app-button-primary w-full">
                   Guardar
                 </button>
               </div>

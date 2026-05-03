@@ -2,13 +2,16 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   addDressInstagramPostAction,
-  addDressPhotoAction,
   addDressPhotoFolderAction,
   assignModelToDressAction,
+  saveDressGalleryLinksAction,
+  updateDressDetailAction,
   updateDressStatusesAction,
 } from "@/app/vestidos/actions";
+import { DressProductGallery } from "@/components/dress-product-gallery";
 import { getDressModelOptions } from "@/lib/models";
 import {
+  dressConditionLabels,
   folderProviderLabels,
   getDressDetailData,
   getInstagramStatusBadgeClasses,
@@ -16,7 +19,6 @@ import {
   instagramPostTypeLabels,
   instagramStatusLabels,
   photoTypeLabels,
-  photoTypeOptions,
   workflowStatusLabels,
 } from "@/lib/dresses";
 
@@ -28,8 +30,12 @@ type DressDetailPageProps = {
     folderSaved?: string;
     instagramSaved?: string;
     photoSaved?: string;
+    photoUpdated?: string;
+    gallerySaved?: string;
     statusSaved?: string;
     assignmentSaved?: string;
+    detailsSaved?: string;
+    missing?: string;
     demo?: string;
   }>;
 };
@@ -68,15 +74,23 @@ export default async function DressDetailPage({
 
   const { dress } = data;
   const modelOptions = await getDressModelOptions(dress.id, dress.size);
+  const galleryPhotos = {
+    cover: dress.photos.find((photo) => photo.photoType === "COVER")?.imageUrl ?? "",
+    front: dress.photos.find((photo) => photo.photoType === "FRONT")?.imageUrl ?? "",
+    back: dress.photos.find((photo) => photo.photoType === "BACK")?.imageUrl ?? "",
+    detail: dress.photos.find((photo) => photo.photoType === "DETAIL")?.imageUrl ?? "",
+  };
 
   return (
-    <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-6 pb-12 pt-6 sm:px-10 lg:px-12">
-      <section className="rounded-[2rem] border border-line bg-surface p-6 shadow-[0_20px_80px_rgba(64,34,24,0.08)]">
+    <main className="flex w-full flex-1 flex-col gap-6">
+      <section className="app-page">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-4xl">
-            <p className="text-sm uppercase tracking-[0.3em] text-accent">Detalle de vestido</p>
+            <p className="text-sm uppercase tracking-[0.28em] text-accent-strong">
+              Detalle de vestido
+            </p>
             <div className="mt-3 flex flex-wrap items-center gap-3">
-              <h1 className="font-heading text-5xl leading-none text-foreground sm:text-6xl">
+              <h1 className="font-heading text-5xl leading-[0.95] text-foreground sm:text-6xl">
                 {dress.name}
               </h1>
               <span className="rounded-full bg-stone-200 px-3 py-1 text-xs uppercase tracking-[0.2em] text-stone-700">
@@ -89,22 +103,16 @@ export default async function DressDetailPage({
               ) : null}
             </div>
             <p className="mt-4 text-lg leading-8 text-foreground/75">
-              {dress.brand ?? "Marca pendiente"} · Talla {dress.size} ·{" "}
-              {dress.color ?? "Color pendiente"} · Ingreso {formatDate(dress.receivedAt)}
+              {dress.brand ?? "Marca pendiente"} · Talla {dress.size} · Ingreso{" "}
+              {formatDate(dress.receivedAt)}
             </p>
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row">
-            <Link
-              href="/vestidos"
-              className="rounded-full border border-line bg-white px-5 py-3 text-center text-sm font-medium text-foreground transition hover:bg-background"
-            >
+            <Link href="/vestidos" className="app-button-secondary">
               Volver al listado
             </Link>
-            <Link
-              href="/asignaciones"
-              className="rounded-full bg-accent px-5 py-3 text-center text-sm font-medium text-white transition hover:bg-[#6f3b28]"
-            >
+            <Link href="/asignaciones" className="app-button-primary">
               Ver asignaciones
             </Link>
           </div>
@@ -135,6 +143,18 @@ export default async function DressDetailPage({
           </div>
         ) : null}
 
+        {query?.photoUpdated === "1" ? (
+          <div className="mt-6 rounded-[1.5rem] border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm text-emerald-900">
+            La foto interna se actualizó correctamente.
+          </div>
+        ) : null}
+
+        {query?.gallerySaved === "1" ? (
+          <div className="mt-6 rounded-[1.5rem] border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm text-emerald-900">
+            La galería del vestido se actualizó correctamente.
+          </div>
+        ) : null}
+
         {query?.statusSaved === "1" ? (
           <div className="mt-6 rounded-[1.5rem] border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm text-emerald-900">
             Los estados del vestido se actualizaron correctamente.
@@ -147,6 +167,18 @@ export default async function DressDetailPage({
           </div>
         ) : null}
 
+        {query?.detailsSaved === "1" ? (
+          <div className="mt-6 rounded-[1.5rem] border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm text-emerald-900">
+            Los datos del vestido se actualizaron correctamente.
+          </div>
+        ) : null}
+
+        {query?.missing === "1" ? (
+          <div className="mt-6 rounded-[1.5rem] border border-support-coral/30 bg-support-coral/10 px-5 py-4 text-sm text-foreground">
+            El nombre del vestido es obligatorio para guardar cambios.
+          </div>
+        ) : null}
+
         {query?.demo === "1" ? (
           <div className="mt-6 rounded-[1.5rem] border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-900">
             La acción no se guardó porque el proyecto sigue en modo demo.
@@ -154,7 +186,7 @@ export default async function DressDetailPage({
         ) : null}
 
         <div className="mt-8 grid gap-4 md:grid-cols-4">
-          <article className="rounded-[1.35rem] border border-line bg-white/80 p-5">
+          <article className="app-card p-5">
             <p className="text-sm uppercase tracking-[0.2em] text-foreground/55">Fotografía</p>
             <span
               className={`mt-3 inline-flex rounded-full px-3 py-2 text-sm font-medium ${getWorkflowStatusBadgeClasses(
@@ -164,7 +196,7 @@ export default async function DressDetailPage({
               {workflowStatusLabels[dress.workflowStatus]}
             </span>
           </article>
-          <article className="rounded-[1.35rem] border border-line bg-white/80 p-5">
+          <article className="app-card p-5">
             <p className="text-sm uppercase tracking-[0.2em] text-foreground/55">Instagram</p>
             <span
               className={`mt-3 inline-flex rounded-full px-3 py-2 text-sm font-medium ${getInstagramStatusBadgeClasses(
@@ -174,11 +206,11 @@ export default async function DressDetailPage({
               {instagramStatusLabels[dress.instagramStatus]}
             </span>
           </article>
-          <article className="rounded-[1.35rem] border border-line bg-white/80 p-5">
+          <article className="app-card p-5">
             <p className="text-sm uppercase tracking-[0.2em] text-foreground/55">Fotos</p>
             <p className="mt-3 font-heading text-5xl text-accent">{dress.photoCount}</p>
           </article>
-          <article className="rounded-[1.35rem] border border-line bg-white/80 p-5">
+          <article className="app-card p-5">
             <p className="text-sm uppercase tracking-[0.2em] text-foreground/55">Precio</p>
             <p className="mt-3 font-heading text-4xl text-accent">
               {formatCurrency(dress.price)}
@@ -187,104 +219,87 @@ export default async function DressDetailPage({
         </div>
       </section>
 
-      <section className="mt-8 rounded-[2rem] border border-line bg-white/80 p-6">
+      <section className="app-page">
+        <div className="border-b border-line pb-4">
+          <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
+            Galería del vestido
+          </p>
+          <h2 className="mt-2 font-heading text-4xl text-foreground">Vista tipo catálogo</h2>
+        </div>
+
+        <div className="mt-6">
+          <DressProductGallery
+            dressName={dress.name}
+            photos={dress.photos}
+            photoTypeLabels={photoTypeLabels}
+          />
+        </div>
+      </section>
+
+      <section className="rounded-[2rem] border border-line bg-white/80 p-6">
         <div className="flex items-center justify-between border-b border-line pb-4">
           <div>
             <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
-              Galería interna
+              Configurar galería
             </p>
-            <h2 className="font-heading text-4xl text-foreground">Fotos y video del sistema</h2>
+            <h2 className="font-heading text-4xl text-foreground">Links de fotos del vestido</h2>
           </div>
         </div>
 
-        <form action={addDressPhotoAction} className="mt-6 grid gap-4">
+        <form action={saveDressGalleryLinksAction} className="mt-6 grid gap-4">
           <input type="hidden" name="dressId" value={dress.id} />
-          <div className="grid gap-4 sm:grid-cols-[1fr_1.4fr_0.7fr]">
+          <div className="grid gap-4 md:grid-cols-2">
             <label className="grid gap-2 text-sm text-foreground/75">
-              Tipo
-              <select
-                name="photoType"
-                defaultValue="COVER"
-                className="rounded-2xl border border-line bg-surface px-4 py-3 outline-none transition focus:border-accent"
-              >
-                {photoTypeOptions.map((photoType) => (
-                  <option key={photoType} value={photoType}>
-                    {photoTypeLabels[photoType]}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className="grid gap-2 text-sm text-foreground/75">
-              URL de imagen o video
+              Foto principal
               <input
-                required
                 type="url"
-                name="imageUrl"
-                placeholder="https://..."
-                className="rounded-2xl border border-line bg-surface px-4 py-3 outline-none transition focus:border-accent"
+                name="coverUrl"
+                defaultValue={galleryPhotos.cover}
+                placeholder="https://... foto cuerpo completo"
+                className="app-field"
               />
             </label>
             <label className="grid gap-2 text-sm text-foreground/75">
-              Orden
+              Foto medio cuerpo
               <input
-                type="number"
-                name="sortOrder"
-                placeholder="1"
-                className="rounded-2xl border border-line bg-surface px-4 py-3 outline-none transition focus:border-accent"
+                type="url"
+                name="frontUrl"
+                defaultValue={galleryPhotos.front}
+                placeholder="https://... foto de la mitad del cuerpo para arriba"
+                className="app-field"
+              />
+            </label>
+            <label className="grid gap-2 text-sm text-foreground/75">
+              Foto espalda
+              <input
+                type="url"
+                name="backUrl"
+                defaultValue={galleryPhotos.back}
+                placeholder="https://... foto de espalda"
+                className="app-field"
+              />
+            </label>
+            <label className="grid gap-2 text-sm text-foreground/75">
+              Foto detalle
+              <input
+                type="url"
+                name="detailUrl"
+                defaultValue={galleryPhotos.detail}
+                placeholder="https://... detalle del vestido"
+                className="app-field"
               />
             </label>
           </div>
-          <label className="grid gap-2 text-sm text-foreground/75">
-            Descripción corta
-            <input
-              name="altText"
-              placeholder="Ejemplo: frente del vestido con luz natural."
-              className="rounded-2xl border border-line bg-surface px-4 py-3 outline-none transition focus:border-accent"
-            />
-          </label>
-          <button
-            type="submit"
-            className="w-full rounded-full bg-accent px-5 py-3 text-sm font-medium text-white transition hover:bg-[#6f3b28] sm:w-auto"
-          >
-            Guardar foto interna
+
+          <div className="rounded-2xl border border-line bg-surface px-4 py-4 text-sm leading-7 text-foreground/72">
+            Puedes pegar aquí links directos desde Cloudinary, OneDrive o donde tengas las
+            fotos. La galería principal del vestido usará estas imágenes.
+          </div>
+
+          <button type="submit" className="app-button-primary w-full sm:w-auto">
+            Guardar links de galería
           </button>
         </form>
-
-        <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {dress.photos.map((photo) => (
-            <div
-              key={photo.id}
-              className="rounded-[1.35rem] border border-line bg-surface px-4 py-4"
-            >
-              <div className="flex items-center justify-between gap-3">
-                <p className="font-medium text-foreground">{photoTypeLabels[photo.photoType]}</p>
-                <span className="rounded-full bg-stone-200 px-3 py-1 text-xs text-stone-700">
-                  #{photo.sortOrder}
-                </span>
-              </div>
-              <p className="mt-2 break-all text-sm leading-7 text-foreground/72">
-                {photo.imageUrl}
-              </p>
-              <p className="text-sm leading-7 text-foreground/72">
-                {photo.altText ?? "Sin descripción"}
-              </p>
-              <a
-                href={photo.imageUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-3 inline-flex text-sm font-medium text-accent underline-offset-4 hover:underline"
-              >
-                Abrir archivo
-              </a>
-            </div>
-          ))}
-
-          {dress.photos.length === 0 ? (
-            <div className="rounded-[1.35rem] border border-dashed border-line bg-surface px-4 py-6 text-sm text-foreground/72 md:col-span-2 xl:col-span-3">
-              Todavía no hay fotos internas registradas para este vestido.
-            </div>
-          ) : null}
-        </div>
       </section>
 
       <section className="mt-8 grid gap-6 lg:grid-cols-[1fr_1fr]">
@@ -327,10 +342,7 @@ export default async function DressDetailPage({
                 </select>
               </label>
             </div>
-            <button
-              type="submit"
-              className="w-full rounded-full bg-accent px-5 py-3 text-sm font-medium text-white transition hover:bg-[#6f3b28] sm:w-auto"
-            >
+            <button type="submit" className="app-button-primary w-full sm:w-auto">
               Guardar estados
             </button>
           </form>
@@ -339,34 +351,103 @@ export default async function DressDetailPage({
         <article className="rounded-[2rem] border border-line bg-white/80 p-6">
           <div className="border-b border-line pb-4">
             <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
-              Resumen operativo
+              Edición principal
             </p>
             <h2 className="font-heading text-4xl text-foreground">Datos del vestido</h2>
           </div>
-          <div className="mt-6 grid gap-4 sm:grid-cols-2">
-            <div className="rounded-[1.25rem] bg-background p-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">Condición</p>
-              <p className="mt-2 text-sm text-foreground/78">{dress.condition}</p>
+          <form action={updateDressDetailAction} className="mt-6 grid gap-4">
+            <input type="hidden" name="dressId" value={dress.id} />
+            <div className="grid gap-4 sm:grid-cols-2">
+              <label className="grid gap-2 text-sm text-foreground/75">
+                Nombre del vestido
+                <input
+                  required
+                  name="name"
+                  defaultValue={dress.name}
+                  className="app-field"
+                />
+              </label>
+              <label className="grid gap-2 text-sm text-foreground/75">
+                Marca
+                <input
+                  name="brand"
+                  defaultValue={dress.brand ?? ""}
+                  placeholder="Pronovias"
+                  className="app-field"
+                />
+              </label>
+              <label className="grid gap-2 text-sm text-foreground/75">
+                Talla
+                <input
+                  name="size"
+                  defaultValue={dress.size}
+                  placeholder="8"
+                  className="app-field"
+                />
+              </label>
+              <label className="grid gap-2 text-sm text-foreground/75">
+                Estado del vestido
+                <select
+                  name="condition"
+                  defaultValue={dress.condition}
+                  className="app-field"
+                >
+                  <option value="USED">Usado</option>
+                  <option value="NEW">Nuevo</option>
+                  <option value="SAMPLE">Propio de EcoBridal</option>
+                </select>
+              </label>
+              <label className="grid gap-2 text-sm text-foreground/75">
+                Precio
+                <input
+                  type="number"
+                  step="0.01"
+                  name="price"
+                  defaultValue={dress.price ?? ""}
+                  placeholder="15999"
+                  className="app-field"
+                />
+              </label>
+              <label className="grid gap-2 text-sm text-foreground/75">
+                Fecha de ingreso
+                <input
+                  type="date"
+                  name="receivedAt"
+                  defaultValue={
+                    dress.receivedAt ? dress.receivedAt.toISOString().slice(0, 10) : ""
+                  }
+                  className="app-field"
+                />
+              </label>
             </div>
-            <div className="rounded-[1.25rem] bg-background p-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">Talla</p>
-              <p className="mt-2 text-sm text-foreground/78">{dress.size}</p>
+            <label className="flex items-center gap-3 rounded-xl border border-line bg-white px-4 py-4 text-sm text-foreground/78">
+              <input
+                type="checkbox"
+                name="isNew"
+                defaultChecked={dress.isNew}
+                className="h-4 w-4 accent-[--color-accent]"
+              />
+              Marcar como vestido nuevo
+            </label>
+            <label className="grid gap-2 text-sm text-foreground/75">
+              Notas
+              <textarea
+                name="notes"
+                rows={4}
+                defaultValue={dress.notes ?? ""}
+                placeholder="Notas internas, detalles de sesión o seguimiento."
+                className="app-field min-h-32 resize-y"
+              />
+            </label>
+            <div className="flex flex-wrap gap-3">
+              <button type="submit" className="app-button-primary">
+                Guardar datos del vestido
+              </button>
+              <span className="app-badge bg-slate-200 text-slate-700">
+                {dressConditionLabels[dress.condition]}
+              </span>
             </div>
-            <div className="rounded-[1.25rem] bg-background p-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">Marca</p>
-              <p className="mt-2 text-sm text-foreground/78">{dress.brand ?? "Pendiente"}</p>
-            </div>
-            <div className="rounded-[1.25rem] bg-background p-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">Color</p>
-              <p className="mt-2 text-sm text-foreground/78">{dress.color ?? "Pendiente"}</p>
-            </div>
-            <div className="rounded-[1.25rem] bg-background p-4 sm:col-span-2">
-              <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">Notas</p>
-              <p className="mt-2 text-sm leading-7 text-foreground/78">
-                {dress.notes ?? "Todavía no hay notas internas para este vestido."}
-              </p>
-            </div>
-          </div>
+          </form>
         </article>
 
         <article className="rounded-[2rem] border border-line bg-surface-strong p-6">
@@ -381,9 +462,9 @@ export default async function DressDetailPage({
               href={dress.photoFolders[0]?.folderUrl ?? "#"}
               target="_blank"
               rel="noopener noreferrer"
-              className={`rounded-[1.3rem] border px-5 py-4 text-sm font-medium transition ${
+              className={`rounded-xl border px-5 py-4 text-sm font-medium transition ${
                 dress.photoFolders[0]
-                  ? "border-line bg-white text-foreground hover:bg-background"
+                  ? "border-line bg-white text-foreground hover:border-foreground hover:bg-foreground hover:text-white"
                   : "cursor-not-allowed border-dashed border-line bg-white/60 text-foreground/45"
               }`}
             >
@@ -395,9 +476,9 @@ export default async function DressDetailPage({
               href={dress.instagramPosts[0]?.instagramUrl ?? "#"}
               target="_blank"
               rel="noopener noreferrer"
-              className={`rounded-[1.3rem] border px-5 py-4 text-sm font-medium transition ${
+              className={`rounded-xl border px-5 py-4 text-sm font-medium transition ${
                 dress.instagramPosts[0]
-                  ? "border-line bg-white text-foreground hover:bg-background"
+                  ? "border-line bg-white text-foreground hover:border-foreground hover:bg-foreground hover:text-white"
                   : "cursor-not-allowed border-dashed border-line bg-white/60 text-foreground/45"
               }`}
             >
@@ -477,10 +558,7 @@ export default async function DressDetailPage({
                 className="rounded-3xl border border-line bg-white px-4 py-3 outline-none transition focus:border-accent"
               />
             </label>
-            <button
-              type="submit"
-              className="w-full rounded-full bg-accent px-5 py-3 text-sm font-medium text-white transition hover:bg-[#6f3b28] sm:w-auto"
-            >
+            <button type="submit" className="app-button-primary w-full sm:w-auto">
               Guardar asignación
             </button>
           </form>
@@ -581,10 +659,7 @@ export default async function DressDetailPage({
                 className="rounded-3xl border border-line bg-white px-4 py-3 outline-none transition focus:border-accent"
               />
             </label>
-            <button
-              type="submit"
-              className="w-full rounded-full bg-accent px-5 py-3 text-sm font-medium text-white transition hover:bg-[#6f3b28] sm:w-auto"
-            >
+            <button type="submit" className="app-button-primary w-full sm:w-auto">
               Guardar carpeta externa
             </button>
           </form>
@@ -608,7 +683,7 @@ export default async function DressDetailPage({
                     href={folder.folderUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="rounded-full bg-accent px-4 py-2 text-sm text-white"
+                    className="app-button-primary px-4 py-2"
                   >
                     Abrir
                   </a>
@@ -691,10 +766,7 @@ export default async function DressDetailPage({
                 />
               </label>
             </div>
-            <button
-              type="submit"
-              className="w-full rounded-full bg-accent px-5 py-3 text-sm font-medium text-white transition hover:bg-[#6f3b28] sm:w-auto"
-            >
+            <button type="submit" className="app-button-primary w-full sm:w-auto">
               Guardar publicación de Instagram
             </button>
           </form>
@@ -718,7 +790,7 @@ export default async function DressDetailPage({
                     href={post.instagramUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="rounded-full bg-accent px-4 py-2 text-sm text-white"
+                    className="app-button-primary px-4 py-2"
                   >
                     Abrir
                   </a>
