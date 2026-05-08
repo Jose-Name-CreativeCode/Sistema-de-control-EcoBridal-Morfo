@@ -22,10 +22,12 @@ type DashboardTask = {
 };
 
 type DashboardAssignment = {
+  dressId: string;
   dressName: string;
   modelName: string;
   scheduledDate: Date | null;
   status: string;
+  href: string;
 };
 
 export type DashboardData = {
@@ -150,10 +152,12 @@ export async function getDashboardData(): Promise<DashboardData> {
           href: `/vestidos/${dress.id}`,
         })),
       upcomingAssignments: assignments.map((assignment) => ({
+        dressId: assignment.dressId,
         dressName: assignment.dress.name,
         modelName: assignment.model?.name ?? "Modelo pendiente",
         scheduledDate: assignment.scheduledDate,
         status: assignment.assignmentStatus,
+        href: `/vestidos/${assignment.dressId}`,
       })),
       publicationQueue: readyForInstagram
         .filter((dress) => !instagramDressIds.has(dress.id))
@@ -175,10 +179,12 @@ function buildDemoDashboardData(): DashboardData {
       const dress = demoDresses.find((entry) => entry.id === dressId);
 
       return {
+        dressId,
         dressName: dress?.name ?? "Vestido",
         modelName: item.model?.name ?? "Modelo pendiente",
         scheduledDate: item.scheduledDate,
         status: item.assignmentStatus,
+        href: dress ? `/vestidos/${dress.id}` : "/asignaciones",
       };
     }),
   );

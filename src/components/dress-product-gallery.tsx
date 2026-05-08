@@ -21,7 +21,9 @@ function isVideoAsset(source: string, photoType: string) {
     return true;
   }
 
-  return source.startsWith("data:video/") || /\.(mp4|mov|webm|ogg)$/i.test(source);
+  return (
+    source.startsWith("data:video/") || /\.(mp4|mov|webm|ogg)$/i.test(source)
+  );
 }
 
 export function DressProductGallery({
@@ -30,11 +32,15 @@ export function DressProductGallery({
   photoTypeLabels,
 }: DressProductGalleryProps) {
   const usablePhotos = useMemo(
-    () => photos.filter((photo) => photo.imageUrl).sort((a, b) => a.sortOrder - b.sortOrder),
+    () =>
+      photos
+        .filter((photo) => photo.imageUrl)
+        .sort((a, b) => a.sortOrder - b.sortOrder),
     [photos],
   );
 
   const [selectedId, setSelectedId] = useState(usablePhotos[0]?.id ?? null);
+  const [carouselIndex, setCarouselIndex] = useState(0);
   const [zoom, setZoom] = useState<{ x: number; y: number; active: boolean }>({
     x: 50,
     y: 50,
@@ -42,14 +48,18 @@ export function DressProductGallery({
   });
 
   const selectedPhoto =
-    usablePhotos.find((photo) => photo.id === selectedId) ?? usablePhotos[0] ?? null;
+    usablePhotos.find((photo) => photo.id === selectedId) ??
+    usablePhotos[0] ??
+    null;
 
   if (!selectedPhoto) {
     return (
       <div className="rounded-[28px] border border-line bg-white p-8">
         <div className="flex min-h-[420px] items-center justify-center rounded-[24px] bg-[linear-gradient(135deg,#eef3ff,#dce6fb)] p-8 text-center">
           <div>
-            <p className="font-heading text-5xl text-accent-strong">{dressName}</p>
+            <p className="font-heading text-5xl text-accent-strong">
+              {dressName}
+            </p>
             <p className="mt-4 text-sm text-foreground/65">
               Todavía no hay fotos cargadas para este vestido.
             </p>
@@ -59,7 +69,36 @@ export function DressProductGallery({
     );
   }
 
-  const selectedIsVideo = isVideoAsset(selectedPhoto.imageUrl, selectedPhoto.photoType);
+  const selectedIsVideo = isVideoAsset(
+    selectedPhoto.imageUrl,
+    selectedPhoto.photoType,
+  );
+  const visibleCount = Math.min(2, usablePhotos.length);
+  const visiblePhotos =
+    usablePhotos.length <= visibleCount
+      ? usablePhotos
+      : Array.from({ length: visibleCount }, (_, offset) => {
+          const index = (carouselIndex + offset) % usablePhotos.length;
+          return usablePhotos[index];
+        });
+
+  function goPrev() {
+    if (usablePhotos.length <= visibleCount) {
+      return;
+    }
+
+    setCarouselIndex(
+      (current) => (current - 1 + usablePhotos.length) % usablePhotos.length,
+    );
+  }
+
+  function goNext() {
+    if (usablePhotos.length <= visibleCount) {
+      return;
+    }
+
+    setCarouselIndex((current) => (current + 1) % usablePhotos.length);
+  }
 
   return (
     <div className="rounded-[28px] border border-line bg-white p-5">
@@ -81,7 +120,9 @@ export function DressProductGallery({
               setZoom((current) => ({ ...current, active: true }));
             }
           }}
-          onMouseLeave={() => setZoom((current) => ({ ...current, active: false }))}
+          onMouseLeave={() =>
+            setZoom((current) => ({ ...current, active: false }))
+          }
         >
           {selectedIsVideo ? (
             <video
@@ -118,55 +159,74 @@ export function DressProductGallery({
                   />
                 </div>
               </div>
-              <div className="pointer-events-none absolute bottom-5 left-5 rounded-full bg-white/90 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-foreground/75">
-                Pasa el mouse para zoom
-              </div>
             </>
           )}
         </div>
 
-        <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-5">
-          {usablePhotos.map((photo) => {
-            const active = photo.id === selectedPhoto.id;
-            const video = isVideoAsset(photo.imageUrl, photo.photoType);
+        <div className="rounded-[22px] border border-line bg-[#f7f3ee] px-4 py-3">
+          <div className="mx-auto flex max-w-[420px] items-center justify-center gap-3">
+            <button
+              type="button"
+              onClick={goPrev}
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-line bg-white text-lg text-foreground transition hover:border-accent hover:text-accent"
+              aria-label="Foto anterior"
+            >
+              ←
+            </button>
 
-            return (
-              <button
-                key={photo.id}
-                type="button"
-                onClick={() => setSelectedId(photo.id)}
-                className={`overflow-hidden rounded-2xl border transition ${
-                  active
-                    ? "border-accent-strong shadow-[0_8px_20px_rgba(63,111,198,0.18)]"
-                    : "border-line hover:border-accent"
-                }`}
-              >
-                <div className="relative aspect-square overflow-hidden bg-[#f3eee8]">
-                  {!video ? (
-                    <div
-                      className="absolute inset-0 scale-110 bg-cover bg-center opacity-35 blur-xl"
-                      style={{ backgroundImage: `url(${photo.imageUrl})` }}
-                    />
-                  ) : null}
-                  {video ? (
-                    <video
-                      src={photo.imageUrl}
-                      className="relative z-10 h-full w-full object-contain"
-                    />
-                  ) : (
-                    <img
-                      src={photo.imageUrl}
-                      alt={photo.altText ?? `${dressName} miniatura`}
-                      className="relative z-10 h-full w-full object-contain"
-                    />
-                  )}
-                  <div className="absolute inset-x-0 bottom-0 bg-black/45 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white">
-                    {photoTypeLabels[photo.photoType] ?? photo.photoType}
-                  </div>
-                </div>
-              </button>
-            );
-          })}
+            <div className="grid w-full max-w-[420px] grid-cols-2 gap-2">
+              {visiblePhotos.map((photo) => {
+                const active = photo.id === selectedPhoto.id;
+                const video = isVideoAsset(photo.imageUrl, photo.photoType);
+
+                return (
+                  <button
+                    key={photo.id}
+                    type="button"
+                    onClick={() => setSelectedId(photo.id)}
+                    className={`overflow-hidden rounded-2xl border transition ${
+                      active
+                        ? "border-accent-strong shadow-[0_8px_20px_rgba(63,111,198,0.18)]"
+                        : "border-line hover:border-accent"
+                    }`}
+                  >
+                    <div className="relative aspect-square overflow-hidden bg-[#f3eee8]">
+                      {!video ? (
+                        <div
+                          className="absolute inset-0 scale-110 bg-cover bg-center opacity-35 blur-xl"
+                          style={{ backgroundImage: `url(${photo.imageUrl})` }}
+                        />
+                      ) : null}
+                      {video ? (
+                        <video
+                          src={photo.imageUrl}
+                          className="relative z-10 h-full w-full object-contain"
+                        />
+                      ) : (
+                        <img
+                          src={photo.imageUrl}
+                          alt={photo.altText ?? `${dressName} miniatura`}
+                          className="relative z-10 h-full w-full object-contain"
+                        />
+                      )}
+                      <div className="absolute inset-x-0 bottom-0 bg-black/45 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white">
+                        {photoTypeLabels[photo.photoType] ?? photo.photoType}
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+
+            <button
+              type="button"
+              onClick={goNext}
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-line bg-white text-lg text-foreground transition hover:border-accent hover:text-accent"
+              aria-label="Foto siguiente"
+            >
+              →
+            </button>
+          </div>
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-line bg-surface px-4 py-4">
@@ -175,7 +235,8 @@ export function DressProductGallery({
               Vista seleccionada
             </p>
             <p className="mt-2 text-sm font-semibold text-foreground">
-              {photoTypeLabels[selectedPhoto.photoType] ?? selectedPhoto.photoType}
+              {photoTypeLabels[selectedPhoto.photoType] ??
+                selectedPhoto.photoType}
             </p>
           </div>
           <p className="max-w-2xl text-sm leading-7 text-foreground/72">
