@@ -137,7 +137,11 @@ export default async function AssignmentsPage({ searchParams }: AssignmentsPageP
                   <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">
                     Modelos sugeridas
                   </p>
-                  <div className="mt-3 grid gap-3">
+                  <div
+                    className={`mt-3 grid gap-3 ${
+                      suggestion.suggestedModels.length > 1 ? "max-h-72 overflow-y-auto pr-1" : ""
+                    }`}
+                  >
                     {suggestion.suggestedModels.length > 0 ? (
                       suggestion.suggestedModels.slice(0, 3).map((model) => (
                         <div
