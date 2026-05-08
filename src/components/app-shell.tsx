@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 
 const navigation = [
   { href: "/", label: "Dashboard", note: "Resumen diario" },
@@ -37,6 +38,29 @@ function isActive(activeHref: string, href: string) {
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const activeHref = getActiveHref(pathname);
+  const defaultReminder =
+    "Captura primero nombre, talla y estado. Los links de carpeta e Instagram se pueden completar después sin perder el vestido.";
+  const [reminder, setReminder] = useState(() => {
+    if (typeof window === "undefined") {
+      return defaultReminder;
+    }
+
+    return window.localStorage.getItem("ecobridal-reminder-note") ?? defaultReminder;
+  });
+  const [draftReminder, setDraftReminder] = useState(() => {
+    if (typeof window === "undefined") {
+      return defaultReminder;
+    }
+
+    return window.localStorage.getItem("ecobridal-reminder-note") ?? defaultReminder;
+  });
+  const [editingReminder, setEditingReminder] = useState(false);
+
+  function saveReminder() {
+    window.localStorage.setItem("ecobridal-reminder-note", draftReminder);
+    setReminder(draftReminder);
+    setEditingReminder(false);
+  }
 
   return (
     <div className="min-h-screen bg-transparent">
@@ -91,13 +115,48 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </nav>
 
           <div className="mt-auto rounded-2xl border border-white/12 bg-[#1f2430]/26 p-4">
-            <p className="text-xs uppercase tracking-[0.22em] text-white/60">
-              Recordatorio
-            </p>
-            <p className="mt-3 text-sm leading-6 text-white/82">
-              Captura primero nombre, talla y estado. Los links de carpeta e Instagram
-              se pueden completar después sin perder el vestido.
-            </p>
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-xs uppercase tracking-[0.22em] text-white/60">
+                Recordatorio
+              </p>
+              {!editingReminder ? (
+                <button
+                  type="button"
+                  onClick={() => setEditingReminder(true)}
+                  className="text-xs font-medium text-white/78 underline-offset-4 hover:text-white hover:underline"
+                >
+                  Editar
+                </button>
+              ) : null}
+            </div>
+
+            {editingReminder ? (
+              <div className="mt-3 grid gap-3">
+                <textarea
+                  value={draftReminder}
+                  onChange={(event) => setDraftReminder(event.target.value)}
+                  rows={5}
+                  className="rounded-2xl border border-white/12 bg-white/10 px-3 py-3 text-sm leading-6 text-white outline-none transition focus:border-accent"
+                />
+                <div className="flex gap-2">
+                  <button type="button" onClick={saveReminder} className="app-button-primary px-4 py-2">
+                    Guardar
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setDraftReminder(reminder);
+                      setEditingReminder(false);
+                    }}
+                    className="app-button-secondary px-4 py-2"
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <p className="mt-3 text-sm leading-6 text-white/82">{reminder}</p>
+            )}
           </div>
         </aside>
 

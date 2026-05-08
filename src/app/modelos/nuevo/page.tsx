@@ -13,8 +13,8 @@ export default async function NewModelPage({ searchParams }: NewModelPageProps) 
   const databaseReady = isDatabaseConfigured();
 
   return (
-    <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col px-6 pb-12 pt-6 sm:px-10 lg:px-12">
-      <section className="rounded-[2rem] border border-line bg-surface p-6 shadow-[0_20px_80px_rgba(37,37,37,0.08)]">
+    <main className="flex w-full flex-1 flex-col gap-6">
+      <section className="app-page">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-sm uppercase tracking-[0.3em] text-accent">Alta de modelo</p>
@@ -49,7 +49,7 @@ export default async function NewModelPage({ searchParams }: NewModelPageProps) 
               required
               name="name"
               placeholder="Sofía Ramírez"
-              className="rounded-2xl border border-line bg-white px-4 py-3 outline-none transition focus:border-accent"
+              className="app-field"
             />
           </label>
 
@@ -58,7 +58,7 @@ export default async function NewModelPage({ searchParams }: NewModelPageProps) 
             <input
               name="instagramHandle"
               placeholder="@sofia.morfo"
-              className="rounded-2xl border border-line bg-white px-4 py-3 outline-none transition focus:border-accent"
+              className="app-field"
             />
           </label>
 
@@ -67,17 +67,7 @@ export default async function NewModelPage({ searchParams }: NewModelPageProps) 
             <input
               name="contactPhone"
               placeholder="55 1234 5678"
-              className="rounded-2xl border border-line bg-white px-4 py-3 outline-none transition focus:border-accent"
-            />
-          </label>
-
-          <label className="grid gap-2 text-sm text-foreground/75">
-            Correo
-            <input
-              type="email"
-              name="contactEmail"
-              placeholder="modelo@correo.com"
-              className="rounded-2xl border border-line bg-white px-4 py-3 outline-none transition focus:border-accent"
+              className="app-field"
             />
           </label>
 
@@ -88,7 +78,7 @@ export default async function NewModelPage({ searchParams }: NewModelPageProps) 
               step="0.01"
               name="hourlyRate"
               placeholder="450"
-              className="rounded-2xl border border-line bg-white px-4 py-3 outline-none transition focus:border-accent"
+              className="app-field"
             />
           </label>
 
@@ -99,7 +89,7 @@ export default async function NewModelPage({ searchParams }: NewModelPageProps) 
               step="0.01"
               name="perDressRate"
               placeholder="180"
-              className="rounded-2xl border border-line bg-white px-4 py-3 outline-none transition focus:border-accent"
+              className="app-field"
             />
           </label>
 
@@ -109,7 +99,7 @@ export default async function NewModelPage({ searchParams }: NewModelPageProps) 
               required
               name="sizes"
               placeholder="6, 8, 10"
-              className="rounded-2xl border border-line bg-white px-4 py-3 outline-none transition focus:border-accent"
+              className="app-field"
             />
           </label>
 
@@ -118,7 +108,7 @@ export default async function NewModelPage({ searchParams }: NewModelPageProps) 
             <input
               name="availability"
               placeholder="Lunes y miércoles"
-              className="rounded-2xl border border-line bg-white px-4 py-3 outline-none transition focus:border-accent"
+              className="app-field"
             />
           </label>
 
@@ -128,7 +118,7 @@ export default async function NewModelPage({ searchParams }: NewModelPageProps) 
               name="notes"
               rows={5}
               placeholder="Notas sobre estilo, experiencia, sesiones pasadas o consideraciones internas."
-              className="rounded-3xl border border-line bg-white px-4 py-3 outline-none transition focus:border-accent"
+              className="app-field min-h-36 resize-y"
             />
           </label>
 

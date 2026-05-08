@@ -362,26 +362,55 @@ export async function assignModelToDressAction(formData: FormData) {
     redirect(`/vestidos/${dressId}?demo=1`);
   }
 
-  const modelId = String(formData.get("modelId") ?? "").trim();
+  const modelIds = Array.from(
+    new Set(
+      formData
+        .getAll("modelIds")
+        .map((value) => (typeof value === "string" ? value.trim() : ""))
+        .filter(Boolean),
+    ),
+  );
   const assignmentStatus = String(formData.get("assignmentStatus") ?? "SUGGESTED");
   const scheduledDateValue = String(formData.get("scheduledDate") ?? "").trim();
   const costAgreed = parseOptionalNumber(formData.get("costAgreed"));
   const notes = parseOptionalString(formData.get("notes"));
 
-  await prisma.dressAssignment.create({
-    data: {
+  if (modelIds.length === 0) {
+    redirect(`/vestidos/${dressId}?missing=1&edit=1`);
+  }
+
+  const existingAssignments = await prisma.dressAssignment.findMany({
+    where: {
       dressId,
-      modelId: modelId || null,
-      assignmentStatus: assignmentStatus as
-        | "SUGGESTED"
-        | "CONFIRMED"
-        | "COMPLETED"
-        | "CANCELLED",
-      scheduledDate: scheduledDateValue ? new Date(scheduledDateValue) : null,
-      costAgreed,
-      notes,
+      modelId: {
+        in: modelIds,
+      },
+    },
+    select: {
+      modelId: true,
     },
   });
+
+  const existingModelIds = new Set(existingAssignments.map((assignment) => assignment.modelId));
+
+  const assignmentsToCreate = modelIds.filter((modelId) => !existingModelIds.has(modelId));
+
+  if (assignmentsToCreate.length > 0) {
+    await prisma.dressAssignment.createMany({
+      data: assignmentsToCreate.map((modelId) => ({
+        dressId,
+        modelId,
+        assignmentStatus: assignmentStatus as
+          | "SUGGESTED"
+          | "CONFIRMED"
+          | "COMPLETED"
+          | "CANCELLED",
+        scheduledDate: scheduledDateValue ? new Date(scheduledDateValue) : null,
+        costAgreed,
+        notes,
+      })),
+    });
+  }
 
   await prisma.dress.update({
     where: { id: dressId },

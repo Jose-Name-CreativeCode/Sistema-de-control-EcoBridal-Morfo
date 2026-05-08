@@ -229,20 +229,6 @@ export function DressProductGallery({
           </div>
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-line bg-surface px-4 py-4">
-          <div>
-            <p className="text-xs uppercase tracking-[0.18em] text-foreground/55">
-              Vista seleccionada
-            </p>
-            <p className="mt-2 text-sm font-semibold text-foreground">
-              {photoTypeLabels[selectedPhoto.photoType] ??
-                selectedPhoto.photoType}
-            </p>
-          </div>
-          <p className="max-w-2xl text-sm leading-7 text-foreground/72">
-            {selectedPhoto.altText ?? "Sin descripción todavía."}
-          </p>
-        </div>
       </div>
     </div>
   );

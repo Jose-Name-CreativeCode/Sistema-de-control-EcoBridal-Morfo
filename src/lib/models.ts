@@ -10,6 +10,7 @@ export type ModelFilters = {
 export type ModelListItem = {
   id: string;
   name: string;
+  photoUrl: string | null;
   contactPhone: string | null;
   contactEmail: string | null;
   instagramHandle: string | null;
@@ -27,6 +28,26 @@ export type ModelCatalogData = {
   averagePerDressRate: number;
 };
 
+export type ModelDetailData = {
+  databaseReady: boolean;
+  model: ModelListItem & {
+    notes: string | null;
+    assignments: Array<{
+      id: string;
+      assignmentStatus: "SUGGESTED" | "CONFIRMED" | "COMPLETED" | "CANCELLED";
+      scheduledDate: Date | null;
+      costAgreed: number | null;
+      notes: string | null;
+      dress: {
+        id: string;
+        name: string;
+        internalCode: string;
+        size: string;
+      } | null;
+    }>;
+  };
+};
+
 export type AssignmentSuggestion = {
   dressId: string;
   dressName: string;
@@ -34,9 +55,11 @@ export type AssignmentSuggestion = {
   dressSize: string;
   brand: string | null;
   workflowStatus: string;
+  previewPhotoUrl: string | null;
   suggestedModels: Array<{
     id: string;
     name: string;
+    instagramHandle: string | null;
     perDressRate: number | null;
     hourlyRate: number | null;
     sizes: string[];
@@ -47,6 +70,7 @@ export const demoModels: ModelListItem[] = [
   {
     id: "model-1",
     name: "Sofía Ramírez",
+    photoUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=900&q=80",
     contactPhone: "55 1200 8891",
     contactEmail: "sofia@demo.com",
     instagramHandle: "@sofia.morfo",
@@ -58,6 +82,7 @@ export const demoModels: ModelListItem[] = [
   {
     id: "model-2",
     name: "Valentina Cruz",
+    photoUrl: "https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?auto=format&fit=crop&w=900&q=80",
     contactPhone: "55 7654 2281",
     contactEmail: "valentina@demo.com",
     instagramHandle: "@vale.bridal",
@@ -69,6 +94,7 @@ export const demoModels: ModelListItem[] = [
   {
     id: "model-3",
     name: "Camila Torres",
+    photoUrl: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=900&q=80",
     contactPhone: "55 9918 7782",
     contactEmail: "camila@demo.com",
     instagramHandle: "@camitorres",
@@ -80,6 +106,7 @@ export const demoModels: ModelListItem[] = [
   {
     id: "model-4",
     name: "Renata León",
+    photoUrl: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=900&q=80",
     contactPhone: "55 3412 5519",
     contactEmail: "renata@demo.com",
     instagramHandle: "@renata.leon",
@@ -126,6 +153,7 @@ export const demoDressAssignments: Record<
 export type DressCompatibleModel = {
   id: string;
   name: string;
+  photoUrl: string | null;
   instagramHandle: string | null;
   hourlyRate: number | null;
   perDressRate: number | null;
@@ -180,6 +208,7 @@ export async function getModelCatalogData(
       models: models.map((model) => ({
         id: model.id,
         name: model.name,
+        photoUrl: model.photoUrl,
         contactPhone: model.contactPhone,
         contactEmail: model.contactEmail,
         instagramHandle: model.instagramHandle,
@@ -238,6 +267,19 @@ export async function getAssignmentSuggestions(): Promise<{
           brand: true,
           size: true,
           workflowStatus: true,
+          photos: {
+            where: {
+              photoType: {
+                in: ["COVER", "WORN_BY_MODEL", "FRONT"],
+              },
+            },
+            orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+            take: 1,
+            select: {
+              imageUrl: true,
+              photoType: true,
+            },
+          },
         },
       }),
       prisma.modelProfile.findMany({
@@ -265,13 +307,14 @@ export async function getAssignmentSuggestions(): Promise<{
       workflowStatus: dress.workflowStatus,
       instagramStatus: "NOT_PUBLISHED",
       receivedAt: null,
-      previewPhotoUrl: null,
-      previewPhotoType: null,
+      previewPhotoUrl: dress.photos[0]?.imageUrl ?? null,
+      previewPhotoType: dress.photos[0]?.photoType ?? null,
     }));
 
     const normalizedModels: ModelListItem[] = models.map((model) => ({
       id: model.id,
       name: model.name,
+      photoUrl: model.photoUrl,
       contactPhone: model.contactPhone,
       contactEmail: model.contactEmail,
       instagramHandle: model.instagramHandle,
@@ -287,6 +330,111 @@ export async function getAssignmentSuggestions(): Promise<{
     };
   } catch {
     return buildDemoAssignmentSuggestions();
+  }
+}
+
+export async function getModelDetailData(modelId: string): Promise<ModelDetailData | null> {
+  if (!isDatabaseConfigured()) {
+    const model = demoModels.find((item) => item.id === modelId);
+
+    if (!model) {
+      return null;
+    }
+
+    const assignments = Object.entries(demoDressAssignments).flatMap(([dressId, entries]) =>
+      entries
+        .filter((entry) => entry.model?.id === modelId)
+        .map((entry) => {
+          const dress = demoDresses.find((item) => item.id === dressId);
+
+          return {
+            id: entry.id,
+            assignmentStatus: entry.assignmentStatus,
+            scheduledDate: entry.scheduledDate,
+            costAgreed: entry.costAgreed,
+            notes: entry.notes,
+            dress: dress
+              ? {
+                  id: dress.id,
+                  name: dress.name,
+                  internalCode: dress.internalCode,
+                  size: dress.size,
+                }
+              : null,
+          };
+        }),
+    );
+
+    return {
+      databaseReady: false,
+      model: {
+        ...model,
+        notes:
+          modelId === "model-1"
+            ? "Estudia por las tardes; considerar sesiones por la manana."
+            : "Sin notas registradas",
+        assignments,
+      },
+    };
+  }
+
+  try {
+    const model = await prisma.modelProfile.findUnique({
+      where: { id: modelId },
+      include: {
+        sizes: {
+          orderBy: {
+            size: "asc",
+          },
+        },
+        assignments: {
+          include: {
+            dress: {
+              select: {
+                id: true,
+                name: true,
+                internalCode: true,
+                size: true,
+              },
+            },
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+        },
+      },
+    });
+
+    if (!model) {
+      return null;
+    }
+
+    return {
+      databaseReady: true,
+      model: {
+        id: model.id,
+        name: model.name,
+        photoUrl: model.photoUrl,
+        contactPhone: model.contactPhone,
+        contactEmail: model.contactEmail,
+        instagramHandle: model.instagramHandle,
+        hourlyRate: model.hourlyRate ? Number(model.hourlyRate) : null,
+        perDressRate: model.perDressRate ? Number(model.perDressRate) : null,
+        availability: model.availability,
+        sizes: model.sizes.map((item) => item.size),
+        notes: model.notes,
+        assignments: model.assignments.map((assignment) => ({
+          id: assignment.id,
+          assignmentStatus: assignment.assignmentStatus,
+          scheduledDate: assignment.scheduledDate,
+          costAgreed: assignment.costAgreed ? Number(assignment.costAgreed) : null,
+          notes: assignment.notes,
+          dress: assignment.dress,
+        })),
+      },
+    };
+  } catch {
+    return null;
   }
 }
 
@@ -343,10 +491,11 @@ export async function getDressModelOptions(dressId: string, dressSize: string): 
 
     return {
       databaseReady: true,
-      compatibleModels: models.map((model) => ({
-        id: model.id,
-        name: model.name,
-        instagramHandle: model.instagramHandle,
+    compatibleModels: models.map((model) => ({
+      id: model.id,
+      name: model.name,
+      photoUrl: model.photoUrl,
+      instagramHandle: model.instagramHandle,
         hourlyRate: model.hourlyRate ? Number(model.hourlyRate) : null,
         perDressRate: model.perDressRate ? Number(model.perDressRate) : null,
         availability: model.availability,
@@ -362,6 +511,7 @@ export async function getDressModelOptions(dressId: string, dressSize: string): 
           ? {
               id: assignment.model.id,
               name: assignment.model.name,
+              photoUrl: assignment.model.photoUrl,
               instagramHandle: assignment.model.instagramHandle,
               hourlyRate: assignment.model.hourlyRate
                 ? Number(assignment.model.hourlyRate)
@@ -395,6 +545,7 @@ function buildDemoDressModelOptions(dressId: string, dressSize: string) {
       .map((model) => ({
         id: model.id,
         name: model.name,
+        photoUrl: model.photoUrl,
         instagramHandle: model.instagramHandle,
         hourlyRate: model.hourlyRate,
         perDressRate: model.perDressRate,
@@ -411,6 +562,7 @@ function buildDemoDressModelOptions(dressId: string, dressSize: string) {
         ? {
             id: assignment.model.id,
             name: assignment.model.name,
+            photoUrl: assignment.model.photoUrl,
             instagramHandle: assignment.model.instagramHandle,
             hourlyRate: assignment.model.hourlyRate,
             perDressRate: assignment.model.perDressRate,
@@ -442,6 +594,12 @@ function buildModelWhere(filters: ModelFilters) {
       },
       {
         instagramHandle: {
+          contains: filters.search,
+          mode: "insensitive",
+        },
+      },
+      {
+        contactPhone: {
           contains: filters.search,
           mode: "insensitive",
         },
@@ -494,11 +652,13 @@ function buildAssignmentSuggestions(dresses: DressListItem[], models: ModelListI
       dressSize: dress.size,
       brand: dress.brand,
       workflowStatus: dress.workflowStatus,
+      previewPhotoUrl: dress.previewPhotoUrl,
       suggestedModels: models
         .filter((model) => model.sizes.includes(dress.size))
         .map((model) => ({
           id: model.id,
           name: model.name,
+          instagramHandle: model.instagramHandle,
           perDressRate: model.perDressRate,
           hourlyRate: model.hourlyRate,
           sizes: model.sizes,

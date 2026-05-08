@@ -14,6 +14,15 @@ function parseOptionalNumber(value: FormDataEntryValue | null) {
   return Number.isFinite(parsed) ? parsed : undefined;
 }
 
+function parseOptionalString(value: FormDataEntryValue | null) {
+  if (typeof value !== "string") {
+    return null;
+  }
+
+  const trimmed = value.trim();
+  return trimmed ? trimmed : null;
+}
+
 function parseSizes(rawValue: FormDataEntryValue | null) {
   const value = typeof rawValue === "string" ? rawValue : "";
 
@@ -34,8 +43,8 @@ export async function createModelAction(formData: FormData) {
 
   const name = String(formData.get("name") ?? "").trim();
   const contactPhone = String(formData.get("contactPhone") ?? "").trim();
-  const contactEmail = String(formData.get("contactEmail") ?? "").trim();
   const instagramHandle = String(formData.get("instagramHandle") ?? "").trim();
+  const photoUrl = String(formData.get("photoUrl") ?? "").trim();
   const availability = String(formData.get("availability") ?? "").trim();
   const notes = String(formData.get("notes") ?? "").trim();
   const hourlyRate = parseOptionalNumber(formData.get("hourlyRate"));
@@ -46,8 +55,8 @@ export async function createModelAction(formData: FormData) {
     data: {
       name,
       contactPhone: contactPhone || null,
-      contactEmail: contactEmail || null,
       instagramHandle: instagramHandle || null,
+      photoUrl: photoUrl || null,
       availability: availability || null,
       notes: notes || null,
       hourlyRate,
@@ -63,4 +72,49 @@ export async function createModelAction(formData: FormData) {
   revalidatePath("/modelos");
   revalidatePath("/asignaciones");
   redirect("/modelos?created=1");
+}
+
+export async function updateModelAction(formData: FormData) {
+  const modelId = String(formData.get("modelId") ?? "").trim();
+
+  if (!isDatabaseConfigured()) {
+    redirect(`/modelos/${modelId}?demo=1`);
+  }
+
+  const name = String(formData.get("name") ?? "").trim();
+  const contactPhone = parseOptionalString(formData.get("contactPhone"));
+  const instagramHandle = parseOptionalString(formData.get("instagramHandle"));
+  const photoUrl = parseOptionalString(formData.get("photoUrl"));
+  const availability = parseOptionalString(formData.get("availability"));
+  const notes = parseOptionalString(formData.get("notes"));
+  const hourlyRate = parseOptionalNumber(formData.get("hourlyRate"));
+  const perDressRate = parseOptionalNumber(formData.get("perDressRate"));
+  const sizes = parseSizes(formData.get("sizes"));
+
+  if (!name) {
+    redirect(`/modelos/${modelId}?missing=1&edit=1`);
+  }
+
+  await prisma.modelProfile.update({
+    where: { id: modelId },
+    data: {
+      name,
+      contactPhone,
+      instagramHandle,
+      photoUrl,
+      availability,
+      notes,
+      hourlyRate,
+      perDressRate,
+      sizes: {
+        deleteMany: {},
+        create: sizes.map((size) => ({ size })),
+      },
+    },
+  });
+
+  revalidatePath("/modelos");
+  revalidatePath(`/modelos/${modelId}`);
+  revalidatePath("/asignaciones");
+  redirect(`/modelos/${modelId}?saved=1`);
 }

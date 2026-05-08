@@ -37,6 +37,7 @@ type DressDetailPageProps = {
     detailsSaved?: string;
     missing?: string;
     demo?: string;
+    edit?: string;
   }>;
 };
 
@@ -73,7 +74,13 @@ export default async function DressDetailPage({
   }
 
   const { dress } = data;
+  const isEditing = query?.edit === "1";
   const modelOptions = await getDressModelOptions(dress.id, dress.size);
+  const assignedModelIds = new Set(
+    modelOptions.assignments
+      .map((assignment) => assignment.model?.id)
+      .filter((value): value is string => Boolean(value)),
+  );
   const galleryPhotos = {
     cover: dress.photos.find((photo) => photo.photoType === "COVER")?.imageUrl ?? "",
     front: dress.photos.find((photo) => photo.photoType === "FRONT")?.imageUrl ?? "",
@@ -112,8 +119,11 @@ export default async function DressDetailPage({
             <Link href="/vestidos" className="app-button-secondary">
               Volver al listado
             </Link>
-            <Link href="/asignaciones" className="app-button-primary">
-              Ver asignaciones
+            <Link
+              href={isEditing ? `/vestidos/${dress.id}` : `/vestidos/${dress.id}?edit=1`}
+              className="app-button-primary"
+            >
+              {isEditing ? "Ver resumen" : "Editar información"}
             </Link>
           </div>
         </div>
@@ -236,6 +246,249 @@ export default async function DressDetailPage({
         </div>
       </section>
 
+      {!isEditing ? (
+        <>
+          <section className="mt-8 grid gap-6 lg:grid-cols-[1fr_1fr]">
+            <article className="rounded-[2rem] border border-line bg-white/80 p-6">
+              <div className="border-b border-line pb-4">
+                <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
+                  Resumen del vestido
+                </p>
+                <h2 className="font-heading text-4xl text-foreground">Datos del vestido</h2>
+              </div>
+
+              <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                <div className="rounded-[1.35rem] border border-line bg-surface px-4 py-4">
+                  <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">
+                    Nombre
+                  </p>
+                  <p className="mt-2 text-lg font-medium text-foreground">{dress.name}</p>
+                </div>
+                <div className="rounded-[1.35rem] border border-line bg-surface px-4 py-4">
+                  <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">Marca</p>
+                  <p className="mt-2 text-lg font-medium text-foreground">
+                    {dress.brand ?? "Pendiente"}
+                  </p>
+                </div>
+                <div className="rounded-[1.35rem] border border-line bg-surface px-4 py-4">
+                  <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">Talla</p>
+                  <p className="mt-2 text-lg font-medium text-foreground">{dress.size}</p>
+                </div>
+                <div className="rounded-[1.35rem] border border-line bg-surface px-4 py-4">
+                  <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">
+                    Estado del vestido
+                  </p>
+                  <p className="mt-2 text-lg font-medium text-foreground">
+                    {dressConditionLabels[dress.condition]}
+                  </p>
+                </div>
+                <div className="rounded-[1.35rem] border border-line bg-surface px-4 py-4">
+                  <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">Precio</p>
+                  <p className="mt-2 text-lg font-medium text-foreground">
+                    {formatCurrency(dress.price)}
+                  </p>
+                </div>
+                <div className="rounded-[1.35rem] border border-line bg-surface px-4 py-4">
+                  <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">
+                    Fecha de ingreso
+                  </p>
+                  <p className="mt-2 text-lg font-medium text-foreground">
+                    {formatDate(dress.receivedAt)}
+                  </p>
+                </div>
+                <div className="rounded-[1.35rem] border border-line bg-surface px-4 py-4 sm:col-span-2">
+                  <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">Notas</p>
+                  <p className="mt-2 text-sm leading-7 text-foreground/72">
+                    {dress.notes ?? "Sin notas registradas"}
+                  </p>
+                </div>
+              </div>
+            </article>
+
+            <article className="rounded-[2rem] border border-line bg-white/80 p-6">
+              <div className="border-b border-line pb-4">
+                <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
+                  Modelos
+                </p>
+                <h2 className="font-heading text-4xl text-foreground">Modelos compatibles</h2>
+              </div>
+
+              <div className="mt-6 grid gap-4">
+                <div className="rounded-[1.35rem] border border-line bg-surface px-4 py-4">
+                  <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">
+                    Modelos compatibles
+                  </p>
+                  <div className="mt-3 grid max-h-56 gap-3 overflow-y-auto pr-1">
+                    {modelOptions.compatibleModels.length > 0 ? (
+                      modelOptions.compatibleModels.map((model) => (
+                        <div
+                          key={model.id}
+                          className="rounded-[1.15rem] border border-line bg-white px-4 py-4"
+                        >
+                          <div className="flex items-center justify-between gap-3">
+                            <p className="font-medium text-foreground">{model.name}</p>
+                            {assignedModelIds.has(model.id) ? (
+                              <span className="app-badge bg-emerald-100 text-emerald-800">
+                                Agregada
+                              </span>
+                            ) : null}
+                          </div>
+                          <div className="mt-3 grid gap-1 text-sm leading-6 text-foreground/72">
+                            <p>Tallas: {model.sizes.join(", ")}</p>
+                            <p>Por vestido: {formatCurrency(model.perDressRate)}</p>
+                            <p>Por hora: {formatCurrency(model.hourlyRate)}</p>
+                            <p>{model.availability ?? "Disponibilidad pendiente"}</p>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <span className="text-sm text-foreground/72">
+                        No hay modelos compatibles registradas.
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </article>
+          </section>
+
+          <section className="mt-8 grid gap-6 lg:grid-cols-[1fr_1fr]">
+            <article className="rounded-[2rem] border border-line bg-white/80 p-6">
+              <div className="border-b border-line pb-4">
+                <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
+                  Carpetas externas
+                </p>
+                <h2 className="font-heading text-4xl text-foreground">Fotos editadas</h2>
+              </div>
+
+              <div className="mt-6 grid gap-4">
+                {dress.photoFolders.map((folder) => (
+                  <div
+                    key={folder.id}
+                    className="rounded-[1.35rem] border border-line bg-surface px-4 py-4"
+                  >
+                    <div className="flex items-center justify-between gap-4">
+                      <div>
+                        <p className="text-sm font-medium text-foreground">
+                          {folderProviderLabels[folder.provider]}
+                        </p>
+                        <p className="mt-1 text-xs uppercase tracking-[0.2em] text-foreground/55">
+                          {folder.versionLabel ?? "Sin versión"}
+                        </p>
+                      </div>
+                      <a
+                        href={folder.folderUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="app-button-primary px-4 py-2"
+                      >
+                        Abrir link
+                      </a>
+                    </div>
+                    <p className="mt-3 text-sm leading-7 text-foreground/72">
+                      {folder.notes ?? "Sin notas adicionales"}
+                    </p>
+                  </div>
+                ))}
+
+                {dress.photoFolders.length === 0 ? (
+                  <div className="rounded-[1.35rem] border border-dashed border-line bg-surface px-4 py-6 text-sm text-foreground/72">
+                    Todavía no hay carpetas externas registradas para este vestido.
+                  </div>
+                ) : null}
+              </div>
+            </article>
+
+            <article className="rounded-[2rem] border border-line bg-white/80 p-6">
+              <div className="border-b border-line pb-4">
+                <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
+                  Publicaciones
+                </p>
+                <h2 className="font-heading text-4xl text-foreground">Instagram</h2>
+              </div>
+
+              <div className="mt-6 grid gap-4">
+                {dress.instagramPosts.map((post) => (
+                  <div
+                    key={post.id}
+                    className="rounded-[1.35rem] border border-line bg-surface px-4 py-4"
+                  >
+                    <div className="flex items-center justify-between gap-4">
+                      <div>
+                        <p className="text-sm font-medium text-foreground">
+                          {instagramPostTypeLabels[post.postType]}
+                        </p>
+                        <p className="mt-1 text-xs uppercase tracking-[0.2em] text-foreground/55">
+                          {post.accountName ?? "Cuenta pendiente"} · {formatDate(post.publishedAt)}
+                        </p>
+                      </div>
+                      <a
+                        href={post.instagramUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="app-button-primary px-4 py-2"
+                      >
+                        Abrir link
+                      </a>
+                    </div>
+                    <p className="mt-3 text-sm leading-7 text-foreground/72">
+                      {post.captionNotes ?? "Sin notas de caption"}
+                    </p>
+                  </div>
+                ))}
+
+                {dress.instagramPosts.length === 0 ? (
+                  <div className="rounded-[1.35rem] border border-dashed border-line bg-surface px-4 py-6 text-sm text-foreground/72">
+                    Todavía no hay publicaciones de Instagram registradas para este vestido.
+                  </div>
+                ) : null}
+              </div>
+            </article>
+          </section>
+
+          <section className="mt-8">
+            <article className="rounded-[2rem] border border-line bg-surface-strong p-6">
+              <div className="border-b border-line pb-4">
+                <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
+                  Comprobación externa
+                </p>
+                <h2 className="font-heading text-4xl text-foreground">Atajos rápidos</h2>
+              </div>
+              <div className="mt-6 grid gap-4 sm:grid-cols-2">
+                <a
+                  href={dress.photoFolders[0]?.folderUrl ?? "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`rounded-xl border px-5 py-4 text-sm font-medium transition ${
+                    dress.photoFolders[0]
+                      ? "border-line bg-white text-foreground no-underline visited:text-foreground hover:border-foreground hover:bg-foreground hover:!text-white hover:no-underline visited:hover:!text-white"
+                      : "cursor-not-allowed border-dashed border-line bg-white/60 text-foreground/45"
+                  }`}
+                >
+                  {dress.photoFolders[0]
+                    ? "Abrir carpeta editada más reciente"
+                    : "Todavía no hay carpeta enlazada"}
+                </a>
+                <a
+                  href={dress.instagramPosts[0]?.instagramUrl ?? "#"}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`rounded-xl border px-5 py-4 text-sm font-medium transition ${
+                    dress.instagramPosts[0]
+                      ? "border-line bg-white text-foreground no-underline visited:text-foreground hover:border-foreground hover:bg-foreground hover:!text-white hover:no-underline visited:hover:!text-white"
+                      : "cursor-not-allowed border-dashed border-line bg-white/60 text-foreground/45"
+                  }`}
+                >
+                  {dress.instagramPosts[0]
+                    ? "Abrir publicación más reciente en Instagram"
+                    : "Todavía no hay publicación enlazada"}
+                </a>
+              </div>
+            </article>
+          </section>
+        </>
+      ) : (
+        <>
       <section className="rounded-[2rem] border border-line bg-white/80 p-6">
         <div className="flex items-center justify-between border-b border-line pb-4">
           <div>
@@ -464,7 +717,7 @@ export default async function DressDetailPage({
               rel="noopener noreferrer"
               className={`rounded-xl border px-5 py-4 text-sm font-medium transition ${
                 dress.photoFolders[0]
-                  ? "border-line bg-white text-foreground hover:border-foreground hover:bg-foreground hover:text-white"
+                  ? "border-line bg-white text-foreground no-underline visited:text-foreground hover:border-foreground hover:bg-foreground hover:!text-white hover:no-underline visited:hover:!text-white"
                   : "cursor-not-allowed border-dashed border-line bg-white/60 text-foreground/45"
               }`}
             >
@@ -478,7 +731,7 @@ export default async function DressDetailPage({
               rel="noopener noreferrer"
               className={`rounded-xl border px-5 py-4 text-sm font-medium transition ${
                 dress.instagramPosts[0]
-                  ? "border-line bg-white text-foreground hover:border-foreground hover:bg-foreground hover:text-white"
+                  ? "border-line bg-white text-foreground no-underline visited:text-foreground hover:border-foreground hover:bg-foreground hover:!text-white hover:no-underline visited:hover:!text-white"
                   : "cursor-not-allowed border-dashed border-line bg-white/60 text-foreground/45"
               }`}
             >
@@ -501,22 +754,58 @@ export default async function DressDetailPage({
 
           <form action={assignModelToDressAction} className="mt-6 grid gap-4">
             <input type="hidden" name="dressId" value={dress.id} />
-            <label className="grid gap-2 text-sm text-foreground/75">
-              Modelo
-              <select
-                name="modelId"
-                className="rounded-2xl border border-line bg-white px-4 py-3 outline-none transition focus:border-accent"
-                defaultValue={modelOptions.compatibleModels[0]?.id ?? ""}
-              >
-                <option value="">Selecciona una modelo</option>
-                {modelOptions.compatibleModels.map((model) => (
-                  <option key={model.id} value={model.id}>
-                    {model.name} · tallas {model.sizes.join(", ")}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <div className="grid gap-4 sm:grid-cols-3">
+            <div className="grid gap-2 text-sm text-foreground/75">
+              <p>Modelos compatibles</p>
+              <div className="grid max-h-72 gap-3 overflow-y-auto rounded-[1.5rem] border border-line bg-surface p-3">
+                {modelOptions.compatibleModels.length > 0 ? (
+                  modelOptions.compatibleModels.map((model) => {
+                    const alreadyAssigned = assignedModelIds.has(model.id);
+
+                    return (
+                      <label
+                        key={model.id}
+                        className={`grid gap-2 rounded-[1.15rem] border px-4 py-4 ${
+                          alreadyAssigned
+                            ? "border-emerald-200 bg-emerald-50"
+                            : "border-line bg-white"
+                        }`}
+                      >
+                        <div className="flex items-start gap-3">
+                          <input
+                            type="checkbox"
+                            name="modelIds"
+                            value={model.id}
+                            disabled={alreadyAssigned}
+                            className="mt-1 h-4 w-4 accent-[--color-accent]"
+                          />
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between gap-3">
+                              <p className="font-medium text-foreground">{model.name}</p>
+                              {alreadyAssigned ? (
+                                <span className="app-badge bg-emerald-100 text-emerald-800">
+                                  Ya agregada
+                                </span>
+                              ) : null}
+                            </div>
+                            <div className="mt-2 grid gap-1 text-sm leading-6 text-foreground/72">
+                              <p>Tallas: {model.sizes.join(", ")}</p>
+                              <p>Por vestido: {formatCurrency(model.perDressRate)}</p>
+                              <p>Por hora: {formatCurrency(model.hourlyRate)}</p>
+                              <p>{model.availability ?? "Disponibilidad pendiente"}</p>
+                            </div>
+                          </div>
+                        </div>
+                      </label>
+                    );
+                  })
+                ) : (
+                  <div className="rounded-[1.15rem] border border-dashed border-line bg-white px-4 py-5 text-sm text-foreground/72">
+                    No hay modelos compatibles para esta talla todavía.
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="grid gap-4 sm:grid-cols-2">
               <label className="grid gap-2 text-sm text-foreground/75">
                 Estado
                 <select
@@ -538,16 +827,6 @@ export default async function DressDetailPage({
                   className="rounded-2xl border border-line bg-white px-4 py-3 outline-none transition focus:border-accent"
                 />
               </label>
-              <label className="grid gap-2 text-sm text-foreground/75">
-                Costo acordado
-                <input
-                  type="number"
-                  step="0.01"
-                  name="costAgreed"
-                  placeholder="180"
-                  className="rounded-2xl border border-line bg-white px-4 py-3 outline-none transition focus:border-accent"
-                />
-              </label>
             </div>
             <label className="grid gap-2 text-sm text-foreground/75">
               Notas de asignación
@@ -564,43 +843,6 @@ export default async function DressDetailPage({
           </form>
         </article>
 
-        <article className="rounded-[2rem] border border-line bg-white/80 p-6">
-          <div className="border-b border-line pb-4">
-            <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
-              Historial de asignaciones
-            </p>
-            <h2 className="font-heading text-4xl text-foreground">Sesiones y modelos</h2>
-          </div>
-          <div className="mt-6 grid gap-4">
-            {modelOptions.assignments.map((assignment) => (
-              <div
-                key={assignment.id}
-                className="rounded-[1.35rem] border border-line bg-surface px-4 py-4"
-              >
-                <div className="flex flex-wrap items-center gap-3">
-                  <p className="font-medium text-foreground">
-                    {assignment.model?.name ?? "Modelo sin asignar"}
-                  </p>
-                  <span className="rounded-full bg-stone-200 px-3 py-1 text-xs text-stone-700">
-                    {assignment.assignmentStatus}
-                  </span>
-                </div>
-                <p className="mt-2 text-sm leading-7 text-foreground/72">
-                  Fecha: {formatDate(assignment.scheduledDate)} · Costo:{" "}
-                  {formatCurrency(assignment.costAgreed)}
-                </p>
-                <p className="text-sm leading-7 text-foreground/72">
-                  {assignment.notes ?? "Sin notas adicionales"}
-                </p>
-              </div>
-            ))}
-            {modelOptions.assignments.length === 0 ? (
-              <div className="rounded-[1.35rem] border border-dashed border-line bg-surface px-4 py-6 text-sm text-foreground/72">
-                Todavía no hay asignaciones registradas para este vestido.
-              </div>
-            ) : null}
-          </div>
-        </article>
       </section>
 
       <section className="mt-8 grid gap-6 lg:grid-cols-[1fr_1fr]">
@@ -809,6 +1051,8 @@ export default async function DressDetailPage({
           </div>
         </article>
       </section>
+        </>
+      )}
     </main>
   );
 }

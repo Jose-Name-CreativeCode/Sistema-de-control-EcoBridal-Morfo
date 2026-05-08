@@ -95,6 +95,7 @@ model ModelProfile {
   contactPhone   String?
   contactEmail   String?
   instagramHandle String?
+  photoUrl       String?
   hourlyRate     Decimal?          @db.Decimal(10, 2)
   perDressRate   Decimal?          @db.Decimal(10, 2)
   availability   String?

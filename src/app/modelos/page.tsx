@@ -21,6 +21,11 @@ function formatCurrency(value: number | null) {
   }).format(value);
 }
 
+function buildInstagramUrl(handle: string) {
+  const cleanHandle = handle.replace(/^@/, "").trim();
+  return `https://instagram.com/${cleanHandle}`;
+}
+
 export default async function ModelsPage({ searchParams }: ModelsPageProps) {
   const params = await searchParams;
   const data = await getModelCatalogData({
@@ -29,18 +34,17 @@ export default async function ModelsPage({ searchParams }: ModelsPageProps) {
   });
 
   return (
-    <main className="mx-auto flex w-full max-w-7xl flex-1 flex-col px-6 pb-12 pt-6 sm:px-10 lg:px-12">
-      <section className="rounded-[2rem] border border-line bg-surface p-6 shadow-[0_20px_80px_rgba(37,37,37,0.08)]">
+    <main className="flex w-full flex-1 flex-col gap-6">
+      <section className="app-page">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-3xl">
-            <p className="text-sm uppercase tracking-[0.3em] text-accent">Módulo 02</p>
-            <h1 className="font-heading text-5xl leading-none text-foreground sm:text-6xl">
+            <p className="text-sm uppercase tracking-[0.28em] text-accent-strong">Módulo 02</p>
+            <h1 className="font-heading text-5xl leading-[0.95] text-foreground sm:text-6xl">
               Modelos
             </h1>
-            <p className="mt-4 text-lg leading-8 text-foreground/75">
-              Aquí controlas tallas compatibles, disponibilidad, contacto y costo por
-              vestido u hora. Este módulo alimenta directamente las asignaciones para cada
-              sesión.
+            <p className="mt-4 text-lg leading-8 text-foreground/78">
+              Aquí ves a cada modelo como ficha visual, con su foto, tallas, tarifas,
+              disponibilidad e Instagram.
             </p>
           </div>
 
@@ -56,9 +60,8 @@ export default async function ModelsPage({ searchParams }: ModelsPageProps) {
 
         {!data.databaseReady ? (
           <div className="mt-6 rounded-[1.5rem] border border-dashed border-accent/30 bg-accent/8 px-5 py-4 text-sm leading-7 text-foreground/78">
-            Estás viendo el módulo en modo demo. La estructura ya está preparada para que,
-            al conectar PostgreSQL, puedas guardar modelos reales y usarlas en las
-            asignaciones de vestidos.
+            Estás viendo el módulo en modo demo. Al conectar PostgreSQL podrás guardar
+            modelos reales, editar su ficha y usarlas en asignaciones.
           </div>
         ) : null}
 
@@ -74,31 +77,23 @@ export default async function ModelsPage({ searchParams }: ModelsPageProps) {
             { label: "Tallas cubiertas", value: data.sizes.length },
             { label: "Promedio por vestido", value: formatCurrency(data.averagePerDressRate) },
           ].map((item) => (
-            <article
-              key={item.label}
-              className="rounded-[1.35rem] border border-line bg-white/80 p-5"
-            >
+            <article key={item.label} className="app-card p-5">
               <p className="text-sm uppercase tracking-[0.2em] text-foreground/55">
                 {item.label}
               </p>
-              <p className="mt-3 font-heading text-5xl text-accent">{item.value}</p>
+              <p className="mt-3 font-heading text-5xl text-accent-strong">{item.value}</p>
             </article>
           ))}
         </div>
       </section>
 
-      <section className="mt-8 rounded-[2rem] border border-line bg-white/75 p-6">
+      <section className="app-page">
         <div className="flex items-center justify-between border-b border-line pb-4">
           <div>
-            <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
-              Filtros
-            </p>
+            <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">Filtros</p>
             <h2 className="font-heading text-4xl text-foreground">Busca por talla o nombre</h2>
           </div>
-          <Link
-            href="/modelos"
-            className="text-sm font-medium text-accent underline-offset-4 hover:underline"
-          >
+          <Link href="/modelos" className="text-sm font-medium text-accent underline-offset-4 hover:underline">
             Limpiar filtros
           </Link>
         </div>
@@ -109,13 +104,9 @@ export default async function ModelsPage({ searchParams }: ModelsPageProps) {
             name="search"
             defaultValue={params?.search ?? ""}
             placeholder="Nombre, Instagram o teléfono"
-            className="rounded-2xl border border-line bg-surface px-4 py-3 text-sm outline-none transition focus:border-accent"
+            className="app-field"
           />
-          <select
-            name="size"
-            defaultValue={params?.size ?? ""}
-            className="rounded-2xl border border-line bg-surface px-4 py-3 text-sm outline-none transition focus:border-accent"
-          >
+          <select name="size" defaultValue={params?.size ?? ""} className="app-field">
             <option value="">Todas las tallas</option>
             {data.sizes.map((size) => (
               <option key={size} value={size}>
@@ -129,67 +120,97 @@ export default async function ModelsPage({ searchParams }: ModelsPageProps) {
         </form>
       </section>
 
-      <section className="mt-8 grid gap-4">
-        {data.models.map((model) => (
-          <article
-            key={model.id}
-            className="rounded-[1.6rem] border border-line bg-surface p-6 shadow-[0_10px_30px_rgba(37,37,37,0.05)]"
-          >
-            <div className="grid gap-5 lg:grid-cols-[1.2fr_0.8fr_0.8fr_0.8fr]">
-              <div>
-                <div className="flex flex-wrap items-center gap-3">
-                  <p className="font-heading text-3xl text-foreground">{model.name}</p>
+      <section className="app-page">
+        <div className="border-b border-line pb-4">
+          <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">Resultado</p>
+          <h2 className="mt-2 font-heading text-4xl leading-none text-foreground">
+            {data.models.length} modelos encontradas
+          </h2>
+        </div>
+
+        <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          {data.models.map((model) => (
+            <article key={model.id} className="app-card overflow-hidden">
+              <Link href={`/modelos/${model.id}`} className="block">
+                <div className="relative h-72 overflow-hidden bg-surface-strong">
+                  {model.photoUrl ? (
+                    <img
+                      src={model.photoUrl}
+                      alt={model.name}
+                      className="h-full w-full object-cover object-[center_15%] transition duration-300 hover:scale-[1.04]"
+                    />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center bg-[linear-gradient(135deg,#eef3ff,#dce6fb)] px-8 text-center">
+                      <p className="font-heading text-4xl text-accent-strong">{model.name}</p>
+                    </div>
+                  )}
                   {model.instagramHandle ? (
-                    <span className="rounded-full bg-stone-200 px-3 py-1 text-xs text-stone-700">
-                      {model.instagramHandle}
-                    </span>
+                    <div className="absolute left-4 top-4">
+                      <a
+                        href={buildInstagramUrl(model.instagramHandle)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="app-badge bg-white/90 text-slate-700 no-underline transition hover:bg-foreground hover:!text-white"
+                      >
+                        {model.instagramHandle}
+                      </a>
+                    </div>
                   ) : null}
                 </div>
-                <p className="mt-2 text-sm leading-7 text-foreground/72">
-                  {model.contactPhone ?? "Teléfono pendiente"} ·{" "}
-                  {model.contactEmail ?? "Correo pendiente"}
-                </p>
-              </div>
+              </Link>
 
-              <div>
-                <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">
-                  Tallas
-                </p>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {model.sizes.map((size) => (
-                    <span
-                      key={`${model.id}-${size}`}
-                      className="rounded-full bg-accent/10 px-3 py-1 text-sm text-accent"
-                    >
-                      {size}
-                    </span>
-                  ))}
+              <div className="grid gap-4 p-5">
+                <div>
+                  <Link
+                    href={`/modelos/${model.id}`}
+                    className="font-heading text-3xl leading-none text-foreground underline-offset-4 hover:text-accent-strong hover:underline"
+                  >
+                    {model.name}
+                  </Link>
+                  <p className="mt-3 text-sm leading-7 text-foreground/72">
+                    {model.contactPhone ?? "Teléfono pendiente"}
+                  </p>
                 </div>
-              </div>
 
-              <div>
-                <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">
-                  Tarifas
-                </p>
-                <p className="mt-2 text-sm leading-7 text-foreground/75">
-                  Por vestido: {formatCurrency(model.perDressRate)}
-                </p>
-                <p className="text-sm leading-7 text-foreground/75">
-                  Por hora: {formatCurrency(model.hourlyRate)}
-                </p>
-              </div>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">
+                      Tallas
+                    </p>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {model.sizes.map((size) => (
+                        <span
+                          key={`${model.id}-${size}`}
+                          className="rounded-full bg-accent/10 px-3 py-1 text-sm text-accent"
+                        >
+                          {size}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
 
-              <div>
-                <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">
-                  Disponibilidad
-                </p>
-                <p className="mt-2 text-sm leading-7 text-foreground/75">
-                  {model.availability ?? "Pendiente de definir"}
-                </p>
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">
+                      Disponibilidad
+                    </p>
+                    <p className="mt-2 text-sm leading-7 text-foreground/75">
+                      {model.availability ?? "Pendiente"}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="grid gap-2 text-sm leading-7 text-foreground/75">
+                  <p>Por vestido: {formatCurrency(model.perDressRate)}</p>
+                  <p>Por hora: {formatCurrency(model.hourlyRate)}</p>
+                </div>
+
+                <Link href={`/modelos/${model.id}`} className="app-button-secondary text-center">
+                  Ver detalle
+                </Link>
               </div>
-            </div>
-          </article>
-        ))}
+            </article>
+          ))}
+        </div>
       </section>
     </main>
   );
