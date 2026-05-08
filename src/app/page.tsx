@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { DashboardReminders } from "@/components/dashboard-reminders";
 import { getDashboardData } from "@/lib/dashboard";
 
 export default async function Home() {
@@ -84,6 +85,13 @@ export default async function Home() {
                 Ver cruces de vestido y modelo para sesiones.
               </p>
             </Link>
+
+            <Link href="/poses" className="app-card-soft p-5 transition hover:border-accent">
+              <p className="font-heading text-2xl leading-none">Ver poses</p>
+              <p className="mt-3 text-sm leading-7 text-foreground/72">
+                Visualizar referencias de poses por talla de modelo.
+              </p>
+            </Link>
           </div>
         </article>
 
@@ -111,6 +119,8 @@ export default async function Home() {
           </div>
         </article>
       </section>
+
+      <DashboardReminders />
     </main>
   );
 }

@@ -30,6 +30,23 @@ function buildInstagramUrl(handle: string) {
   return `https://instagram.com/${cleanHandle}`;
 }
 
+function getFolderProviderLabel(
+  provider: "OUTLOOK_ONEDRIVE" | "SHAREPOINT" | "GOOGLE_DRIVE" | "OTHER" | null,
+) {
+  switch (provider) {
+    case "OUTLOOK_ONEDRIVE":
+      return "OneDrive";
+    case "SHAREPOINT":
+      return "SharePoint";
+    case "GOOGLE_DRIVE":
+      return "Google Drive";
+    case "OTHER":
+      return "Otro";
+    default:
+      return "Carpeta";
+  }
+}
+
 function formatDate(value: Date | null) {
   if (!value) return "Sin fecha";
 
@@ -125,7 +142,7 @@ export default async function ModelDetailPage({
                     <img
                       src={model.photoUrl}
                       alt={model.name}
-                      className="h-full w-full object-cover object-[center_15%]"
+                      className="h-full w-full object-cover object-center"
                     />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center bg-[linear-gradient(135deg,#eef3ff,#dce6fb)] px-8 text-center">
@@ -203,6 +220,38 @@ export default async function ModelDetailPage({
                       {model.notes ?? "Sin notas registradas"}
                     </p>
                   </div>
+                  <div className="rounded-[1.35rem] border border-line bg-surface px-4 py-4 sm:col-span-2">
+                    <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">
+                      Atajos externos
+                    </p>
+                    <div className="mt-3 flex flex-wrap gap-3">
+                      {model.folderUrl ? (
+                        <a
+                          href={model.folderUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="app-button-secondary"
+                        >
+                          Abrir {getFolderProviderLabel(model.folderProvider)}
+                        </a>
+                      ) : null}
+                      {model.instagramPostUrl ? (
+                        <a
+                          href={model.instagramPostUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="app-button-secondary"
+                        >
+                          Abrir publicación
+                        </a>
+                      ) : null}
+                      {!model.folderUrl && !model.instagramPostUrl ? (
+                        <p className="text-sm leading-7 text-foreground/72">
+                          Todavía no hay links externos registrados.
+                        </p>
+                      ) : null}
+                    </div>
+                  </div>
                 </div>
               </article>
             </div>
@@ -275,6 +324,54 @@ export default async function ModelDetailPage({
               <input
                 name="contactPhone"
                 defaultValue={model.contactPhone ?? ""}
+                className="app-field"
+              />
+            </label>
+
+            <label className="col-span-full grid gap-2 text-sm text-foreground/75">
+              Link de foto
+              <input
+                name="photoUrl"
+                type="url"
+                defaultValue={model.photoUrl ?? ""}
+                placeholder="https://... foto de la modelo"
+                className="app-field"
+              />
+            </label>
+
+            <label className="grid gap-2 text-sm text-foreground/75">
+              Proveedor de carpeta externa
+              <select
+                name="folderProvider"
+                defaultValue={model.folderProvider ?? ""}
+                className="app-field"
+              >
+                <option value="">Sin proveedor</option>
+                <option value="OUTLOOK_ONEDRIVE">Outlook / OneDrive</option>
+                <option value="SHAREPOINT">SharePoint</option>
+                <option value="GOOGLE_DRIVE">Google Drive</option>
+                <option value="OTHER">Otro</option>
+              </select>
+            </label>
+
+            <label className="grid gap-2 text-sm text-foreground/75">
+              Link de carpeta externa
+              <input
+                name="folderUrl"
+                type="url"
+                defaultValue={model.folderUrl ?? ""}
+                placeholder="https://... carpeta de fotos"
+                className="app-field"
+              />
+            </label>
+
+            <label className="col-span-full grid gap-2 text-sm text-foreground/75">
+              Link de publicación de Instagram
+              <input
+                name="instagramPostUrl"
+                type="url"
+                defaultValue={model.instagramPostUrl ?? ""}
+                placeholder="https://instagram.com/p/..."
                 className="app-field"
               />
             </label>

@@ -71,6 +71,16 @@ export default async function NewModelPage({ searchParams }: NewModelPageProps) 
             />
           </label>
 
+          <label className="col-span-full grid gap-2 text-sm text-foreground/75">
+            Link de foto
+            <input
+              name="photoUrl"
+              type="url"
+              placeholder="https://... foto de la modelo"
+              className="app-field"
+            />
+          </label>
+
           <label className="grid gap-2 text-sm text-foreground/75">
             Costo por hora
             <input
@@ -108,6 +118,37 @@ export default async function NewModelPage({ searchParams }: NewModelPageProps) 
             <input
               name="availability"
               placeholder="Lunes y miércoles"
+              className="app-field"
+            />
+          </label>
+
+          <label className="grid gap-2 text-sm text-foreground/75">
+            Proveedor de carpeta externa
+            <select name="folderProvider" className="app-field" defaultValue="">
+              <option value="">Sin proveedor</option>
+              <option value="OUTLOOK_ONEDRIVE">Outlook / OneDrive</option>
+              <option value="SHAREPOINT">SharePoint</option>
+              <option value="GOOGLE_DRIVE">Google Drive</option>
+              <option value="OTHER">Otro</option>
+            </select>
+          </label>
+
+          <label className="grid gap-2 text-sm text-foreground/75">
+            Link de carpeta externa
+            <input
+              name="folderUrl"
+              type="url"
+              placeholder="https://... carpeta de fotos"
+              className="app-field"
+            />
+          </label>
+
+          <label className="col-span-full grid gap-2 text-sm text-foreground/75">
+            Link de publicación de Instagram
+            <input
+              name="instagramPostUrl"
+              type="url"
+              placeholder="https://instagram.com/p/..."
               className="app-field"
             />
           </label>

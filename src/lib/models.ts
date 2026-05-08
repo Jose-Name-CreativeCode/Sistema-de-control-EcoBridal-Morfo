@@ -14,6 +14,9 @@ export type ModelListItem = {
   contactPhone: string | null;
   contactEmail: string | null;
   instagramHandle: string | null;
+  folderProvider: "OUTLOOK_ONEDRIVE" | "SHAREPOINT" | "GOOGLE_DRIVE" | "OTHER" | null;
+  folderUrl: string | null;
+  instagramPostUrl: string | null;
   hourlyRate: number | null;
   perDressRate: number | null;
   availability: string | null;
@@ -74,6 +77,9 @@ export const demoModels: ModelListItem[] = [
     contactPhone: "55 1200 8891",
     contactEmail: "sofia@demo.com",
     instagramHandle: "@sofia.morfo",
+    folderProvider: "OUTLOOK_ONEDRIVE",
+    folderUrl: "https://outlook.office.com/demo/modelos/sofia",
+    instagramPostUrl: "https://instagram.com/p/demo-sofia",
     hourlyRate: 450,
     perDressRate: 180,
     availability: "Lunes y miércoles",
@@ -86,6 +92,9 @@ export const demoModels: ModelListItem[] = [
     contactPhone: "55 7654 2281",
     contactEmail: "valentina@demo.com",
     instagramHandle: "@vale.bridal",
+    folderProvider: "SHAREPOINT",
+    folderUrl: "https://sharepoint.com/demo/modelos/valentina",
+    instagramPostUrl: "https://instagram.com/p/demo-vale",
     hourlyRate: 500,
     perDressRate: 220,
     availability: "Martes y jueves",
@@ -98,6 +107,9 @@ export const demoModels: ModelListItem[] = [
     contactPhone: "55 9918 7782",
     contactEmail: "camila@demo.com",
     instagramHandle: "@camitorres",
+    folderProvider: null,
+    folderUrl: null,
+    instagramPostUrl: null,
     hourlyRate: 420,
     perDressRate: 170,
     availability: "Viernes",
@@ -110,6 +122,9 @@ export const demoModels: ModelListItem[] = [
     contactPhone: "55 3412 5519",
     contactEmail: "renata@demo.com",
     instagramHandle: "@renata.leon",
+    folderProvider: "GOOGLE_DRIVE",
+    folderUrl: "https://drive.google.com/demo/modelos/renata",
+    instagramPostUrl: null,
     hourlyRate: 540,
     perDressRate: 260,
     availability: "Fin de semana",
@@ -212,6 +227,9 @@ export async function getModelCatalogData(
         contactPhone: model.contactPhone,
         contactEmail: model.contactEmail,
         instagramHandle: model.instagramHandle,
+        folderProvider: model.folderProvider,
+        folderUrl: model.folderUrl,
+        instagramPostUrl: model.instagramPostUrl,
         hourlyRate: model.hourlyRate ? Number(model.hourlyRate) : null,
         perDressRate: model.perDressRate ? Number(model.perDressRate) : null,
         availability: model.availability,
@@ -318,6 +336,9 @@ export async function getAssignmentSuggestions(): Promise<{
       contactPhone: model.contactPhone,
       contactEmail: model.contactEmail,
       instagramHandle: model.instagramHandle,
+      folderProvider: model.folderProvider,
+      folderUrl: model.folderUrl,
+      instagramPostUrl: model.instagramPostUrl,
       hourlyRate: model.hourlyRate ? Number(model.hourlyRate) : null,
       perDressRate: model.perDressRate ? Number(model.perDressRate) : null,
       availability: model.availability,
@@ -418,6 +439,9 @@ export async function getModelDetailData(modelId: string): Promise<ModelDetailDa
         contactPhone: model.contactPhone,
         contactEmail: model.contactEmail,
         instagramHandle: model.instagramHandle,
+        folderProvider: model.folderProvider,
+        folderUrl: model.folderUrl,
+        instagramPostUrl: model.instagramPostUrl,
         hourlyRate: model.hourlyRate ? Number(model.hourlyRate) : null,
         perDressRate: model.perDressRate ? Number(model.perDressRate) : null,
         availability: model.availability,

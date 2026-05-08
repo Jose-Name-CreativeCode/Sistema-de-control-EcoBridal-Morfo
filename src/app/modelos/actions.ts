@@ -45,6 +45,9 @@ export async function createModelAction(formData: FormData) {
   const contactPhone = String(formData.get("contactPhone") ?? "").trim();
   const instagramHandle = String(formData.get("instagramHandle") ?? "").trim();
   const photoUrl = String(formData.get("photoUrl") ?? "").trim();
+  const folderProvider = String(formData.get("folderProvider") ?? "").trim();
+  const folderUrl = String(formData.get("folderUrl") ?? "").trim();
+  const instagramPostUrl = String(formData.get("instagramPostUrl") ?? "").trim();
   const availability = String(formData.get("availability") ?? "").trim();
   const notes = String(formData.get("notes") ?? "").trim();
   const hourlyRate = parseOptionalNumber(formData.get("hourlyRate"));
@@ -57,6 +60,9 @@ export async function createModelAction(formData: FormData) {
       contactPhone: contactPhone || null,
       instagramHandle: instagramHandle || null,
       photoUrl: photoUrl || null,
+      folderProvider: folderProvider ? (folderProvider as "OUTLOOK_ONEDRIVE" | "SHAREPOINT" | "GOOGLE_DRIVE" | "OTHER") : null,
+      folderUrl: folderUrl || null,
+      instagramPostUrl: instagramPostUrl || null,
       availability: availability || null,
       notes: notes || null,
       hourlyRate,
@@ -85,6 +91,14 @@ export async function updateModelAction(formData: FormData) {
   const contactPhone = parseOptionalString(formData.get("contactPhone"));
   const instagramHandle = parseOptionalString(formData.get("instagramHandle"));
   const photoUrl = parseOptionalString(formData.get("photoUrl"));
+  const folderProvider = parseOptionalString(formData.get("folderProvider")) as
+    | "OUTLOOK_ONEDRIVE"
+    | "SHAREPOINT"
+    | "GOOGLE_DRIVE"
+    | "OTHER"
+    | null;
+  const folderUrl = parseOptionalString(formData.get("folderUrl"));
+  const instagramPostUrl = parseOptionalString(formData.get("instagramPostUrl"));
   const availability = parseOptionalString(formData.get("availability"));
   const notes = parseOptionalString(formData.get("notes"));
   const hourlyRate = parseOptionalNumber(formData.get("hourlyRate"));
@@ -102,6 +116,9 @@ export async function updateModelAction(formData: FormData) {
       contactPhone,
       instagramHandle,
       photoUrl,
+      folderProvider,
+      folderUrl,
+      instagramPostUrl,
       availability,
       notes,
       hourlyRate,

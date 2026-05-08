@@ -26,6 +26,23 @@ function buildInstagramUrl(handle: string) {
   return `https://instagram.com/${cleanHandle}`;
 }
 
+function getFolderProviderLabel(
+  provider: "OUTLOOK_ONEDRIVE" | "SHAREPOINT" | "GOOGLE_DRIVE" | "OTHER" | null,
+) {
+  switch (provider) {
+    case "OUTLOOK_ONEDRIVE":
+      return "OneDrive";
+    case "SHAREPOINT":
+      return "SharePoint";
+    case "GOOGLE_DRIVE":
+      return "Google Drive";
+    case "OTHER":
+      return "Otro";
+    default:
+      return "Carpeta";
+  }
+}
+
 export default async function ModelsPage({ searchParams }: ModelsPageProps) {
   const params = await searchParams;
   const data = await getModelCatalogData({
@@ -137,7 +154,7 @@ export default async function ModelsPage({ searchParams }: ModelsPageProps) {
                     <img
                       src={model.photoUrl}
                       alt={model.name}
-                      className="h-full w-full object-cover object-[center_15%] transition duration-300 hover:scale-[1.04]"
+                      className="h-full w-full object-cover object-center transition duration-300 hover:scale-[1.04]"
                     />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center bg-[linear-gradient(135deg,#eef3ff,#dce6fb)] px-8 text-center">
@@ -202,6 +219,29 @@ export default async function ModelsPage({ searchParams }: ModelsPageProps) {
                 <div className="grid gap-2 text-sm leading-7 text-foreground/75">
                   <p>Por vestido: {formatCurrency(model.perDressRate)}</p>
                   <p>Por hora: {formatCurrency(model.hourlyRate)}</p>
+                </div>
+
+                <div className="flex flex-wrap gap-3">
+                  {model.folderUrl ? (
+                    <a
+                      href={model.folderUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="app-button-secondary text-center"
+                    >
+                      Abrir {getFolderProviderLabel(model.folderProvider)}
+                    </a>
+                  ) : null}
+                  {model.instagramPostUrl ? (
+                    <a
+                      href={model.instagramPostUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="app-button-secondary text-center"
+                    >
+                      Abrir publicación
+                    </a>
+                  ) : null}
                 </div>
 
                 <Link href={`/modelos/${model.id}`} className="app-button-secondary text-center">
