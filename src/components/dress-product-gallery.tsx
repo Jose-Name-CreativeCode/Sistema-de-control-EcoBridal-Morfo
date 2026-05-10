@@ -222,14 +222,11 @@ export function DressProductGallery({
               type="button"
               onClick={goNext}
               className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-line bg-white text-lg text-foreground transition hover:border-accent hover:text-accent"
-              aria-label="Foto siguiente"
-            >
-              →
-            </button>
+              aria-label="Foto siguiente ->"
+            ></button>
           </div>
         </div>
       </div>
     </div>
   );
 }
-// ds
