@@ -143,7 +143,7 @@ export default async function AssignmentsPage({ searchParams }: AssignmentsPageP
                     }`}
                   >
                     {suggestion.suggestedModels.length > 0 ? (
-                      suggestion.suggestedModels.slice(0, 3).map((model) => (
+                      suggestion.suggestedModels.map((model) => (
                         <div
                           key={model.id}
                           className="rounded-[1.15rem] border border-line bg-surface px-4 py-4"
