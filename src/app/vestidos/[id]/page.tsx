@@ -97,7 +97,7 @@ export default async function DressDetailPage({
               Detalle de vestido
             </p>
             <div className="mt-3 flex flex-wrap items-center gap-3">
-              <h1 className="font-heading text-5xl leading-[0.95] text-foreground sm:text-6xl">
+              <h1 className="font-heading text-4xl leading-[0.95] text-foreground sm:text-5xl lg:text-6xl">
                 {dress.name}
               </h1>
               <span className="rounded-full bg-stone-200 px-3 py-1 text-xs uppercase tracking-[0.2em] text-stone-700">
@@ -109,7 +109,7 @@ export default async function DressDetailPage({
                 </span>
               ) : null}
             </div>
-            <p className="mt-4 text-lg leading-8 text-foreground/75">
+            <p className="mt-4 text-base leading-7 text-foreground/75 sm:text-lg sm:leading-8">
               {dress.brand ?? "Marca pendiente"} · Talla {dress.size} · Ingreso{" "}
               {formatDate(dress.receivedAt)}
             </p>
@@ -218,11 +218,11 @@ export default async function DressDetailPage({
           </article>
           <article className="app-card p-5">
             <p className="text-sm uppercase tracking-[0.2em] text-foreground/55">Fotos</p>
-            <p className="mt-3 font-heading text-5xl text-accent">{dress.photoCount}</p>
+            <p className="mt-3 font-heading text-4xl text-accent sm:text-5xl">{dress.photoCount}</p>
           </article>
           <article className="app-card p-5">
             <p className="text-sm uppercase tracking-[0.2em] text-foreground/55">Precio</p>
-            <p className="mt-3 font-heading text-4xl text-accent">
+            <p className="mt-3 font-heading text-3xl text-accent sm:text-4xl">
               {formatCurrency(dress.price)}
             </p>
           </article>
@@ -234,7 +234,7 @@ export default async function DressDetailPage({
           <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
             Galería del vestido
           </p>
-          <h2 className="mt-2 font-heading text-4xl text-foreground">Vista tipo catálogo</h2>
+          <h2 className="mt-2 font-heading text-3xl text-foreground sm:text-4xl">Vista tipo catálogo</h2>
         </div>
 
         <div className="mt-6">

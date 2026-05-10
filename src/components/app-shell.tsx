@@ -41,22 +41,22 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-transparent">
-      <div className="mx-auto flex min-h-screen w-full max-w-[1600px] flex-col gap-6 px-4 py-4 lg:flex-row lg:px-6 lg:py-6">
-        <aside className="app-shell-panel flex w-full shrink-0 flex-col p-4 text-white lg:sticky lg:top-6 lg:h-[calc(100vh-3rem)] lg:w-[320px]">
-          <div className="border-b border-white/14 pb-5">
+      <div className="mx-auto flex min-h-screen w-full max-w-[1600px] flex-col gap-4 px-3 py-3 sm:px-4 sm:py-4 lg:flex-row lg:gap-6 lg:px-6 lg:py-6">
+        <aside className="app-shell-panel flex w-full shrink-0 flex-col p-4 text-white lg:sticky lg:top-6 lg:h-[calc(100vh-3rem)] lg:w-[320px] lg:p-5">
+          <div className="border-b border-white/14 pb-4 lg:pb-5">
             <p className="text-xs uppercase tracking-[0.28em] text-white/70">
               EcoBridal Hub
             </p>
-            <h2 className="mt-3 font-heading text-4xl leading-none text-white">
+            <h2 className="mt-3 font-heading text-3xl leading-none text-white sm:text-4xl">
               Navegación central
             </h2>
-            <p className="mt-3 text-sm leading-6 text-white/74">
+            <p className="mt-3 max-w-xl text-sm leading-6 text-white/74 lg:max-w-none">
               Entra a cada módulo, captura datos y vuelve aquí cuando necesites
               cambiar de contexto.
             </p>
           </div>
 
-          <nav className="mt-5 grid gap-3">
+          <nav className="mt-4 flex gap-3 overflow-x-auto pb-1 lg:mt-5 lg:grid lg:overflow-visible lg:pb-0">
             {navigation.map((item) => {
               const active = isActive(activeHref, item.href);
 
@@ -64,7 +64,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`rounded-2xl border px-4 py-4 transition ${
+                  className={`min-w-[176px] rounded-2xl border px-4 py-3 transition lg:min-w-0 lg:py-4 ${
                     active
                       ? "border-white/12 bg-white text-foreground shadow-[0_12px_28px_rgba(0,0,0,0.18)]"
                       : "border-white/10 bg-white/6 text-white hover:border-accent hover:bg-white/10"

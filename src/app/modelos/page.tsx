@@ -56,10 +56,10 @@ export default async function ModelsPage({ searchParams }: ModelsPageProps) {
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-3xl">
             <p className="text-sm uppercase tracking-[0.28em] text-accent-strong">Módulo 02</p>
-            <h1 className="font-heading text-5xl leading-[0.95] text-foreground sm:text-6xl">
+            <h1 className="font-heading text-4xl leading-[0.95] text-foreground sm:text-5xl lg:text-6xl">
               Modelos
             </h1>
-            <p className="mt-4 text-lg leading-8 text-foreground/78">
+            <p className="mt-4 text-base leading-7 text-foreground/78 sm:text-lg sm:leading-8">
               Aquí ves a cada modelo como ficha visual, con su foto, tallas, tarifas,
               disponibilidad e Instagram.
             </p>
@@ -98,7 +98,7 @@ export default async function ModelsPage({ searchParams }: ModelsPageProps) {
               <p className="text-sm uppercase tracking-[0.2em] text-foreground/55">
                 {item.label}
               </p>
-              <p className="mt-3 font-heading text-5xl text-accent-strong">{item.value}</p>
+              <p className="mt-3 font-heading text-4xl text-accent-strong sm:text-5xl">{item.value}</p>
             </article>
           ))}
         </div>
@@ -108,7 +108,7 @@ export default async function ModelsPage({ searchParams }: ModelsPageProps) {
         <div className="flex items-center justify-between border-b border-line pb-4">
           <div>
             <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">Filtros</p>
-            <h2 className="font-heading text-4xl text-foreground">Busca por talla o nombre</h2>
+            <h2 className="font-heading text-3xl text-foreground sm:text-4xl">Busca por talla o nombre</h2>
           </div>
           <Link href="/modelos" className="text-sm font-medium text-accent underline-offset-4 hover:underline">
             Limpiar filtros
@@ -140,16 +140,16 @@ export default async function ModelsPage({ searchParams }: ModelsPageProps) {
       <section className="app-page">
         <div className="border-b border-line pb-4">
           <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">Resultado</p>
-          <h2 className="mt-2 font-heading text-4xl leading-none text-foreground">
-            {data.models.length} modelos encontradas
-          </h2>
+            <h2 className="mt-2 font-heading text-3xl leading-none text-foreground sm:text-4xl">
+              {data.models.length} modelos encontradas
+            </h2>
         </div>
 
         <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
           {data.models.map((model) => (
             <article key={model.id} className="app-card overflow-hidden">
               <Link href={`/modelos/${model.id}`} className="block">
-                <div className="relative h-72 overflow-hidden bg-surface-strong">
+                <div className="relative h-64 overflow-hidden bg-surface-strong sm:h-72">
                   {model.photoUrl ? (
                     <img
                       src={model.photoUrl}

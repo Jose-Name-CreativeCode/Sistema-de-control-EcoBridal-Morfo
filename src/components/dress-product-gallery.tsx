@@ -128,7 +128,7 @@ export function DressProductGallery({
             <video
               src={selectedPhoto.imageUrl}
               controls
-              className="h-[620px] w-full bg-black object-contain"
+              className="h-[320px] w-full bg-black object-contain sm:h-[440px] lg:h-[620px]"
             />
           ) : (
             <>
@@ -139,7 +139,7 @@ export function DressProductGallery({
               <img
                 src={selectedPhoto.imageUrl}
                 alt={selectedPhoto.altText ?? dressName}
-                className="relative z-10 h-[620px] w-full object-contain object-[center_8%]"
+                className="relative z-10 h-[320px] w-full object-contain object-[center_8%] sm:h-[440px] lg:h-[620px]"
               />
               <div className="pointer-events-none absolute inset-0 z-40 hidden xl:block">
                 <div
@@ -164,17 +164,17 @@ export function DressProductGallery({
         </div>
 
         <div className="rounded-[22px] border border-line bg-[#f7f3ee] px-4 py-3">
-          <div className="mx-auto flex max-w-[420px] items-center justify-center gap-3">
+          <div className="mx-auto flex max-w-[320px] items-center justify-center gap-2 sm:max-w-[420px] sm:gap-3">
             <button
               type="button"
               onClick={goPrev}
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-line bg-white text-lg text-foreground transition hover:border-accent hover:text-accent"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-line bg-white text-base text-foreground transition hover:border-accent hover:text-accent sm:h-10 sm:w-10 sm:text-lg"
               aria-label="Foto anterior"
             >
               ←
             </button>
 
-            <div className="grid w-full max-w-[420px] grid-cols-2 gap-2">
+            <div className="grid w-full max-w-[320px] grid-cols-2 gap-2 sm:max-w-[420px]">
               {visiblePhotos.map((photo) => {
                 const active = photo.id === selectedPhoto.id;
                 const video = isVideoAsset(photo.imageUrl, photo.photoType);
@@ -221,7 +221,7 @@ export function DressProductGallery({
             <button
               type="button"
               onClick={goNext}
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-line bg-white text-lg text-foreground transition hover:border-accent hover:text-accent"
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-line bg-white text-base text-foreground transition hover:border-accent hover:text-accent sm:h-10 sm:w-10 sm:text-lg"
               aria-label="Foto siguiente"
             >
               →
