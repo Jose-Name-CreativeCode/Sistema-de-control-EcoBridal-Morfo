@@ -42,7 +42,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-transparent">
       <div className="mx-auto flex min-h-screen w-full max-w-[1600px] flex-col gap-4 px-3 py-3 sm:px-4 sm:py-4 lg:flex-row lg:gap-6 lg:px-6 lg:py-6">
-        <aside className="app-shell-panel flex w-full shrink-0 flex-col p-4 text-white lg:sticky lg:top-6 lg:h-[calc(100vh-3rem)] lg:w-[320px] lg:overflow-hidden lg:p-5">
+        <aside className="app-shell-panel flex w-full shrink-0 flex-col p-4 text-white lg:sticky lg:top-3 lg:h-[calc(100vh-1.5rem)] lg:w-[320px] lg:overflow-hidden lg:p-5">
           <div className="border-b border-white/14 pb-4 lg:pb-5">
             <p className="text-xs uppercase tracking-[0.28em] text-white/70">
               EcoBridal Hub
