@@ -18,7 +18,7 @@ export default async function NewModelPage({ searchParams }: NewModelPageProps) 
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-sm uppercase tracking-[0.3em] text-accent">Alta de modelo</p>
-            <h1 className="font-heading text-5xl leading-none text-foreground sm:text-6xl">
+            <h1 className="font-heading text-4xl leading-none text-foreground sm:text-5xl lg:text-6xl">
               Registrar modelo
             </h1>
           </div>
@@ -42,7 +42,7 @@ export default async function NewModelPage({ searchParams }: NewModelPageProps) 
           </div>
         ) : null}
 
-        <form action={createModelAction} className="mt-8 grid gap-4 sm:grid-cols-2">
+        <form action={createModelAction} className="mt-8 grid gap-4 lg:grid-cols-2">
           <label className="grid gap-2 text-sm text-foreground/75">
             Nombre
             <input

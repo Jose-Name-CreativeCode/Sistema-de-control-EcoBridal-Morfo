@@ -161,10 +161,10 @@ export function PoseLibraryManager() {
         <div className="flex flex-col gap-4 border-b border-line pb-6 lg:flex-row lg:items-start lg:justify-between">
           <div className="max-w-3xl">
             <p className="text-sm uppercase tracking-[0.28em] text-accent-strong">Poses</p>
-            <h1 className="mt-3 font-heading text-5xl leading-[0.95] text-foreground sm:text-6xl">
+            <h1 className="mt-3 font-heading text-4xl leading-[0.95] text-foreground sm:text-5xl lg:text-6xl">
               Biblioteca de poses por talla
             </h1>
-            <p className="mt-4 max-w-2xl text-lg leading-8 text-foreground/78">
+            <p className="mt-4 max-w-2xl text-base leading-7 text-foreground/78 sm:text-lg sm:leading-8">
               Guarda referencias de poses de modelos por talla para tenerlas a la mano
               cuando prepares sesiones y pruebas.
             </p>
@@ -178,7 +178,7 @@ export function PoseLibraryManager() {
             <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
               {editingId ? "Editar pose" : "Agregar pose"}
             </p>
-            <h2 className="mt-2 font-heading text-4xl leading-none text-foreground">
+            <h2 className="mt-2 font-heading text-3xl leading-none text-foreground sm:text-4xl">
               Registro visual
             </h2>
           </div>
@@ -253,17 +253,17 @@ export function PoseLibraryManager() {
 
       <section className="app-page">
         <article>
-          <div className="flex items-center justify-between border-b border-line pb-4">
+            <div className="flex flex-col gap-4 border-b border-line pb-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">Visualizar</p>
-              <h2 className="mt-2 font-heading text-4xl leading-none text-foreground">
+              <h2 className="mt-2 font-heading text-3xl leading-none text-foreground sm:text-4xl">
                 Poses guardadas
               </h2>
             </div>
             <select
               value={filterSize}
               onChange={(event) => setFilterSize(event.target.value)}
-              className="app-field w-[180px]"
+              className="app-field w-full sm:w-[180px]"
             >
               <option value="">Todas las tallas</option>
               {sizes.map((entry) => (
@@ -277,7 +277,7 @@ export function PoseLibraryManager() {
           <div className="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
             {filteredPoses.map((pose) => (
               <article key={pose.id} className="app-card overflow-hidden">
-                <div className="flex min-h-[26rem] items-center justify-center overflow-hidden bg-[linear-gradient(180deg,rgba(239,241,250,0.95),rgba(232,227,221,0.92))] p-6">
+                <div className="flex min-h-[20rem] items-center justify-center overflow-hidden bg-[linear-gradient(180deg,rgba(239,241,250,0.95),rgba(232,227,221,0.92))] p-4 sm:min-h-[24rem] sm:p-6">
                   <button
                     type="button"
                     onClick={() => setZoomedPose(pose)}
@@ -286,7 +286,7 @@ export function PoseLibraryManager() {
                     <img
                       src={pose.imageUrl}
                       alt={pose.title}
-                      className="max-h-[22rem] w-full rounded-[1.2rem] object-contain shadow-[0_18px_40px_rgba(15,23,42,0.08)] transition duration-200 hover:scale-[1.01]"
+                      className="max-h-[16rem] w-full rounded-[1.2rem] object-contain shadow-[0_18px_40px_rgba(15,23,42,0.08)] transition duration-200 hover:scale-[1.01] sm:max-h-[22rem]"
                     />
                   </button>
                 </div>
@@ -327,19 +327,19 @@ export function PoseLibraryManager() {
 
       {zoomedPose ? (
         <div
-          className="fixed inset-0 z-[120] flex items-center justify-center bg-black/78 px-6 py-10"
+          className="fixed inset-0 z-[120] flex items-center justify-center bg-black/78 px-3 py-4 sm:px-6 sm:py-10"
           role="dialog"
           aria-modal="true"
           aria-label={`Vista ampliada de ${zoomedPose.title}`}
           onClick={() => setZoomedPose(null)}
         >
           <div
-            className="relative flex max-h-full w-full max-w-6xl flex-col gap-4 rounded-[1.8rem] bg-white p-4 shadow-2xl"
+            className="relative flex max-h-full w-full max-w-6xl flex-col gap-4 rounded-[1.4rem] bg-white p-3 shadow-2xl sm:rounded-[1.8rem] sm:p-4"
             onClick={(event) => event.stopPropagation()}
           >
             <div className="flex items-start justify-between gap-4 border-b border-line pb-4">
               <div>
-                <p className="font-heading text-3xl leading-none text-foreground">
+                <p className="font-heading text-2xl leading-none text-foreground sm:text-3xl">
                   {zoomedPose.title}
                 </p>
                 <p className="mt-2 text-sm text-foreground/68">
@@ -356,13 +356,13 @@ export function PoseLibraryManager() {
               </button>
             </div>
 
-            <div className="flex min-h-[65vh] items-center justify-center overflow-auto rounded-[1.4rem] bg-[linear-gradient(180deg,rgba(239,241,250,0.95),rgba(232,227,221,0.92))] p-6">
-              <div className="flex w-full items-center justify-center gap-4">
+            <div className="flex min-h-[52vh] items-center justify-center overflow-auto rounded-[1.2rem] bg-[linear-gradient(180deg,rgba(239,241,250,0.95),rgba(232,227,221,0.92))] p-3 sm:min-h-[65vh] sm:rounded-[1.4rem] sm:p-6">
+              <div className="flex w-full items-center justify-center gap-2 sm:gap-4">
                 {filteredPoses.length > 1 ? (
                   <button
                     type="button"
                     onClick={handlePrevPose}
-                    className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-line bg-white text-2xl text-foreground transition hover:bg-foreground hover:text-white"
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-line bg-white text-xl text-foreground transition hover:bg-foreground hover:text-white sm:h-12 sm:w-12 sm:text-2xl"
                     aria-label="Ver pose anterior"
                   >
                     ←
@@ -372,14 +372,14 @@ export function PoseLibraryManager() {
                 <img
                   src={zoomedPose.imageUrl}
                   alt={zoomedPose.title}
-                  className="max-h-[75vh] w-full rounded-[1.25rem] object-contain"
+                  className="max-h-[70vh] w-full rounded-[1rem] object-contain sm:max-h-[75vh] sm:rounded-[1.25rem]"
                 />
 
                 {filteredPoses.length > 1 ? (
                   <button
                     type="button"
                     onClick={handleNextPose}
-                    className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-line bg-white text-2xl text-foreground transition hover:bg-foreground hover:text-white"
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-line bg-white text-xl text-foreground transition hover:bg-foreground hover:text-white sm:h-12 sm:w-12 sm:text-2xl"
                     aria-label="Ver pose siguiente"
                   >
                     →

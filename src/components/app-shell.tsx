@@ -2,15 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
 
 const navigation = [
-  { href: "/", label: "Dashboard", note: "Resumen diario" },
-  { href: "/vestidos", label: "Vestidos", note: "Catálogo y filtros" },
-  { href: "/vestidos/nuevo", label: "Nuevo vestido", note: "Alta rápida" },
-  { href: "/modelos", label: "Modelos", note: "Perfiles y tallas" },
-  { href: "/asignaciones", label: "Asignaciones", note: "Sesiones y cruces" },
-  { href: "/poses", label: "Poses", note: "Referencia por talla" },
+  { href: "/", label: "Dashboard" },
+  { href: "/vestidos", label: "Vestidos" },
+  { href: "/vestidos/nuevo", label: "Nuevo vestido" },
+  { href: "/modelos", label: "Modelos" },
+  { href: "/asignaciones", label: "Asignaciones" },
+  { href: "/poses", label: "Poses" },
 ];
 
 function getActiveHref(pathname: string) {
@@ -39,77 +38,48 @@ function isActive(activeHref: string, href: string) {
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const activeHref = getActiveHref(pathname);
-  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-transparent">
-      <div className="mx-auto flex min-h-screen w-full max-w-[1600px] flex-col gap-4 px-3 py-3 sm:px-4 sm:py-4 2xl:flex-row 2xl:gap-6 2xl:px-6 2xl:py-6">
-        <aside className="app-shell-panel sticky top-3 z-40 flex w-full shrink-0 flex-col bg-[rgba(22,22,24,0.98)] p-4 text-white shadow-[0_18px_40px_rgba(0,0,0,0.30)] 2xl:top-3 2xl:h-[calc(100vh-1.5rem)] 2xl:w-[320px] 2xl:overflow-hidden 2xl:bg-white/6 2xl:p-5 2xl:shadow-[0_20px_60px_rgba(0,0,0,0.30)]">
-          <div className="flex items-center justify-between gap-4 border-b border-white/14 pb-4 2xl:block 2xl:pb-5">
-            <div>
-              <p className="text-xs uppercase tracking-[0.28em] text-white/70">
-                EcoBridal Hub
+      <div className="mx-auto flex min-h-screen w-full max-w-[1600px] flex-col gap-4 px-3 py-3 sm:px-4 sm:py-4 xl:px-6 xl:py-6">
+        <aside className="app-shell-panel sticky top-3 z-40 w-full shrink-0 overflow-hidden bg-[linear-gradient(180deg,rgba(17,17,19,0.98),rgba(24,24,27,0.98))] px-3 py-3 text-white shadow-[0_18px_40px_rgba(0,0,0,0.26)] sm:px-4 lg:px-5 lg:py-3.5">
+          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex justify-center lg:min-w-[180px] lg:justify-start">
+              <p className="text-xs font-semibold tracking-[0.32em] text-white/88">
+                ECOBRIDAL
               </p>
-              <h2 className="mt-2 font-heading text-2xl leading-none text-white sm:text-3xl 2xl:mt-3 2xl:text-4xl">
-                Navegación central
-              </h2>
             </div>
 
-            <button
-              type="button"
-              onClick={() => setMenuOpen((current) => !current)}
-              className="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-white/12 bg-white/8 text-xl text-white transition hover:bg-white/12 2xl:hidden"
-              aria-label={menuOpen ? "Cerrar menu" : "Abrir menu"}
-              aria-expanded={menuOpen}
-            >
-              {menuOpen ? "×" : "☰"}
-            </button>
-          </div>
+            <nav className="flex flex-1 items-center justify-center">
+              <div className="flex max-w-full items-center justify-center gap-2 overflow-x-auto pb-1">
+                {navigation.map((item) => {
+                  const active = isActive(activeHref, item.href);
 
-          <div className="hidden 2xl:block">
-            <p className="mt-3 max-w-xl text-sm leading-6 text-white/74 2xl:max-w-none">
-              Entra a cada módulo, captura datos y vuelve aquí cuando necesites
-              cambiar de contexto.
-            </p>
-          </div>
-
-          <nav
-            className={`${menuOpen ? "mt-4 grid" : "hidden"} gap-3 2xl:mt-5 2xl:grid 2xl:flex-1 2xl:content-start 2xl:overflow-y-auto 2xl:pr-1`}
-          >
-            {navigation.map((item) => {
-              const active = isActive(activeHref, item.href);
-
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  onClick={() => setMenuOpen(false)}
-                  className={`rounded-2xl border px-4 py-3 text-left transition 2xl:min-w-0 2xl:py-4 ${
-                    active
-                      ? "border-white/12 bg-white text-foreground shadow-[0_12px_28px_rgba(0,0,0,0.18)]"
-                      : "border-white/10 bg-white/6 text-white hover:border-accent hover:bg-white/10"
-                  }`}
-                >
-                  <div className="flex items-center justify-between gap-3">
-                    <span
-                      className={`text-base font-semibold ${
-                        active ? "text-foreground" : "text-white"
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={`min-w-fit whitespace-nowrap rounded-full border px-4 py-2.5 text-center transition ${
+                        active
+                          ? "border-white/12 bg-white text-foreground shadow-[0_10px_24px_rgba(0,0,0,0.18)]"
+                          : "border-white/10 bg-white/7 text-white hover:border-white/18 hover:bg-white/12"
                       }`}
                     >
-                      {item.label}
-                    </span>
-                  </div>
-                  <p
-                    className={`mt-2 text-sm leading-6 ${
-                      active ? "text-foreground/70" : "text-white/72"
-                    }`}
-                  >
-                    {item.note}
-                  </p>
-                </Link>
-              );
-            })}
-          </nav>
+                      <span
+                        className={`text-sm font-semibold sm:text-[0.95rem] ${
+                          active ? "text-foreground" : "text-white"
+                        }`}
+                      >
+                        {item.label}
+                      </span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </nav>
+
+            <div className="hidden lg:block lg:min-w-[180px]" />
+          </div>
         </aside>
 
         <div className="flex-1">{children}</div>

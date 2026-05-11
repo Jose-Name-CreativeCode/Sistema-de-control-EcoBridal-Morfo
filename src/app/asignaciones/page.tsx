@@ -34,10 +34,10 @@ export default async function AssignmentsPage({ searchParams }: AssignmentsPageP
         <div className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-3xl">
             <p className="text-sm uppercase tracking-[0.28em] text-accent-strong">Módulo 03</p>
-            <h1 className="font-heading text-5xl leading-[0.95] text-foreground sm:text-6xl">
+            <h1 className="font-heading text-4xl leading-[0.95] text-foreground sm:text-5xl lg:text-6xl">
               Asignaciones
             </h1>
-            <p className="mt-4 text-lg leading-8 text-foreground/78">
+            <p className="mt-4 text-base leading-7 text-foreground/78 sm:text-lg sm:leading-8">
               Aquí ves cada vestido con sus modelos sugeridas. Si quieres cambiar algo,
               abre el vestido y edítalo desde su ficha.
             </p>
@@ -62,10 +62,10 @@ export default async function AssignmentsPage({ searchParams }: AssignmentsPageP
       </section>
 
       <section className="app-page">
-        <div className="flex items-center justify-between border-b border-line pb-4">
+        <div className="flex flex-col gap-4 border-b border-line pb-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">Filtros</p>
-            <h2 className="font-heading text-4xl text-foreground">Filtra asignaciones</h2>
+            <h2 className="font-heading text-3xl text-foreground sm:text-4xl">Filtra asignaciones</h2>
           </div>
           <Link href="/asignaciones" className="text-sm font-medium text-accent underline-offset-4 hover:underline">
             Limpiar filtros
@@ -88,7 +88,7 @@ export default async function AssignmentsPage({ searchParams }: AssignmentsPageP
       <section className="app-page">
         <div className="border-b border-line pb-4">
           <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">Resultado</p>
-          <h2 className="mt-2 font-heading text-4xl leading-none text-foreground">
+          <h2 className="mt-2 font-heading text-3xl leading-none text-foreground sm:text-4xl">
             {filteredSuggestions.length} asignaciones sugeridas
           </h2>
         </div>
@@ -101,7 +101,7 @@ export default async function AssignmentsPage({ searchParams }: AssignmentsPageP
                   <div className="flex flex-wrap items-center gap-3">
                     <Link
                       href={`/vestidos/${suggestion.dressId}`}
-                      className="font-heading text-3xl leading-none text-foreground underline-offset-4 hover:text-accent-strong hover:underline"
+                      className="font-heading text-2xl leading-none text-foreground underline-offset-4 hover:text-accent-strong hover:underline sm:text-3xl"
                     >
                       {suggestion.dressName}
                     </Link>

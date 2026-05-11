@@ -81,7 +81,7 @@ export default async function ModelDetailPage({
               Detalle de modelo
             </p>
             <div className="mt-3 flex flex-wrap items-center gap-3">
-              <h1 className="font-heading text-5xl leading-[0.95] text-foreground sm:text-6xl">
+              <h1 className="font-heading text-4xl leading-[0.95] text-foreground sm:text-5xl lg:text-6xl">
                 {model.name}
               </h1>
               {model.instagramHandle ? (
@@ -95,7 +95,7 @@ export default async function ModelDetailPage({
                 </a>
               ) : null}
             </div>
-            <p className="mt-4 text-lg leading-8 text-foreground/75">
+            <p className="mt-4 text-base leading-7 text-foreground/75 sm:text-lg sm:leading-8">
               {model.contactPhone ?? "Teléfono pendiente"} · {model.availability ?? "Disponibilidad pendiente"}
             </p>
           </div>
@@ -137,7 +137,7 @@ export default async function ModelDetailPage({
           <section className="app-page">
             <div className="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
               <article className="app-card overflow-hidden p-0">
-                <div className="h-[420px] overflow-hidden bg-surface-strong">
+                <div className="h-[300px] overflow-hidden bg-surface-strong sm:h-[360px] lg:h-[420px]">
                   {model.photoUrl ? (
                     <img
                       src={model.photoUrl}
@@ -157,7 +157,7 @@ export default async function ModelDetailPage({
                   <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
                     Resumen de la modelo
                   </p>
-                  <h2 className="font-heading text-4xl text-foreground">Datos principales</h2>
+                  <h2 className="font-heading text-3xl text-foreground sm:text-4xl">Datos principales</h2>
                 </div>
 
                 <div className="mt-6 grid gap-4 sm:grid-cols-2">
@@ -262,7 +262,7 @@ export default async function ModelDetailPage({
               <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
                 Sesiones y vestidos
               </p>
-              <h2 className="mt-2 font-heading text-4xl text-foreground">Resumen de trabajo</h2>
+              <h2 className="mt-2 font-heading text-3xl text-foreground sm:text-4xl">Resumen de trabajo</h2>
             </div>
 
             <div className="mt-6 grid gap-4">
@@ -300,7 +300,7 @@ export default async function ModelDetailPage({
             <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
               Editar modelo
             </p>
-            <h2 className="font-heading text-4xl text-foreground">Configuración de la ficha</h2>
+            <h2 className="font-heading text-3xl text-foreground sm:text-4xl">Configuración de la ficha</h2>
           </div>
 
           <form action={updateModelAction} className="mt-6 grid gap-4 sm:grid-cols-2">

@@ -11,10 +11,10 @@ export default async function Home() {
         <div className="flex flex-col gap-4 border-b border-line pb-6 lg:flex-row lg:items-start lg:justify-between">
           <div className="max-w-3xl">
             <p className="text-sm uppercase tracking-[0.28em] text-accent-strong">Inicio</p>
-            <h1 className="mt-3 font-heading text-5xl leading-[0.95] text-foreground sm:text-6xl">
+            <h1 className="mt-3 font-heading text-4xl leading-[0.95] text-foreground sm:text-5xl lg:text-6xl">
               Panel simple del estudio
             </h1>
-            <p className="mt-4 max-w-2xl text-lg leading-8 text-foreground/78">
+            <p className="mt-4 max-w-2xl text-base leading-7 text-foreground/78 sm:text-lg sm:leading-8">
               Aquí solo ves lo importante y cada bloque te lleva directo a donde sí se
               modifica la información.
             </p>
@@ -31,7 +31,7 @@ export default async function Home() {
               <p className="text-sm uppercase tracking-[0.2em] text-foreground/55">
                 {card.label}
               </p>
-              <p className="mt-3 font-heading text-5xl leading-none text-accent-strong">
+              <p className="mt-3 font-heading text-4xl leading-none text-accent-strong sm:text-5xl">
                 {card.value}
               </p>
               <p className="mt-3 text-sm leading-7 text-foreground/72">{card.note}</p>
@@ -46,14 +46,14 @@ export default async function Home() {
             <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
               Accesos directos
             </p>
-            <h2 className="mt-2 font-heading text-4xl leading-none text-foreground">
+            <h2 className="mt-2 font-heading text-3xl leading-none text-foreground sm:text-4xl">
               Qué quieres hacer
             </h2>
           </div>
 
           <div className="mt-6 grid gap-4 sm:grid-cols-2">
             <Link href="/vestidos" className="app-card-soft p-5 transition hover:border-accent">
-              <p className="font-heading text-2xl leading-none">Ver vestidos</p>
+              <p className="font-heading text-xl leading-none sm:text-2xl">Ver vestidos</p>
               <p className="mt-3 text-sm leading-7 text-foreground/72">
                 Buscar, filtrar y abrir cualquier vestido del catálogo.
               </p>
@@ -63,14 +63,14 @@ export default async function Home() {
               href="/vestidos/nuevo"
               className="app-card-soft p-5 transition hover:border-accent"
             >
-              <p className="font-heading text-2xl leading-none">Registrar vestido</p>
+              <p className="font-heading text-xl leading-none sm:text-2xl">Registrar vestido</p>
               <p className="mt-3 text-sm leading-7 text-foreground/72">
                 Dar de alta un vestido nuevo con sus datos básicos.
               </p>
             </Link>
 
             <Link href="/modelos" className="app-card-soft p-5 transition hover:border-accent">
-              <p className="font-heading text-2xl leading-none">Ver modelos</p>
+              <p className="font-heading text-xl leading-none sm:text-2xl">Ver modelos</p>
               <p className="mt-3 text-sm leading-7 text-foreground/72">
                 Revisar perfiles, tallas y disponibilidad de modelos.
               </p>
@@ -80,14 +80,14 @@ export default async function Home() {
               href="/asignaciones"
               className="app-card-soft p-5 transition hover:border-accent"
             >
-              <p className="font-heading text-2xl leading-none">Revisar asignaciones</p>
+              <p className="font-heading text-xl leading-none sm:text-2xl">Revisar asignaciones</p>
               <p className="mt-3 text-sm leading-7 text-foreground/72">
                 Ver cruces de vestido y modelo para sesiones.
               </p>
             </Link>
 
             <Link href="/poses" className="app-card-soft p-5 transition hover:border-accent">
-              <p className="font-heading text-2xl leading-none">Ver poses</p>
+              <p className="font-heading text-xl leading-none sm:text-2xl">Ver poses</p>
               <p className="mt-3 text-sm leading-7 text-foreground/72">
                 Visualizar referencias de poses por talla de modelo.
               </p>
@@ -100,7 +100,7 @@ export default async function Home() {
             <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
               Cómo usarlo
             </p>
-            <h2 className="mt-2 font-heading text-4xl leading-none text-foreground">
+            <h2 className="mt-2 font-heading text-3xl leading-none text-foreground sm:text-4xl">
               Flujo corto
             </h2>
           </div>

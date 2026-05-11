@@ -99,7 +99,7 @@ export function DashboardReminders() {
     <section className="app-page">
       <div className="border-b border-line pb-4">
         <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">Recordatorios</p>
-        <h2 className="mt-2 font-heading text-4xl leading-none text-foreground">
+        <h2 className="mt-2 font-heading text-3xl leading-none text-foreground sm:text-4xl">
           Agenda rápida
         </h2>
       </div>
@@ -152,7 +152,7 @@ export function DashboardReminders() {
         </article>
 
         <article className="rounded-[1.6rem] border border-line bg-surface p-5">
-          <div className="flex items-center justify-between gap-3 border-b border-line pb-4">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line pb-4">
             <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
               Tus recordatorios
             </p>
