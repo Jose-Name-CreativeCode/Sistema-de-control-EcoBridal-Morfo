@@ -42,10 +42,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-transparent">
       <div className="mx-auto flex min-h-screen w-full max-w-[1600px] flex-col gap-4 px-3 py-3 sm:px-4 sm:py-4 xl:px-6 xl:py-6">
-        <aside className="app-shell-panel sticky top-3 z-40 w-full shrink-0 overflow-hidden bg-[linear-gradient(180deg,rgba(17,17,19,0.98),rgba(24,24,27,0.98))] px-3 py-3 text-white shadow-[0_18px_40px_rgba(0,0,0,0.26)] sm:px-4 lg:px-5 lg:py-3.5">
+        <aside className="app-shell-panel sticky top-3 z-40 w-full shrink-0 overflow-hidden bg-[linear-gradient(180deg,rgba(36,39,45,0.98),rgba(31,34,40,0.98))] px-3 py-3 text-white shadow-[0_18px_40px_rgba(0,0,0,0.2)] sm:px-4 lg:px-5 lg:py-3.5">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex justify-center lg:min-w-[180px] lg:justify-start">
-              <p className="text-xs font-semibold tracking-[0.32em] text-white/88">
+              <p className="text-xs font-semibold tracking-[0.32em] text-white/68">
                 ECOBRIDAL
               </p>
             </div>
@@ -61,13 +61,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                       href={item.href}
                       className={`min-w-fit whitespace-nowrap rounded-full border px-4 py-2.5 text-center transition ${
                         active
-                          ? "border-white/12 bg-white text-foreground shadow-[0_10px_24px_rgba(0,0,0,0.18)]"
-                          : "border-white/10 bg-white/7 text-white hover:border-white/18 hover:bg-white/12"
+                          ? "border-[rgba(87,131,208,0.22)] bg-[rgba(250,248,244,0.98)] text-foreground shadow-[0_10px_24px_rgba(0,0,0,0.12)]"
+                          : "border-white/8 bg-white/5 text-white/86 hover:border-[rgba(88,190,193,0.24)] hover:bg-white/9"
                       }`}
                     >
                       <span
                         className={`text-sm font-semibold sm:text-[0.95rem] ${
-                          active ? "text-foreground" : "text-white"
+                          active ? "text-foreground" : "text-white/86"
                         }`}
                       >
                         {item.label}
