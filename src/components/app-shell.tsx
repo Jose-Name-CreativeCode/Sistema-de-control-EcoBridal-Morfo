@@ -42,7 +42,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-transparent">
       <div className="mx-auto flex min-h-screen w-full max-w-[1600px] flex-col gap-4 px-3 py-3 sm:px-4 sm:py-4 2xl:flex-row 2xl:gap-6 2xl:px-6 2xl:py-6">
-        <aside className="app-shell-panel flex w-full shrink-0 flex-col p-4 text-white 2xl:sticky 2xl:top-3 2xl:h-[calc(100vh-1.5rem)] 2xl:w-[320px] 2xl:overflow-hidden 2xl:p-5">
+        <aside className="app-shell-panel sticky top-3 z-40 flex w-full shrink-0 flex-col p-4 text-white 2xl:top-3 2xl:h-[calc(100vh-1.5rem)] 2xl:w-[320px] 2xl:overflow-hidden 2xl:p-5">
           <div className="border-b border-white/14 pb-4 2xl:pb-5">
             <p className="text-xs uppercase tracking-[0.28em] text-white/70">
               EcoBridal Hub
@@ -56,7 +56,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </p>
           </div>
 
-          <nav className="mt-4 flex gap-3 overflow-x-auto pb-1 2xl:mt-5 2xl:grid 2xl:flex-1 2xl:content-start 2xl:overflow-y-auto 2xl:pb-0 2xl:pr-1">
+          <nav className="mt-4 flex justify-center gap-3 overflow-x-auto pb-1 2xl:mt-5 2xl:grid 2xl:flex-1 2xl:content-start 2xl:overflow-y-auto 2xl:justify-start 2xl:pb-0 2xl:pr-1">
             {navigation.map((item) => {
               const active = isActive(activeHref, item.href);
 
@@ -64,7 +64,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <Link
                   key={item.href}
                   href={item.href}
-                  className={`min-w-[176px] rounded-2xl border px-4 py-3 transition 2xl:min-w-0 2xl:py-4 ${
+                  className={`min-w-[176px] rounded-2xl border px-4 py-3 text-center transition 2xl:min-w-0 2xl:py-4 2xl:text-left ${
                     active
                       ? "border-white/12 bg-white text-foreground shadow-[0_12px_28px_rgba(0,0,0,0.18)]"
                       : "border-white/10 bg-white/6 text-white hover:border-accent hover:bg-white/10"
