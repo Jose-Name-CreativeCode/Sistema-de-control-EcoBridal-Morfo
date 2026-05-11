@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 type ReminderItem = {
   id: string;
@@ -49,6 +49,17 @@ export function DashboardReminders() {
   const [title, setTitle] = useState("");
   const [date, setDate] = useState("");
   const [notes, setNotes] = useState("");
+  const dateInputRef = useRef<HTMLInputElement>(null);
+
+  function openDatePicker() {
+    const input = dateInputRef.current;
+    if (!input) {
+      return;
+    }
+
+    input.focus();
+    input.showPicker?.();
+  }
 
   function resetForm() {
     setEditingId(null);
@@ -120,9 +131,12 @@ export function DashboardReminders() {
             <label className="grid gap-2 text-sm text-foreground/75">
               Fecha
               <input
+                ref={dateInputRef}
                 type="date"
                 value={date}
                 onChange={(event) => setDate(event.target.value)}
+                onClick={openDatePicker}
+                onFocus={openDatePicker}
                 className="app-field"
               />
             </label>
