@@ -154,7 +154,7 @@ export default async function ModelsPage({ searchParams }: ModelsPageProps) {
                     <img
                       src={model.photoUrl}
                       alt={model.name}
-                      className="h-full w-full object-cover object-center transition duration-300 hover:scale-[1.04]"
+                      className="h-full w-full object-cover object-[center_20%] transition duration-300 hover:scale-[1.04]"
                     />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center bg-[linear-gradient(135deg,#eef3ff,#dce6fb)] px-8 text-center">

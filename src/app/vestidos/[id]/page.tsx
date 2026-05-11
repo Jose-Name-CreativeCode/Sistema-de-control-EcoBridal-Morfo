@@ -229,26 +229,28 @@ export default async function DressDetailPage({
         </div>
       </section>
 
-      <section className="app-page">
-        <div className="border-b border-line pb-4">
-          <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
-            Galería del vestido
-          </p>
-          <h2 className="mt-2 font-heading text-3xl text-foreground sm:text-4xl">Vista tipo catálogo</h2>
-        </div>
-
-        <div className="mt-6">
-          <DressProductGallery
-            dressName={dress.name}
-            photos={dress.photos}
-            photoTypeLabels={photoTypeLabels}
-          />
-        </div>
-      </section>
-
       {!isEditing ? (
         <>
-          <section className="mt-8 grid gap-6 lg:grid-cols-[1fr_1fr]">
+          <section className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+            <article className="app-page">
+              <div className="border-b border-line pb-4">
+                <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
+                  Galería del vestido
+                </p>
+                <h2 className="mt-2 font-heading text-3xl text-foreground sm:text-4xl">
+                  Vista tipo catálogo
+                </h2>
+              </div>
+
+              <div className="mt-6">
+                <DressProductGallery
+                  dressName={dress.name}
+                  photos={dress.photos}
+                  photoTypeLabels={photoTypeLabels}
+                />
+              </div>
+            </article>
+
             <article className="rounded-[2rem] border border-line bg-white/80 p-6">
               <div className="border-b border-line pb-4">
                 <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
@@ -303,22 +305,20 @@ export default async function DressDetailPage({
                   </p>
                 </div>
               </div>
-            </article>
 
-            <article className="rounded-[2rem] border border-line bg-white/80 p-6">
-              <div className="border-b border-line pb-4">
+              <div className="mt-6 border-t border-line pt-6">
                 <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
                   Modelos
                 </p>
-                <h2 className="font-heading text-4xl text-foreground">Modelos compatibles</h2>
-              </div>
+                <h3 className="mt-2 font-heading text-3xl text-foreground sm:text-4xl">
+                  Modelos compatibles
+                </h3>
 
-              <div className="mt-6 grid gap-4">
-                <div className="rounded-[1.35rem] border border-line bg-surface px-4 py-4">
+                <div className="mt-4 min-h-[22rem] rounded-[1.35rem] border border-line bg-surface px-4 py-4">
                   <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">
-                    Modelos compatibles
+                    Compatibilidad y sesión
                   </p>
-                  <div className="mt-3 grid max-h-56 gap-3 overflow-y-auto pr-1">
+                  <div className="mt-3 grid max-h-[17rem] gap-3 overflow-y-auto pr-1">
                     {modelOptions.compatibleModels.length > 0 ? (
                       modelOptions.compatibleModels.map((model) => (
                         <div
@@ -352,8 +352,8 @@ export default async function DressDetailPage({
             </article>
           </section>
 
-          <section className="mt-8 grid gap-6 lg:grid-cols-[1fr_1fr]">
-            <article className="rounded-[2rem] border border-line bg-white/80 p-6">
+          <section className="mt-8 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+            <article className="app-page">
               <div className="border-b border-line pb-4">
                 <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
                   Carpetas externas
@@ -489,6 +489,23 @@ export default async function DressDetailPage({
         </>
       ) : (
         <>
+      <section className="app-page">
+        <div className="border-b border-line pb-4">
+          <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
+            Galería del vestido
+          </p>
+          <h2 className="mt-2 font-heading text-3xl text-foreground sm:text-4xl">Vista tipo catálogo</h2>
+        </div>
+
+        <div className="mt-6">
+          <DressProductGallery
+            dressName={dress.name}
+            photos={dress.photos}
+            photoTypeLabels={photoTypeLabels}
+          />
+        </div>
+      </section>
+
       <section className="rounded-[2rem] border border-line bg-white/80 p-6">
         <div className="flex items-center justify-between border-b border-line pb-4">
           <div>
