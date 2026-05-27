@@ -23,12 +23,8 @@ export function ModelPhotoZoom({ photoUrl, modelName }: ModelPhotoZoomProps) {
         const y = ((event.clientY - rect.top) / rect.height) * 100;
         setZoom({ x, y, active: true });
       }}
-      onMouseEnter={() =>
-        setZoom((current) => ({ ...current, active: true }))
-      }
-      onMouseLeave={() =>
-        setZoom((current) => ({ ...current, active: false }))
-      }
+      onMouseEnter={() => setZoom((current) => ({ ...current, active: true }))}
+      onMouseLeave={() => setZoom((current) => ({ ...current, active: false }))}
     >
       <div
         className="absolute inset-0 scale-110 bg-cover bg-center opacity-30 blur-2xl"

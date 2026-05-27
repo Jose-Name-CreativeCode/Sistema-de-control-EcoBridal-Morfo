@@ -513,18 +513,47 @@ export async function getDressModelOptions(dressId: string, dressSize: string): 
       }),
     ]);
 
-    return {
-      databaseReady: true,
-    compatibleModels: models.map((model) => ({
-      id: model.id,
-      name: model.name,
-      photoUrl: model.photoUrl,
-      instagramHandle: model.instagramHandle,
+    const compatibleModelsMap = new Map<string, DressCompatibleModel>();
+
+    for (const model of models) {
+      compatibleModelsMap.set(model.id, {
+        id: model.id,
+        name: model.name,
+        photoUrl: model.photoUrl,
+        instagramHandle: model.instagramHandle,
         hourlyRate: model.hourlyRate ? Number(model.hourlyRate) : null,
         perDressRate: model.perDressRate ? Number(model.perDressRate) : null,
         availability: model.availability,
         sizes: model.sizes.map((size) => size.size),
-      })),
+      });
+    }
+
+    for (const assignment of assignments) {
+      if (!assignment.model || compatibleModelsMap.has(assignment.model.id)) {
+        continue;
+      }
+
+      compatibleModelsMap.set(assignment.model.id, {
+        id: assignment.model.id,
+        name: assignment.model.name,
+        photoUrl: assignment.model.photoUrl,
+        instagramHandle: assignment.model.instagramHandle,
+        hourlyRate: assignment.model.hourlyRate
+          ? Number(assignment.model.hourlyRate)
+          : null,
+        perDressRate: assignment.model.perDressRate
+          ? Number(assignment.model.perDressRate)
+          : null,
+        availability: assignment.model.availability,
+        sizes: assignment.model.sizes.map((size) => size.size),
+      });
+    }
+
+    return {
+      databaseReady: true,
+      compatibleModels: Array.from(compatibleModelsMap.values()).sort((left, right) =>
+        left.name.localeCompare(right.name, "es-MX"),
+      ),
       assignments: assignments.map((assignment) => ({
         id: assignment.id,
         assignmentStatus: assignment.assignmentStatus,

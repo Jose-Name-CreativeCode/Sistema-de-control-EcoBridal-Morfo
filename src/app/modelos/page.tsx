@@ -66,9 +66,6 @@ export default async function ModelsPage({ searchParams }: ModelsPageProps) {
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row">
-            <Link href="/asignaciones" className="app-button-secondary">
-              Ver asignaciones
-            </Link>
             <Link href="/modelos/nuevo" className="app-button-primary">
               Registrar modelo
             </Link>

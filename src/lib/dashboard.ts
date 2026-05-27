@@ -184,7 +184,7 @@ function buildDemoDashboardData(): DashboardData {
         modelName: item.model?.name ?? "Modelo pendiente",
         scheduledDate: item.scheduledDate,
         status: item.assignmentStatus,
-        href: dress ? `/vestidos/${dress.id}` : "/asignaciones",
+        href: dress ? `/vestidos/${dress.id}` : "/vestidos",
       };
     }),
   );

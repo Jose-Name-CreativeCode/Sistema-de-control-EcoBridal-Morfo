@@ -132,7 +132,7 @@ export default async function ModelDetailPage({
 
         {query?.demo === "1" ? (
           <div className="mt-6 rounded-[1.5rem] border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-900">
-            La acción no se guardó porque el proyecto sigue en modo demo.
+            `` La acción no se guardó porque el proyecto sigue en modo demo.
           </div>
         ) : null}
       </section>

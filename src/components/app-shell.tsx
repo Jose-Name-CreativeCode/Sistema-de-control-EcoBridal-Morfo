@@ -8,7 +8,6 @@ const navigation = [
   { href: "/vestidos", label: "Vestidos" },
   { href: "/vestidos/nuevo", label: "Nuevo vestido" },
   { href: "/modelos", label: "Modelos" },
-  { href: "/asignaciones", label: "Asignaciones" },
   { href: "/poses", label: "Poses" },
 ];
 

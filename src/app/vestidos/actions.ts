@@ -127,18 +127,63 @@ export async function addDressPhotoFolderAction(formData: FormData) {
   const folderUrl = String(formData.get("folderUrl") ?? "").trim();
   const versionLabel = parseOptionalString(formData.get("versionLabel"));
   const notes = parseOptionalString(formData.get("notes"));
+  const folderId = parseOptionalString(formData.get("folderId"));
 
-  await prisma.dressPhotoFolder.create({
-    data: {
-      dressId,
-      provider: provider as "OUTLOOK_ONEDRIVE" | "SHAREPOINT" | "GOOGLE_DRIVE" | "OTHER",
-      folderUrl,
-      versionLabel,
-      notes,
-    },
+  await prisma.$transaction(async (tx) => {
+    const existingFolder = folderId
+      ? await tx.dressPhotoFolder.findFirst({
+          where: {
+            id: folderId,
+            dressId,
+          },
+        })
+      : await tx.dressPhotoFolder.findFirst({
+          where: { dressId },
+          orderBy: {
+            createdAt: "desc",
+          },
+        });
+
+    const savedFolder = existingFolder
+      ? await tx.dressPhotoFolder.update({
+          where: { id: existingFolder.id },
+          data: {
+            provider: provider as
+              | "OUTLOOK_ONEDRIVE"
+              | "SHAREPOINT"
+              | "GOOGLE_DRIVE"
+              | "OTHER",
+            folderUrl,
+            versionLabel,
+            notes,
+          },
+        })
+      : await tx.dressPhotoFolder.create({
+          data: {
+            dressId,
+            provider: provider as
+              | "OUTLOOK_ONEDRIVE"
+              | "SHAREPOINT"
+              | "GOOGLE_DRIVE"
+              | "OTHER",
+            folderUrl,
+            versionLabel,
+            notes,
+          },
+        });
+
+    await tx.dressPhotoFolder.deleteMany({
+      where: {
+        dressId,
+        id: {
+          not: savedFolder.id,
+        },
+      },
+    });
   });
 
   revalidatePath(`/vestidos/${dressId}`);
+  revalidatePath("/vestidos");
   redirect(`/vestidos/${dressId}?folderSaved=1`);
 }
 
@@ -154,16 +199,58 @@ export async function addDressInstagramPostAction(formData: FormData) {
   const accountName = parseOptionalString(formData.get("accountName"));
   const captionNotes = parseOptionalString(formData.get("captionNotes"));
   const publishedAtValue = String(formData.get("publishedAt") ?? "").trim();
+  const instagramPostId = parseOptionalString(formData.get("instagramPostId"));
 
-  await prisma.dressInstagramPost.create({
-    data: {
-      dressId,
-      postType: postType as "POST" | "REEL" | "STORY" | "CAROUSEL",
-      instagramUrl,
-      accountName,
-      captionNotes,
-      publishedAt: publishedAtValue ? new Date(publishedAtValue) : null,
-    },
+  await prisma.$transaction(async (tx) => {
+    const existingPost = instagramPostId
+      ? await tx.dressInstagramPost.findFirst({
+          where: {
+            id: instagramPostId,
+            dressId,
+          },
+        })
+      : await tx.dressInstagramPost.findFirst({
+          where: { dressId },
+          orderBy: [
+            {
+              publishedAt: "desc",
+            },
+            {
+              createdAt: "desc",
+            },
+          ],
+        });
+
+    const savedPost = existingPost
+      ? await tx.dressInstagramPost.update({
+          where: { id: existingPost.id },
+          data: {
+            postType: postType as "POST" | "REEL" | "STORY" | "CAROUSEL",
+            instagramUrl,
+            accountName,
+            captionNotes,
+            publishedAt: publishedAtValue ? new Date(publishedAtValue) : null,
+          },
+        })
+      : await tx.dressInstagramPost.create({
+          data: {
+            dressId,
+            postType: postType as "POST" | "REEL" | "STORY" | "CAROUSEL",
+            instagramUrl,
+            accountName,
+            captionNotes,
+            publishedAt: publishedAtValue ? new Date(publishedAtValue) : null,
+          },
+        });
+
+    await tx.dressInstagramPost.deleteMany({
+      where: {
+        dressId,
+        id: {
+          not: savedPost.id,
+        },
+      },
+    });
   });
 
   revalidatePath(`/vestidos/${dressId}`);
@@ -385,6 +472,9 @@ export async function assignModelToDressAction(formData: FormData) {
       modelId: {
         in: modelIds,
       },
+      assignmentStatus: {
+        in: ["SUGGESTED", "CONFIRMED"],
+      },
     },
     select: {
       modelId: true,
@@ -421,8 +511,36 @@ export async function assignModelToDressAction(formData: FormData) {
 
   revalidatePath(`/vestidos/${dressId}`);
   revalidatePath("/vestidos");
-  revalidatePath("/asignaciones");
   redirect(`/vestidos/${dressId}?assignmentSaved=1`);
+}
+
+export async function removeDressAssignmentAction(formData: FormData) {
+  const dressId = String(formData.get("dressId") ?? "").trim();
+  const assignmentId = String(formData.get("assignmentId") ?? "").trim();
+
+  if (!isDatabaseConfigured()) {
+    redirect(`/vestidos/${dressId}?demo=1`);
+  }
+
+  const assignment = await prisma.dressAssignment.findUnique({
+    where: { id: assignmentId },
+    select: {
+      id: true,
+      dressId: true,
+    },
+  });
+
+  if (!assignment || assignment.dressId !== dressId) {
+    redirect(`/vestidos/${dressId}?demo=1`);
+  }
+
+  await prisma.dressAssignment.delete({
+    where: { id: assignmentId },
+  });
+
+  revalidatePath(`/vestidos/${dressId}`);
+  revalidatePath("/vestidos");
+  redirect(`/vestidos/${dressId}?assignmentRemoved=1&edit=1`);
 }
 
 export async function updateDressBasicsAction(formData: FormData) {

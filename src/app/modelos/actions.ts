@@ -76,7 +76,6 @@ export async function createModelAction(formData: FormData) {
   });
 
   revalidatePath("/modelos");
-  revalidatePath("/asignaciones");
   redirect("/modelos?created=1");
 }
 
@@ -132,6 +131,5 @@ export async function updateModelAction(formData: FormData) {
 
   revalidatePath("/modelos");
   revalidatePath(`/modelos/${modelId}`);
-  revalidatePath("/asignaciones");
   redirect(`/modelos/${modelId}?saved=1`);
 }
