@@ -65,7 +65,9 @@ export default async function NewDressPage({
         ) : null}
 
         {params?.missing === "1" ? (
-          <div className="mt-6 rounded-2xl border border-support-coral/30 bg-support-coral/10 px-5 py-4 text-sm text-foreground"></div>
+          <div className="mt-6 rounded-2xl border border-support-coral/30 bg-support-coral/10 px-5 py-4 text-sm text-foreground">
+            El nombre y la talla del vestido son obligatorios para guardarlo.
+          </div>
         ) : null}
 
         <form

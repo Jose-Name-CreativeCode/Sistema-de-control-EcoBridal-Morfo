@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { updateModelAction } from "@/app/modelos/actions";
-import { getModelDetailData } from "@/lib/models";
+import { deleteModelAction, updateModelAction } from "@/app/modelos/actions";
+import { assignmentStatusLabels, getModelDetailData } from "@/lib/models";
 import { ModelPhotoZoom } from "@/components/model-photo-zoom";
 
 type ModelDetailPageProps = {
@@ -31,23 +31,6 @@ function buildInstagramUrl(handle: string) {
   return `https://instagram.com/${cleanHandle}`;
 }
 
-function getFolderProviderLabel(
-  provider: "OUTLOOK_ONEDRIVE" | "SHAREPOINT" | "GOOGLE_DRIVE" | "OTHER" | null,
-) {
-  switch (provider) {
-    case "OUTLOOK_ONEDRIVE":
-      return "OneDrive";
-    case "SHAREPOINT":
-      return "SharePoint";
-    case "GOOGLE_DRIVE":
-      return "Google Drive";
-    case "OTHER":
-      return "Otro";
-    default:
-      return "Carpeta";
-  }
-}
-
 function formatDate(value: Date | null) {
   if (!value) return "Sin fecha";
 
@@ -56,6 +39,36 @@ function formatDate(value: Date | null) {
     month: "short",
     year: "numeric",
   }).format(value);
+}
+
+function getRateCards(model: {
+  perDressRate: number | null;
+  hourlyRate: number | null;
+}) {
+  const cards: Array<{ label: string; value: string }> = [];
+
+  if (model.perDressRate !== null) {
+    cards.push({
+      label: "Por vestido",
+      value: formatCurrency(model.perDressRate),
+    });
+  }
+
+  if (model.hourlyRate !== null) {
+    cards.push({
+      label: "Por hora",
+      value: formatCurrency(model.hourlyRate),
+    });
+  }
+
+  if (cards.length === 0) {
+    cards.push({
+      label: "Tarifa",
+      value: "Pendiente",
+    });
+  }
+
+  return cards;
 }
 
 export default async function ModelDetailPage({
@@ -72,6 +85,7 @@ export default async function ModelDetailPage({
 
   const { model } = data;
   const isEditing = query?.edit === "1";
+  const rateCards = getRateCards(model);
 
   return (
     <main className="flex w-full flex-1 flex-col gap-6">
@@ -115,6 +129,17 @@ export default async function ModelDetailPage({
             >
               {isEditing ? "Ver resumen" : "Editar información"}
             </Link>
+            {!isEditing ? (
+              <form action={deleteModelAction}>
+                <input type="hidden" name="modelId" value={model.id} />
+                <button
+                  type="submit"
+                  className="w-full rounded-full border border-support-coral/35 bg-support-coral/10 px-5 py-3 text-sm font-medium text-support-coral transition hover:border-support-coral hover:bg-support-coral hover:text-white sm:w-auto"
+                >
+                  Eliminar modelo
+                </button>
+              </form>
+            ) : null}
           </div>
         </div>
 
@@ -126,13 +151,13 @@ export default async function ModelDetailPage({
 
         {query?.missing === "1" ? (
           <div className="mt-6 rounded-[1.5rem] border border-support-coral/30 bg-support-coral/10 px-5 py-4 text-sm text-foreground">
-            El nombre es obligatorio para guardar la modelo.
+            El nombre es obligatorio para guardar la información de la modelo.
           </div>
         ) : null}
 
         {query?.demo === "1" ? (
           <div className="mt-6 rounded-[1.5rem] border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-900">
-            `` La acción no se guardó porque el proyecto sigue en modo demo.
+            La acción no se guardó porque el proyecto sigue en modo demo.
           </div>
         ) : null}
       </section>
@@ -142,7 +167,7 @@ export default async function ModelDetailPage({
           <section className="app-page">
             <div className="grid gap-6 lg:grid-cols-[1.35fr_0.9fr] items-stretch">
               <article className="app-card overflow-hidden p-0 h-full">
-                <div className="h-[800px] overflow-hidden bg-surface-strong">
+                <div className="h-[26rem] overflow-hidden bg-surface-strong sm:h-[38rem] lg:h-[800px]">
                   {model.photoUrl ? (
                     <ModelPhotoZoom
                       photoUrl={model.photoUrl}
@@ -204,22 +229,19 @@ export default async function ModelDetailPage({
                       {model.availability ?? "Pendiente"}
                     </p>
                   </div>
-                  <div className="rounded-[1.35rem] border border-line bg-surface px-4 py-4">
-                    <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">
-                      Por vestido
-                    </p>
-                    <p className="mt-2 text-lg font-medium text-foreground">
-                      {formatCurrency(model.perDressRate)}
-                    </p>
-                  </div>
-                  <div className="rounded-[1.35rem] border border-line bg-surface px-4 py-4">
-                    <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">
-                      Por hora
-                    </p>
-                    <p className="mt-2 text-lg font-medium text-foreground">
-                      {formatCurrency(model.hourlyRate)}
-                    </p>
-                  </div>
+                  {rateCards.map((card) => (
+                    <div
+                      key={card.label}
+                      className="rounded-[1.35rem] border border-line bg-surface px-4 py-4"
+                    >
+                      <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">
+                        {card.label}
+                      </p>
+                      <p className="mt-2 text-lg font-medium text-foreground">
+                        {card.value}
+                      </p>
+                    </div>
+                  ))}
                   <div className="rounded-[1.35rem] border border-line bg-surface px-4 py-4 sm:col-span-2">
                     <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">
                       Tallas
@@ -255,7 +277,7 @@ export default async function ModelDetailPage({
                           rel="noopener noreferrer"
                           className="app-button-secondary"
                         >
-                          Abrir {getFolderProviderLabel(model.folderProvider)}
+                          Abrir carpeta
                         </a>
                       ) : null}
                       {model.instagramPostUrl ? (
@@ -301,7 +323,7 @@ export default async function ModelDetailPage({
                       {assignment.dress?.name ?? "Vestido sin referencia"}
                     </p>
                     <span className="rounded-full bg-stone-200 px-3 py-1 text-xs text-stone-700">
-                      {assignment.assignmentStatus}
+                      {assignmentStatusLabels[assignment.assignmentStatus]}
                     </span>
                   </div>
                   <div className="mt-3 grid gap-1 text-sm leading-7 text-foreground/72">
@@ -436,7 +458,7 @@ export default async function ModelDetailPage({
 
             <div className="col-span-full flex flex-col gap-3 sm:flex-row">
               <button type="submit" className="app-button-primary">
-                Guardar información
+                Guardar datos de la modelo
               </button>
               <Link
                 href={`/modelos/${model.id}`}

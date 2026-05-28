@@ -1,5 +1,16 @@
+import Link from "next/link";
 import { DashboardReminders } from "@/components/dashboard-reminders";
 import { getDashboardData } from "@/lib/dashboard";
+
+function formatDate(value: Date | null) {
+  if (!value) return "Sin fecha";
+
+  return new Intl.DateTimeFormat("es-MX", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  }).format(value);
+}
 
 export default async function Home() {
   const dashboard = await getDashboardData();
@@ -18,15 +29,11 @@ export default async function Home() {
               modifica la información.
             </p>
           </div>
-
-          <div className="app-badge border border-line bg-white text-accent-strong">
-            {dashboard.databaseReady ? "Base real activa" : "Modo demo"}
-          </div>
         </div>
 
-        <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {dashboard.metrics.map((card) => (
-            <article key={card.label} className="app-card p-5">
+            <article key={card.label} className="app-card min-h-[10.5rem] p-5">
               <p className="text-sm uppercase tracking-[0.2em] text-foreground/55">
                 {card.label}
               </p>
@@ -36,6 +43,70 @@ export default async function Home() {
               <p className="mt-3 text-sm leading-7 text-foreground/72">{card.note}</p>
             </article>
           ))}
+        </div>
+
+        <div className="mt-8 grid gap-6 lg:grid-cols-2">
+          <article className="app-card p-5">
+            <div className="border-b border-line pb-4">
+              <p className="text-sm uppercase tracking-[0.2em] text-foreground/55">
+                Citas programadas
+              </p>
+              <h2 className="mt-2 font-heading text-3xl text-foreground sm:text-4xl">
+                Modelo y vestido
+              </h2>
+            </div>
+
+            <div className="mt-5 grid gap-3">
+              {dashboard.upcomingAssignments.length > 0 ? (
+                dashboard.upcomingAssignments.map((assignment) => (
+                  <Link
+                    key={`${assignment.dressId}-${assignment.modelName}-${assignment.scheduledDate?.toISOString() ?? "sin-fecha"}`}
+                    href={assignment.href}
+                    className="rounded-[1.15rem] border border-line bg-[rgba(250,248,244,0.98)] px-4 py-4 transition hover:border-accent hover:bg-white"
+                  >
+                    <p className="font-medium text-foreground">{assignment.modelName}</p>
+                    <p className="mt-1 text-sm leading-6 text-foreground/72">
+                      {assignment.dressName} · {formatDate(assignment.scheduledDate)}
+                    </p>
+                  </Link>
+                ))
+              ) : (
+                <div className="rounded-[1.15rem] border border-dashed border-line bg-[rgba(250,248,244,0.88)] px-4 py-5 text-sm text-foreground/72">
+                  Todavía no hay citas programadas para toma de fotos.
+                </div>
+              )}
+            </div>
+          </article>
+
+          <article className="app-card p-5">
+            <div className="border-b border-line pb-4">
+              <p className="text-sm uppercase tracking-[0.2em] text-foreground/55">
+                Pendientes de Instagram
+              </p>
+              <h2 className="mt-2 font-heading text-3xl text-foreground sm:text-4xl">
+                Publicaciones pendientes
+              </h2>
+            </div>
+
+            <div className="mt-5 grid gap-3">
+              {dashboard.publicationQueue.length > 0 ? (
+                dashboard.publicationQueue.map((task) => (
+                  <Link
+                    key={task.href}
+                    href={task.href}
+                    className="rounded-[1.15rem] border border-line bg-[rgba(250,248,244,0.98)] px-4 py-4 transition hover:border-accent hover:bg-white"
+                  >
+                    <p className="font-medium text-foreground">{task.title}</p>
+                    <p className="mt-1 text-sm leading-6 text-foreground/72">{task.subtitle}</p>
+                  </Link>
+                ))
+              ) : (
+                <div className="rounded-[1.15rem] border border-dashed border-line bg-[rgba(250,248,244,0.88)] px-4 py-5 text-sm text-foreground/72">
+                  No hay vestidos pendientes de publicación.
+                </div>
+              )}
+            </div>
+          </article>
         </div>
       </section>
       <DashboardReminders />

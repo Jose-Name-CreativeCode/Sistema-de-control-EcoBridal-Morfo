@@ -116,6 +116,25 @@ export async function updateDressDetailAction(formData: FormData) {
   redirect(`/vestidos/${dressId}?detailsSaved=1`);
 }
 
+export async function deleteDressAction(formData: FormData) {
+  const dressId = String(formData.get("dressId") ?? "").trim();
+
+  if (!isDatabaseConfigured()) {
+    redirect(`/vestidos/${dressId}?demo=1`);
+  }
+
+  if (!dressId) {
+    redirect("/vestidos");
+  }
+
+  await prisma.dress.delete({
+    where: { id: dressId },
+  });
+
+  revalidatePath("/vestidos");
+  redirect("/vestidos?deleted=1");
+}
+
 export async function addDressPhotoFolderAction(formData: FormData) {
   const dressId = String(formData.get("dressId") ?? "").trim();
 
@@ -463,7 +482,7 @@ export async function assignModelToDressAction(formData: FormData) {
   const notes = parseOptionalString(formData.get("notes"));
 
   if (modelIds.length === 0) {
-    redirect(`/vestidos/${dressId}?missing=1&edit=1`);
+    redirect(`/vestidos/${dressId}?assignmentMissing=1&edit=1`);
   }
 
   const existingAssignments = await prisma.dressAssignment.findMany({
@@ -541,6 +560,48 @@ export async function removeDressAssignmentAction(formData: FormData) {
   revalidatePath(`/vestidos/${dressId}`);
   revalidatePath("/vestidos");
   redirect(`/vestidos/${dressId}?assignmentRemoved=1&edit=1`);
+}
+
+export async function updateDressAssignmentAction(formData: FormData) {
+  const dressId = String(formData.get("dressId") ?? "").trim();
+  const assignmentId = String(formData.get("assignmentId") ?? "").trim();
+
+  if (!isDatabaseConfigured()) {
+    redirect(`/vestidos/${dressId}?demo=1`);
+  }
+
+  const assignmentStatus = String(formData.get("assignmentStatus") ?? "SUGGESTED");
+  const scheduledDateValue = String(formData.get("scheduledDate") ?? "").trim();
+  const notes = parseOptionalString(formData.get("notes"));
+
+  const assignment = await prisma.dressAssignment.findUnique({
+    where: { id: assignmentId },
+    select: {
+      id: true,
+      dressId: true,
+    },
+  });
+
+  if (!assignment || assignment.dressId !== dressId) {
+    redirect(`/vestidos/${dressId}?demo=1`);
+  }
+
+  await prisma.dressAssignment.update({
+    where: { id: assignmentId },
+    data: {
+      assignmentStatus: assignmentStatus as
+        | "SUGGESTED"
+        | "CONFIRMED"
+        | "COMPLETED"
+        | "CANCELLED",
+      scheduledDate: scheduledDateValue ? new Date(scheduledDateValue) : null,
+      notes,
+    },
+  });
+
+  revalidatePath(`/vestidos/${dressId}`);
+  revalidatePath("/vestidos");
+  redirect(`/vestidos/${dressId}?assignmentUpdated=1&edit=1`);
 }
 
 export async function updateDressBasicsAction(formData: FormData) {

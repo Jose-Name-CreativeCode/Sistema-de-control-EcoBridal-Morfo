@@ -1,11 +1,18 @@
 import { prisma } from "@/lib/prisma";
 import { isDatabaseConfigured } from "@/lib/database";
-import { demoDresses, type DressListItem } from "@/lib/dresses";
+import { demoDresses } from "@/lib/dresses";
 
 export type ModelFilters = {
   search?: string;
   size?: string;
 };
+
+export const assignmentStatusLabels = {
+  SUGGESTED: "Pendiente",
+  CONFIRMED: "Programada",
+  COMPLETED: "En espera",
+  CANCELLED: "Cancelada",
+} as const;
 
 export type ModelListItem = {
   id: string;
@@ -49,24 +56,6 @@ export type ModelDetailData = {
       } | null;
     }>;
   };
-};
-
-export type AssignmentSuggestion = {
-  dressId: string;
-  dressName: string;
-  internalCode: string;
-  dressSize: string;
-  brand: string | null;
-  workflowStatus: string;
-  previewPhotoUrl: string | null;
-  suggestedModels: Array<{
-    id: string;
-    name: string;
-    instagramHandle: string | null;
-    perDressRate: number | null;
-    hourlyRate: number | null;
-    sizes: string[];
-  }>;
 };
 
 export const demoModels: ModelListItem[] = [
@@ -259,99 +248,6 @@ function buildDemoModelCatalogData(filters: ModelFilters): ModelCatalogData {
     averagePerDressRate:
       rates.length > 0 ? Math.round(rates.reduce((sum, rate) => sum + rate, 0) / rates.length) : 0,
   };
-}
-
-export async function getAssignmentSuggestions(): Promise<{
-  databaseReady: boolean;
-  suggestions: AssignmentSuggestion[];
-}> {
-  if (!isDatabaseConfigured()) {
-    return buildDemoAssignmentSuggestions();
-  }
-
-  try {
-    const [dresses, models] = await Promise.all([
-      prisma.dress.findMany({
-        where: {
-          workflowStatus: {
-            in: ["PENDING_PHOTOS", "MODEL_ASSIGNED", "IN_SESSION"],
-          },
-        },
-        orderBy: [{ isNew: "desc" }, { createdAt: "desc" }],
-        select: {
-          id: true,
-          internalCode: true,
-          name: true,
-          brand: true,
-          size: true,
-          workflowStatus: true,
-          photos: {
-            where: {
-              photoType: {
-                in: ["COVER", "WORN_BY_MODEL", "FRONT"],
-              },
-            },
-            orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
-            take: 1,
-            select: {
-              imageUrl: true,
-              photoType: true,
-            },
-          },
-        },
-      }),
-      prisma.modelProfile.findMany({
-        include: {
-          sizes: {
-            orderBy: {
-              size: "asc",
-            },
-          },
-        },
-        orderBy: {
-          name: "asc",
-        },
-      }),
-    ]);
-
-    const normalizedDresses: DressListItem[] = dresses.map((dress) => ({
-      id: dress.id,
-      internalCode: dress.internalCode,
-      name: dress.name,
-      brand: dress.brand,
-      size: dress.size,
-      color: null,
-      isNew: false,
-      workflowStatus: dress.workflowStatus,
-      instagramStatus: "NOT_PUBLISHED",
-      receivedAt: null,
-      previewPhotoUrl: dress.photos[0]?.imageUrl ?? null,
-      previewPhotoType: dress.photos[0]?.photoType ?? null,
-    }));
-
-    const normalizedModels: ModelListItem[] = models.map((model) => ({
-      id: model.id,
-      name: model.name,
-      photoUrl: model.photoUrl,
-      contactPhone: model.contactPhone,
-      contactEmail: model.contactEmail,
-      instagramHandle: model.instagramHandle,
-      folderProvider: model.folderProvider,
-      folderUrl: model.folderUrl,
-      instagramPostUrl: model.instagramPostUrl,
-      hourlyRate: model.hourlyRate ? Number(model.hourlyRate) : null,
-      perDressRate: model.perDressRate ? Number(model.perDressRate) : null,
-      availability: model.availability,
-      sizes: model.sizes.map((item) => item.size),
-    }));
-
-    return {
-      databaseReady: true,
-      suggestions: buildAssignmentSuggestions(normalizedDresses, normalizedModels),
-    };
-  } catch {
-    return buildDemoAssignmentSuggestions();
-  }
 }
 
 export async function getModelDetailData(modelId: string): Promise<ModelDetailData | null> {
@@ -583,13 +479,6 @@ export async function getDressModelOptions(dressId: string, dressSize: string): 
   }
 }
 
-function buildDemoAssignmentSuggestions() {
-  return {
-    databaseReady: false,
-    suggestions: buildAssignmentSuggestions(demoDresses, demoModels),
-  };
-}
-
 function buildDemoDressModelOptions(dressId: string, dressSize: string) {
   return {
     databaseReady: false,
@@ -691,33 +580,6 @@ function applyModelFilters(models: ModelListItem[], filters: ModelFilters) {
 
     return true;
   });
-}
-
-function buildAssignmentSuggestions(dresses: DressListItem[], models: ModelListItem[]) {
-  return dresses
-    .filter((dress) =>
-      ["PENDING_PHOTOS", "MODEL_ASSIGNED", "IN_SESSION"].includes(dress.workflowStatus),
-    )
-    .map((dress) => ({
-      dressId: dress.id,
-      dressName: dress.name,
-      internalCode: dress.internalCode,
-      dressSize: dress.size,
-      brand: dress.brand,
-      workflowStatus: dress.workflowStatus,
-      previewPhotoUrl: dress.previewPhotoUrl,
-      suggestedModels: models
-        .filter((model) => model.sizes.includes(dress.size))
-        .map((model) => ({
-          id: model.id,
-          name: model.name,
-          instagramHandle: model.instagramHandle,
-          perDressRate: model.perDressRate,
-          hourlyRate: model.hourlyRate,
-          sizes: model.sizes,
-        })),
-    }))
-    .sort((a, b) => b.suggestedModels.length - a.suggestedModels.length);
 }
 
 function isNumber(value: number | null): value is number {

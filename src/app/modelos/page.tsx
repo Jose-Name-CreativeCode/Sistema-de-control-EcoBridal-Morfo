@@ -6,6 +6,7 @@ type ModelsPageProps = {
     search?: string;
     size?: string;
     created?: string;
+    deleted?: string;
   }>;
 };
 
@@ -26,21 +27,25 @@ function buildInstagramUrl(handle: string) {
   return `https://instagram.com/${cleanHandle}`;
 }
 
-function getFolderProviderLabel(
-  provider: "OUTLOOK_ONEDRIVE" | "SHAREPOINT" | "GOOGLE_DRIVE" | "OTHER" | null,
-) {
-  switch (provider) {
-    case "OUTLOOK_ONEDRIVE":
-      return "OneDrive";
-    case "SHAREPOINT":
-      return "SharePoint";
-    case "GOOGLE_DRIVE":
-      return "Google Drive";
-    case "OTHER":
-      return "Otro";
-    default:
-      return "Carpeta";
+function getRateLines(model: {
+  perDressRate: number | null;
+  hourlyRate: number | null;
+}) {
+  const lines: string[] = [];
+
+  if (model.perDressRate !== null) {
+    lines.push(`Por vestido: ${formatCurrency(model.perDressRate)}`);
   }
+
+  if (model.hourlyRate !== null) {
+    lines.push(`Por hora: ${formatCurrency(model.hourlyRate)}`);
+  }
+
+  if (lines.length === 0) {
+    lines.push("Tarifa pendiente");
+  }
+
+  return lines;
 }
 
 export default async function ModelsPage({ searchParams }: ModelsPageProps) {
@@ -75,13 +80,19 @@ export default async function ModelsPage({ searchParams }: ModelsPageProps) {
         {!data.databaseReady ? (
           <div className="mt-6 rounded-[1.5rem] border border-dashed border-accent/30 bg-accent/8 px-5 py-4 text-sm leading-7 text-foreground/78">
             Estás viendo el módulo en modo demo. Al conectar PostgreSQL podrás guardar
-            modelos reales, editar su ficha y usarlas en asignaciones.
+            modelos reales, editar su ficha y asignarlas a vestidos.
           </div>
         ) : null}
 
         {params?.created === "1" ? (
           <div className="mt-6 rounded-[1.5rem] border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm text-emerald-900">
             La modelo se registró correctamente.
+          </div>
+        ) : null}
+
+        {params?.deleted === "1" ? (
+          <div className="mt-6 rounded-[1.5rem] border border-emerald-200 bg-emerald-50 px-5 py-4 text-sm text-emerald-900">
+            La modelo se eliminó correctamente.
           </div>
         ) : null}
 
@@ -138,7 +149,7 @@ export default async function ModelsPage({ searchParams }: ModelsPageProps) {
         <div className="border-b border-line pb-4">
           <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">Resultado</p>
             <h2 className="mt-2 font-heading text-3xl leading-none text-foreground sm:text-4xl">
-              {data.models.length} modelos encontradas
+              {data.models.length} modelos registradas
             </h2>
         </div>
 
@@ -214,8 +225,9 @@ export default async function ModelsPage({ searchParams }: ModelsPageProps) {
                 </div>
 
                 <div className="grid gap-2 text-sm leading-7 text-foreground/75">
-                  <p>Por vestido: {formatCurrency(model.perDressRate)}</p>
-                  <p>Por hora: {formatCurrency(model.hourlyRate)}</p>
+                  {getRateLines(model).map((line) => (
+                    <p key={`${model.id}-${line}`}>{line}</p>
+                  ))}
                 </div>
 
                 <div className="flex flex-wrap gap-3">
@@ -226,7 +238,7 @@ export default async function ModelsPage({ searchParams }: ModelsPageProps) {
                       rel="noopener noreferrer"
                       className="app-button-secondary text-center"
                     >
-                      Abrir {getFolderProviderLabel(model.folderProvider)}
+                      Abrir carpeta
                     </a>
                   ) : null}
                   {model.instagramPostUrl ? (

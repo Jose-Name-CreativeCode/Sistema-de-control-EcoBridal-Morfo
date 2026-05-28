@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -40,17 +41,27 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-transparent">
-      <div className="mx-auto flex min-h-screen w-full max-w-[1600px] flex-col gap-4 px-3 py-3 sm:px-4 sm:py-4 xl:px-6 xl:py-6">
-        <aside className="app-shell-panel sticky top-3 z-40 w-full shrink-0 overflow-hidden bg-[linear-gradient(180deg,rgba(36,39,45,0.98),rgba(31,34,40,0.98))] px-3 py-3 text-white shadow-[0_18px_40px_rgba(0,0,0,0.2)] sm:px-4 lg:px-5 lg:py-3.5">
-          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+      <div className="mx-auto flex min-h-screen w-full max-w-[1600px] flex-col gap-3 px-2.5 py-2.5 sm:gap-4 sm:px-4 sm:py-4 xl:px-6 xl:py-6">
+        <aside className="app-shell-panel sticky top-2.5 z-40 w-full shrink-0 overflow-hidden bg-[linear-gradient(180deg,rgba(36,39,45,0.98),rgba(31,34,40,0.98))] px-2.5 py-2.5 text-white shadow-[0_18px_40px_rgba(0,0,0,0.2)] sm:top-3 sm:px-4 sm:py-3 lg:px-5 lg:py-3.5">
+          <div className="flex flex-col gap-2.5 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex justify-center lg:min-w-[180px] lg:justify-start">
-              <p className="text-xs font-semibold tracking-[0.32em] text-white/68">
-                ECOBRIDAL
-              </p>
+              <Link
+                href="/"
+                className="inline-flex items-center rounded-xl bg-[rgba(250,248,244,0.96)] px-3 py-1.5 shadow-[0_8px_24px_rgba(0,0,0,0.14)] sm:rounded-2xl sm:px-4 sm:py-2"
+              >
+                <Image
+                  src="/logo-ecobridal.png"
+                  alt="Logo EcoBridal"
+                  width={132}
+                  height={44}
+                  className="h-9 w-auto object-contain sm:h-11"
+                  priority
+                />
+              </Link>
             </div>
 
-            <nav className="flex flex-1 items-center justify-center">
-              <div className="flex max-w-full items-center justify-center gap-2 overflow-x-auto pb-1">
+            <nav className="flex flex-1 items-center justify-start lg:justify-center">
+              <div className="flex max-w-full items-center justify-start gap-1.5 overflow-x-auto px-0.5 pb-1 lg:justify-center lg:gap-2">
                 {navigation.map((item) => {
                   const active = isActive(activeHref, item.href);
 
@@ -58,14 +69,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                     <Link
                       key={item.href}
                       href={item.href}
-                      className={`min-w-fit whitespace-nowrap rounded-full border px-4 py-2.5 text-center transition ${
+                      className={`min-w-fit whitespace-nowrap rounded-full border px-3 py-2 text-center transition sm:px-4 sm:py-2.5 ${
                         active
                           ? "border-[rgba(87,131,208,0.22)] bg-[rgba(250,248,244,0.98)] text-foreground shadow-[0_10px_24px_rgba(0,0,0,0.12)]"
                           : "border-white/8 bg-white/5 text-white/86 hover:border-[rgba(88,190,193,0.24)] hover:bg-white/9"
                       }`}
                     >
                       <span
-                        className={`text-sm font-semibold sm:text-[0.95rem] ${
+                        className={`text-[0.82rem] font-semibold sm:text-[0.95rem] ${
                           active ? "text-foreground" : "text-white/86"
                         }`}
                       >

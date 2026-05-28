@@ -54,6 +54,10 @@ export async function createModelAction(formData: FormData) {
   const perDressRate = parseOptionalNumber(formData.get("perDressRate"));
   const sizes = parseSizes(formData.get("sizes"));
 
+  if (!name) {
+    redirect("/modelos/nuevo?missing=1");
+  }
+
   await prisma.modelProfile.create({
     data: {
       name,
@@ -132,4 +136,23 @@ export async function updateModelAction(formData: FormData) {
   revalidatePath("/modelos");
   revalidatePath(`/modelos/${modelId}`);
   redirect(`/modelos/${modelId}?saved=1`);
+}
+
+export async function deleteModelAction(formData: FormData) {
+  const modelId = String(formData.get("modelId") ?? "").trim();
+
+  if (!isDatabaseConfigured()) {
+    redirect(`/modelos/${modelId}?demo=1`);
+  }
+
+  if (!modelId) {
+    redirect("/modelos");
+  }
+
+  await prisma.modelProfile.delete({
+    where: { id: modelId },
+  });
+
+  revalidatePath("/modelos");
+  redirect("/modelos?deleted=1");
 }

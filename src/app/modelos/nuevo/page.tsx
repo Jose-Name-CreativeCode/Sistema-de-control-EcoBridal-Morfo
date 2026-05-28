@@ -5,6 +5,7 @@ import { isDatabaseConfigured } from "@/lib/database";
 type NewModelPageProps = {
   searchParams?: Promise<{
     demo?: string;
+    missing?: string;
   }>;
 };
 
@@ -39,6 +40,12 @@ export default async function NewModelPage({ searchParams }: NewModelPageProps) 
           <div className="mt-6 rounded-[1.5rem] border border-amber-200 bg-amber-50 px-5 py-4 text-sm text-amber-900">
             No se pudo guardar porque el proyecto sigue en modo demo. Configura `DATABASE_URL`
             para activar el registro real.
+          </div>
+        ) : null}
+
+        {params?.missing === "1" ? (
+          <div className="mt-6 rounded-[1.5rem] border border-support-coral/30 bg-support-coral/10 px-5 py-4 text-sm text-foreground">
+            El nombre de la modelo es obligatorio para guardarla.
           </div>
         ) : null}
 

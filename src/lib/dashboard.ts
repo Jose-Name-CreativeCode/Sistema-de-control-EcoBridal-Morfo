@@ -4,7 +4,6 @@ import {
   demoDresses,
   demoDressFolders,
   demoInstagramPosts,
-  instagramStatusLabels,
   workflowStatusLabels,
 } from "@/lib/dresses";
 import { demoDressAssignments, demoModels } from "@/lib/models";
@@ -26,7 +25,6 @@ type DashboardAssignment = {
   dressName: string;
   modelName: string;
   scheduledDate: Date | null;
-  status: string;
   href: string;
 };
 
@@ -69,7 +67,10 @@ export async function getDashboardData(): Promise<DashboardData> {
       prisma.dressAssignment.findMany({
         where: {
           assignmentStatus: {
-            in: ["SUGGESTED", "CONFIRMED"],
+            in: ["SUGGESTED", "CONFIRMED", "COMPLETED"],
+          },
+          scheduledDate: {
+            not: null,
           },
         },
         include: {
@@ -110,8 +111,10 @@ export async function getDashboardData(): Promise<DashboardData> {
     const readyForFolder = dresses.filter((dress) =>
       ["PHOTOGRAPHED", "EDITED", "READY_TO_POST", "PUBLISHED"].includes(dress.workflowStatus),
     );
-    const readyForInstagram = dresses.filter((dress) =>
-      ["READY_TO_POST", "PUBLISHED"].includes(dress.workflowStatus),
+    const readyForInstagram = dresses.filter(
+      (dress) =>
+        dress.workflowStatus === "READY_TO_POST" ||
+        dress.instagramStatus === "SCHEDULED",
     );
 
     return {
@@ -156,15 +159,14 @@ export async function getDashboardData(): Promise<DashboardData> {
         dressName: assignment.dress.name,
         modelName: assignment.model?.name ?? "Modelo pendiente",
         scheduledDate: assignment.scheduledDate,
-        status: assignment.assignmentStatus,
         href: `/vestidos/${assignment.dressId}`,
       })),
       publicationQueue: readyForInstagram
         .filter((dress) => !instagramDressIds.has(dress.id))
         .slice(0, 4)
         .map((dress) => ({
-          title: `${dress.name} pendiente de publicación`,
-          subtitle: `${dress.internalCode} está ${instagramStatusLabels[dress.instagramStatus]}.`,
+          title: `${dress.name} pendiente de Instagram`,
+          subtitle: `${dress.internalCode} ya está listo para registrar su publicación.`,
           href: `/vestidos/${dress.id}`,
         })),
     };
@@ -175,7 +177,9 @@ export async function getDashboardData(): Promise<DashboardData> {
 
 function buildDemoDashboardData(): DashboardData {
   const assignments = Object.entries(demoDressAssignments).flatMap(([dressId, items]) =>
-    items.map((item) => {
+    items
+      .filter((item) => item.scheduledDate)
+      .map((item) => {
       const dress = demoDresses.find((entry) => entry.id === dressId);
 
       return {
@@ -183,10 +187,9 @@ function buildDemoDashboardData(): DashboardData {
         dressName: dress?.name ?? "Vestido",
         modelName: item.model?.name ?? "Modelo pendiente",
         scheduledDate: item.scheduledDate,
-        status: item.assignmentStatus,
         href: dress ? `/vestidos/${dress.id}` : "/vestidos",
       };
-    }),
+      }),
   );
 
   const pendingPhoto = demoDresses.filter((dress) =>
@@ -195,8 +198,10 @@ function buildDemoDashboardData(): DashboardData {
   const readyForFolder = demoDresses.filter((dress) =>
     ["PHOTOGRAPHED", "EDITED", "READY_TO_POST", "PUBLISHED"].includes(dress.workflowStatus),
   );
-  const readyForInstagram = demoDresses.filter((dress) =>
-    ["READY_TO_POST", "PUBLISHED"].includes(dress.workflowStatus),
+  const readyForInstagram = demoDresses.filter(
+    (dress) =>
+      dress.workflowStatus === "READY_TO_POST" ||
+      dress.instagramStatus === "SCHEDULED",
   );
 
   return {
@@ -242,7 +247,7 @@ function buildDemoDashboardData(): DashboardData {
       .slice(0, 4)
       .map((dress) => ({
         title: `${dress.name} pendiente de Instagram`,
-        subtitle: `${dress.internalCode} está ${instagramStatusLabels[dress.instagramStatus]}.`,
+        subtitle: `${dress.internalCode} ya está listo para registrar su publicación.`,
         href: `/vestidos/${dress.id}`,
       })),
   };
