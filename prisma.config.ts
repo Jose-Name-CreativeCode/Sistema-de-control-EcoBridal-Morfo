@@ -3,12 +3,16 @@
 import "dotenv/config";
 import { defineConfig } from "prisma/config";
 
+function normalizeConnectionString(value?: string) {
+  return value?.trim().replace(/^["']|["']$/g, "");
+}
+
 export default defineConfig({
   schema: "prisma/schema.prisma",
   migrations: {
     path: "prisma/migrations",
   },
   datasource: {
-    url: process.env["DATABASE_URL"],
+    url: normalizeConnectionString(process.env["DATABASE_URL"]),
   },
 });
