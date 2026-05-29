@@ -1,0 +1,1672 @@
+{
+  "dresses": [
+    {
+      "number": 10,
+      "name": "Jumpsuit mangas removibles",
+      "size": "2",
+      "receivedAt": "2025-06-13",
+      "location": "Pasarela 2025",
+      "state": null,
+      "models": []
+    },
+    {
+      "number": 9,
+      "name": "Conjunto de Encaje",
+      "size": "4",
+      "receivedAt": "2025-06-13",
+      "location": "Pasarela 2025",
+      "state": null,
+      "models": []
+    },
+    {
+      "number": 13,
+      "name": "Alejandra",
+      "size": "4",
+      "receivedAt": "2025-06-13",
+      "location": "Pasarela 2025",
+      "state": null,
+      "models": []
+    },
+    {
+      "number": 15,
+      "name": "Amalfi",
+      "size": "4",
+      "receivedAt": "2025-06-18",
+      "location": "Pasarela 2025",
+      "state": null,
+      "models": []
+    },
+    {
+      "number": 23,
+      "name": "Veronica",
+      "size": "4",
+      "receivedAt": "2025-06-23",
+      "location": "Pasarela 2025",
+      "state": null,
+      "models": []
+    },
+    {
+      "number": 34,
+      "name": "Alegria",
+      "size": "4",
+      "receivedAt": null,
+      "location": "Pasarela 2025",
+      "state": null,
+      "models": []
+    },
+    {
+      "number": 48,
+      "name": "Dulce",
+      "size": "4",
+      "receivedAt": "2025-10-03",
+      "location": "Pasarela 2025",
+      "state": null,
+      "models": [
+        "Heidy"
+      ]
+    },
+    {
+      "number": 26,
+      "name": "Fernanda",
+      "size": "6",
+      "receivedAt": "2025-06-20",
+      "location": "Pasarela 2025",
+      "state": null,
+      "models": [
+        "Maria",
+        "Heidy"
+      ]
+    },
+    {
+      "number": 30,
+      "name": "Bangioc",
+      "size": "10",
+      "receivedAt": "2025-07-14",
+      "location": "Pasarela 2025",
+      "state": null,
+      "models": [
+        "Wendy"
+      ]
+    },
+    {
+      "number": 31,
+      "name": "Eva",
+      "size": "10",
+      "receivedAt": "2025-07-14",
+      "location": "Pasarela 2025",
+      "state": null,
+      "models": []
+    },
+    {
+      "number": 1,
+      "name": "Victoria",
+      "size": "12",
+      "receivedAt": "2025-05-31",
+      "location": "Pasarela 2025",
+      "state": null,
+      "models": []
+    },
+    {
+      "number": 2,
+      "name": "CAPA Vic",
+      "size": "12",
+      "receivedAt": "2025-05-31",
+      "location": "Pasarela 2025",
+      "state": null,
+      "models": []
+    },
+    {
+      "number": 89,
+      "name": "Denisse",
+      "size": "10",
+      "receivedAt": "2025-12-16",
+      "location": null,
+      "state": null,
+      "models": [
+        "Sofia"
+      ]
+    },
+    {
+      "number": 97,
+      "name": "Paola",
+      "size": "10",
+      "receivedAt": "2026-01-09",
+      "location": null,
+      "state": null,
+      "models": [
+        "Sofia"
+      ]
+    },
+    {
+      "number": 99,
+      "name": "Rebeca",
+      "size": "10",
+      "receivedAt": null,
+      "location": null,
+      "state": null,
+      "models": [
+        "Sofia"
+      ]
+    },
+    {
+      "number": 107,
+      "name": "Emily",
+      "size": "10",
+      "receivedAt": "2026-02-17",
+      "location": null,
+      "state": null,
+      "models": [
+        "Dani"
+      ]
+    },
+    {
+      "number": 118,
+      "name": "Sol",
+      "size": "10",
+      "receivedAt": "2026-02-26",
+      "location": null,
+      "state": null,
+      "models": [
+        "Dani"
+      ]
+    },
+    {
+      "number": 129,
+      "name": "Hodelia",
+      "size": "10",
+      "receivedAt": "2026-03-23",
+      "location": null,
+      "state": null,
+      "models": [
+        "Vero"
+      ]
+    },
+    {
+      "number": 144,
+      "name": "Rosa",
+      "size": "10",
+      "receivedAt": "2026-04-20",
+      "location": null,
+      "state": null,
+      "models": [
+        "Heidy"
+      ]
+    },
+    {
+      "number": 146,
+      "name": "Glenda",
+      "size": "10",
+      "receivedAt": "2026-04-20",
+      "location": null,
+      "state": null,
+      "models": [
+        "Heidy"
+      ]
+    },
+    {
+      "number": 148,
+      "name": "Anette",
+      "size": "10",
+      "receivedAt": "2026-04-29",
+      "location": null,
+      "state": null,
+      "models": [
+        "Barbara Veana"
+      ]
+    },
+    {
+      "number": 76,
+      "name": "Caity Eco",
+      "size": "12",
+      "receivedAt": "2025-11-27",
+      "location": null,
+      "state": null,
+      "models": [
+        "Vianey"
+      ]
+    },
+    {
+      "number": 94,
+      "name": "Elyse Eco",
+      "size": "12",
+      "receivedAt": "2025-12-26",
+      "location": null,
+      "state": null,
+      "models": [
+        "Sofia"
+      ]
+    },
+    {
+      "number": 104,
+      "name": "Ana",
+      "size": "12",
+      "receivedAt": "2026-02-10",
+      "location": null,
+      "state": null,
+      "models": [
+        "Dani"
+      ]
+    },
+    {
+      "number": 109,
+      "name": "Miriam",
+      "size": "12",
+      "receivedAt": "2026-02-18",
+      "location": null,
+      "state": null,
+      "models": [
+        "Dani"
+      ]
+    },
+    {
+      "number": 116,
+      "name": "Annie Eco",
+      "size": "12",
+      "receivedAt": "2026-02-24",
+      "location": null,
+      "state": "CAMBIO DE DISEÑO",
+      "models": [
+        "Dani"
+      ]
+    },
+    {
+      "number": 135,
+      "name": "Barroco",
+      "size": "12",
+      "receivedAt": "2026-04-07",
+      "location": null,
+      "state": null,
+      "models": [
+        "Barbara"
+      ]
+    },
+    {
+      "number": 145,
+      "name": "Aria",
+      "size": "12",
+      "receivedAt": "2026-04-20",
+      "location": null,
+      "state": null,
+      "models": [
+        "Vero"
+      ]
+    },
+    {
+      "number": 93,
+      "name": "Alexa Eco",
+      "size": "12",
+      "receivedAt": "2025-12-26",
+      "location": null,
+      "state": null,
+      "models": [
+        "Paulina"
+      ]
+    },
+    {
+      "number": 95,
+      "name": "Jolene Eco",
+      "size": "12",
+      "receivedAt": "2025-12-26",
+      "location": null,
+      "state": null,
+      "models": [
+        "Paulina"
+      ]
+    },
+    {
+      "number": 71,
+      "name": "Karla",
+      "size": "14",
+      "receivedAt": "2025-11-21",
+      "location": null,
+      "state": null,
+      "models": [
+        "Diana",
+        "Paulina"
+      ]
+    },
+    {
+      "number": 80,
+      "name": "Cloé",
+      "size": "14",
+      "receivedAt": "2025-12-02",
+      "location": null,
+      "state": null,
+      "models": [
+        "Paulina"
+      ]
+    },
+    {
+      "number": 83,
+      "name": "Ema Eco",
+      "size": "14",
+      "receivedAt": "2025-12-03",
+      "location": null,
+      "state": null,
+      "models": [
+        "Vianey",
+        "Paulina"
+      ]
+    },
+    {
+      "number": 85,
+      "name": "Evany Eco",
+      "size": "14",
+      "receivedAt": "2025-12-04",
+      "location": null,
+      "state": null,
+      "models": [
+        "Paulina"
+      ]
+    },
+    {
+      "number": 115,
+      "name": "Gypsy Eco",
+      "size": "14",
+      "receivedAt": "2026-02-24",
+      "location": null,
+      "state": null,
+      "models": [
+        "Paulina"
+      ]
+    },
+    {
+      "number": 123,
+      "name": "Kritzia",
+      "size": "14/16",
+      "receivedAt": "2026-03-05",
+      "location": null,
+      "state": null,
+      "models": [
+        "Paulina"
+      ]
+    },
+    {
+      "number": 62,
+      "name": "Sofia",
+      "size": "16",
+      "receivedAt": "2025-11-03",
+      "location": null,
+      "state": null,
+      "models": [
+        "Diana",
+        "Aranzazú"
+      ]
+    },
+    {
+      "number": 114,
+      "name": "Lola Eco",
+      "size": "16",
+      "receivedAt": "2026-02-24",
+      "location": null,
+      "state": null,
+      "models": [
+        "Paulina"
+      ]
+    },
+    {
+      "number": 117,
+      "name": "Karol Eco",
+      "size": "16",
+      "receivedAt": "2026-02-24",
+      "location": null,
+      "state": null,
+      "models": [
+        "Paulina"
+      ]
+    },
+    {
+      "number": 121,
+      "name": "Tania Eco",
+      "size": "16",
+      "receivedAt": "2026-02-26",
+      "location": null,
+      "state": null,
+      "models": [
+        "Pau"
+      ]
+    },
+    {
+      "number": 137,
+      "name": "Rafaella Eco",
+      "size": "16",
+      "receivedAt": "2026-04-08",
+      "location": null,
+      "state": null,
+      "models": [
+        "Paulina"
+      ]
+    },
+    {
+      "number": 139,
+      "name": "Aurora Eco",
+      "size": "16",
+      "receivedAt": "2026-04-08",
+      "location": null,
+      "state": null,
+      "models": [
+        "Paulina"
+      ]
+    },
+    {
+      "number": 84,
+      "name": "Emma Eco",
+      "size": "18",
+      "receivedAt": "2025-12-04",
+      "location": null,
+      "state": null,
+      "models": [
+        "Vianey",
+        "Paulina"
+      ]
+    },
+    {
+      "number": 120,
+      "name": "Irina Eco",
+      "size": "18",
+      "receivedAt": "2026-02-26",
+      "location": null,
+      "state": null,
+      "models": [
+        "Paulina"
+      ]
+    },
+    {
+      "number": 132,
+      "name": "Dalia Eco",
+      "size": "18",
+      "receivedAt": "2026-03-25",
+      "location": null,
+      "state": null,
+      "models": [
+        "Aby"
+      ]
+    },
+    {
+      "number": 138,
+      "name": "Carlota Eco",
+      "size": "18",
+      "receivedAt": "2026-04-08",
+      "location": null,
+      "state": null,
+      "models": [
+        "Paulina"
+      ]
+    },
+    {
+      "number": 36,
+      "name": "Baikal",
+      "size": "2 / 4",
+      "receivedAt": "2025-08-15",
+      "location": "Pasarela 2025 y colaboracion campaña cruzada",
+      "state": null,
+      "models": []
+    },
+    {
+      "number": 41,
+      "name": "Senegal",
+      "size": "2 / 4",
+      "receivedAt": "2025-09-18",
+      "location": "Pasarela 2025",
+      "state": null,
+      "models": [
+        "Heidy"
+      ]
+    },
+    {
+      "number": 105,
+      "name": "Carolina Eco",
+      "size": "20",
+      "receivedAt": "2026-02-17",
+      "location": null,
+      "state": null,
+      "models": [
+        "Aby"
+      ]
+    },
+    {
+      "number": 106,
+      "name": "Karen Eco",
+      "size": "20",
+      "receivedAt": "2026-02-17",
+      "location": null,
+      "state": null,
+      "models": [
+        "Aby"
+      ]
+    },
+    {
+      "number": 113,
+      "name": "Angélica Eco",
+      "size": "20",
+      "receivedAt": "2026-02-24",
+      "location": null,
+      "state": null,
+      "models": [
+        "Aby"
+      ]
+    },
+    {
+      "number": 127,
+      "name": "Lorea Eco",
+      "size": "20",
+      "receivedAt": "2026-03-18",
+      "location": null,
+      "state": null,
+      "models": [
+        "Aby"
+      ]
+    },
+    {
+      "number": 143,
+      "name": "Francia",
+      "size": "20",
+      "receivedAt": "2026-04-18",
+      "location": null,
+      "state": null,
+      "models": [
+        "Aby"
+      ]
+    },
+    {
+      "number": 55,
+      "name": "Lapis",
+      "size": "4",
+      "receivedAt": "2025-10-21",
+      "location": "Pasarela 2025",
+      "state": null,
+      "models": [
+        "Heidy"
+      ]
+    },
+    {
+      "number": 61,
+      "name": "Janeth",
+      "size": "4",
+      "receivedAt": "2025-10-28",
+      "location": "Pasarela 2025",
+      "state": null,
+      "models": [
+        "Angie"
+      ]
+    },
+    {
+      "number": 75,
+      "name": "Saville",
+      "size": "4",
+      "receivedAt": "2025-11-27",
+      "location": null,
+      "state": null,
+      "models": [
+        "Heidy"
+      ]
+    },
+    {
+      "number": 102,
+      "name": "Vivian",
+      "size": "4",
+      "receivedAt": "2026-02-09",
+      "location": null,
+      "state": null,
+      "models": [
+        "Heidy"
+      ]
+    },
+    {
+      "number": 111,
+      "name": "Angela",
+      "size": "4",
+      "receivedAt": "2026-02-20",
+      "location": null,
+      "state": null,
+      "models": [
+        "Heidy"
+      ]
+    },
+    {
+      "number": 130,
+      "name": "Elen",
+      "size": "4",
+      "receivedAt": "2026-03-23",
+      "location": null,
+      "state": null,
+      "models": [
+        "Heidy"
+      ]
+    },
+    {
+      "number": 131,
+      "name": "Lucia",
+      "size": "4",
+      "receivedAt": "2026-03-24",
+      "location": null,
+      "state": null,
+      "models": [
+        "Heidy"
+      ]
+    },
+    {
+      "number": 133,
+      "name": "Jessi",
+      "size": "4",
+      "receivedAt": "2026-03-31",
+      "location": null,
+      "state": null,
+      "models": [
+        "Heidy"
+      ]
+    },
+    {
+      "number": 112,
+      "name": "Allu",
+      "size": "4",
+      "receivedAt": "2026-02-21",
+      "location": null,
+      "state": null,
+      "models": [
+        "Heidy"
+      ]
+    },
+    {
+      "number": 32,
+      "name": "Venecia",
+      "size": "4 – 6",
+      "receivedAt": null,
+      "location": "Pasarela 2025",
+      "state": null,
+      "models": []
+    },
+    {
+      "number": 39,
+      "name": "Erika",
+      "size": "4 – 6",
+      "receivedAt": "2025-09-09",
+      "location": null,
+      "state": null,
+      "models": [
+        "Heidy"
+      ]
+    },
+    {
+      "number": 60,
+      "name": "Perla Eco",
+      "size": "4 / 6",
+      "receivedAt": "2025-10-14",
+      "location": "Pasarela 2025",
+      "state": null,
+      "models": [
+        "Angie"
+      ]
+    },
+    {
+      "number": 96,
+      "name": "Kay",
+      "size": "4-6",
+      "receivedAt": "2026-01-07",
+      "location": null,
+      "state": null,
+      "models": [
+        "Alison"
+      ]
+    },
+    {
+      "number": 126,
+      "name": "Peiky dos",
+      "size": "4/6",
+      "receivedAt": "2026-03-07",
+      "location": null,
+      "state": null,
+      "models": [
+        "Heidy"
+      ]
+    },
+    {
+      "number": 151,
+      "name": "Miranda",
+      "size": "4/6",
+      "receivedAt": "2026-05-06",
+      "location": null,
+      "state": null,
+      "models": [
+        "Heidy"
+      ]
+    },
+    {
+      "number": 59,
+      "name": "Lucrecia Eco",
+      "size": "6",
+      "receivedAt": "2025-10-14",
+      "location": "Pasarela 2025",
+      "state": null,
+      "models": [
+        "Alison"
+      ]
+    },
+    {
+      "number": 100,
+      "name": "Mirelle",
+      "size": "6",
+      "receivedAt": null,
+      "location": null,
+      "state": null,
+      "models": [
+        "Heidy"
+      ]
+    },
+    {
+      "number": 140,
+      "name": "Diana",
+      "size": "6",
+      "receivedAt": "2026-04-08",
+      "location": null,
+      "state": null,
+      "models": [
+        "Heidy"
+      ]
+    },
+    {
+      "number": 147,
+      "name": "Abigail",
+      "size": "6",
+      "receivedAt": "2026-04-25",
+      "location": null,
+      "state": null,
+      "models": [
+        "Heidy"
+      ]
+    },
+    {
+      "number": null,
+      "name": "Lucrecia Eco",
+      "size": "6",
+      "receivedAt": null,
+      "location": "Se cambio el diseño del vestido",
+      "state": null,
+      "models": [
+        "Heidy"
+      ]
+    },
+    {
+      "number": 149,
+      "name": "Blanca",
+      "size": "6",
+      "receivedAt": "2026-05-02",
+      "location": null,
+      "state": null,
+      "models": [
+        "Heidy"
+      ]
+    },
+    {
+      "number": 150,
+      "name": "Danielle",
+      "size": "6",
+      "receivedAt": "2026-05-06",
+      "location": null,
+      "state": null,
+      "models": [
+        "Heidy"
+      ]
+    },
+    {
+      "number": 153,
+      "name": "Gabriela",
+      "size": "6",
+      "receivedAt": null,
+      "location": null,
+      "state": null,
+      "models": [
+        "Heidy"
+      ]
+    },
+    {
+      "number": 37,
+      "name": "Susan",
+      "size": "6 – 8",
+      "receivedAt": "2025-08-15",
+      "location": "Pasarela 2025",
+      "state": null,
+      "models": [
+        "Daniela",
+        "Sofia"
+      ]
+    },
+    {
+      "number": 56,
+      "name": "Clara Eco",
+      "size": "6 / 8",
+      "receivedAt": "2025-10-14",
+      "location": "Pasarela 2025",
+      "state": null,
+      "models": [
+        "Angie"
+      ]
+    },
+    {
+      "number": 124,
+      "name": "Estefani",
+      "size": "6/8",
+      "receivedAt": "2026-03-06",
+      "location": null,
+      "state": null,
+      "models": [
+        "Heidy"
+      ]
+    },
+    {
+      "number": 154,
+      "name": "Piera",
+      "size": "6/8",
+      "receivedAt": null,
+      "location": null,
+      "state": null,
+      "models": []
+    },
+    {
+      "number": 155,
+      "name": "Nova",
+      "size": "6/8",
+      "receivedAt": "2026-05-23",
+      "location": null,
+      "state": null,
+      "models": []
+    },
+    {
+      "number": 58,
+      "name": "Eleonora Eco",
+      "size": "8",
+      "receivedAt": "2025-10-14",
+      "location": "Pasarela 2025",
+      "state": null,
+      "models": []
+    },
+    {
+      "number": 88,
+      "name": "Elena",
+      "size": "8",
+      "receivedAt": "2025-12-16",
+      "location": null,
+      "state": null,
+      "models": [
+        "Sofia"
+      ]
+    },
+    {
+      "number": 110,
+      "name": "Peiky",
+      "size": "8",
+      "receivedAt": "2026-02-20",
+      "location": null,
+      "state": null,
+      "models": [
+        "Dani"
+      ]
+    },
+    {
+      "number": 119,
+      "name": "Brady",
+      "size": "8",
+      "receivedAt": "2026-02-26",
+      "location": null,
+      "state": null,
+      "models": [
+        "Heidy"
+      ]
+    },
+    {
+      "number": 128,
+      "name": "Nancy",
+      "size": "8",
+      "receivedAt": "2026-03-23",
+      "location": null,
+      "state": null,
+      "models": [
+        "Wendy"
+      ]
+    },
+    {
+      "number": 134,
+      "name": "Unicornio",
+      "size": "8",
+      "receivedAt": "2026-04-06",
+      "location": null,
+      "state": null,
+      "models": [
+        "Heidy"
+      ]
+    },
+    {
+      "number": 136,
+      "name": "Amanda Eco",
+      "size": "8",
+      "receivedAt": "2026-04-08",
+      "location": null,
+      "state": null,
+      "models": [
+        "Barbara Veana"
+      ]
+    },
+    {
+      "number": 142,
+      "name": "Agatha",
+      "size": "8",
+      "receivedAt": "2026-04-17",
+      "location": null,
+      "state": null,
+      "models": [
+        "Barbara"
+      ]
+    },
+    {
+      "number": 156,
+      "name": "Marena",
+      "size": "8",
+      "receivedAt": "2026-05-25",
+      "location": null,
+      "state": null,
+      "models": []
+    },
+    {
+      "number": null,
+      "name": "Dulce y Baikal",
+      "size": "Por definir",
+      "receivedAt": null,
+      "location": "Por tirantes y pedreria",
+      "state": null,
+      "models": [
+        "Heidy"
+      ]
+    },
+    {
+      "number": 8,
+      "name": "Mariana",
+      "size": "2",
+      "receivedAt": "2025-06-12",
+      "location": "Pasarela 2025",
+      "state": "DEVUELTO",
+      "models": []
+    },
+    {
+      "number": 25,
+      "name": "Nancy",
+      "size": "2",
+      "receivedAt": "2025-06-23",
+      "location": "Pasarela 2025",
+      "state": "DEVUELTO",
+      "models": []
+    },
+    {
+      "number": 38,
+      "name": "Barcaza",
+      "size": "2",
+      "receivedAt": "2025-08-18",
+      "location": "Pasarela 2025",
+      "state": "DEVUELTO",
+      "models": []
+    },
+    {
+      "number": 42,
+      "name": "Gloria",
+      "size": "2",
+      "receivedAt": "2025-09-22",
+      "location": "Pasarela 2025",
+      "state": "DEVOLUCIÓN",
+      "models": []
+    },
+    {
+      "number": 6,
+      "name": "Rozé",
+      "size": "4",
+      "receivedAt": "2025-06-12",
+      "location": "Pasarela 2025",
+      "state": "DEVUELTO",
+      "models": []
+    },
+    {
+      "number": 12,
+      "name": "Saco Largo",
+      "size": "4",
+      "receivedAt": "2025-06-13",
+      "location": "Pasarela 2025",
+      "state": "VENDIDO",
+      "models": []
+    },
+    {
+      "number": 21,
+      "name": "Cayla",
+      "size": "4",
+      "receivedAt": "2025-06-19",
+      "location": "Pasarela 2025",
+      "state": "VENDIDO",
+      "models": []
+    },
+    {
+      "number": 40,
+      "name": "Desdemona",
+      "size": "4",
+      "receivedAt": "2025-09-13",
+      "location": "Pasarela 2025",
+      "state": "DEVOLUCIÓN",
+      "models": []
+    },
+    {
+      "number": 50,
+      "name": "Natalia",
+      "size": "4",
+      "receivedAt": "2025-10-15",
+      "location": "Pasarela 2025",
+      "state": "VENDIDO",
+      "models": [
+        "Angie"
+      ]
+    },
+    {
+      "number": 51,
+      "name": "Marcia",
+      "size": "4",
+      "receivedAt": "2025-10-15",
+      "location": "Pasarela 2025",
+      "state": "DEVUELTO",
+      "models": [
+        "Angie"
+      ]
+    },
+    {
+      "number": 5,
+      "name": "Estrella",
+      "size": "6",
+      "receivedAt": "2025-06-02",
+      "location": "Pasarela 2025",
+      "state": "DEVUELTO",
+      "models": []
+    },
+    {
+      "number": 18,
+      "name": "Begoña",
+      "size": "6",
+      "receivedAt": "2025-06-19",
+      "location": "Pasarela 2025",
+      "state": "VENDIDO",
+      "models": [
+        "Angie",
+        "Heidy"
+      ]
+    },
+    {
+      "number": 27,
+      "name": "Palma",
+      "size": "6",
+      "receivedAt": "2025-06-23",
+      "location": "Pasarela 2025 y colaboracion campaña cruzada",
+      "state": "DEVUELTO",
+      "models": []
+    },
+    {
+      "number": 33,
+      "name": "Marika",
+      "size": "6",
+      "receivedAt": null,
+      "location": "Pasarela 2025",
+      "state": "VENDIDO",
+      "models": []
+    },
+    {
+      "number": 43,
+      "name": "Vanessa",
+      "size": "6",
+      "receivedAt": "2025-09-23",
+      "location": "Pasarela 2025",
+      "state": "DEVUELTO",
+      "models": []
+    },
+    {
+      "number": 46,
+      "name": "Yolanda",
+      "size": "6",
+      "receivedAt": "2025-10-03",
+      "location": "Pasarela 2025",
+      "state": "VENDIDO",
+      "models": []
+    },
+    {
+      "number": 14,
+      "name": "Maria Eugenia",
+      "size": "8",
+      "receivedAt": "2025-06-13",
+      "location": "Pasarela 2025",
+      "state": "DEVUELTO",
+      "models": []
+    },
+    {
+      "number": 20,
+      "name": "Torero",
+      "size": "8",
+      "receivedAt": "2025-06-19",
+      "location": "Pasarela 2025",
+      "state": "DEVUELTO",
+      "models": []
+    },
+    {
+      "number": 47,
+      "name": "Helena",
+      "size": "8",
+      "receivedAt": "2025-10-03",
+      "location": "Pasarela 2025",
+      "state": "DEVOLUCIÓN",
+      "models": [
+        "Daniela"
+      ]
+    },
+    {
+      "number": 49,
+      "name": "Roxana",
+      "size": "8",
+      "receivedAt": "2025-10-11",
+      "location": "Pasarela 2025",
+      "state": null,
+      "models": []
+    },
+    {
+      "number": 28,
+      "name": "Estefania",
+      "size": "10",
+      "receivedAt": "2025-06-20",
+      "location": "Pasarela 2025",
+      "state": "VENDIDO",
+      "models": []
+    },
+    {
+      "number": 3,
+      "name": "Sandra",
+      "size": "12",
+      "receivedAt": "2025-05-31",
+      "location": "Pasarela 2025",
+      "state": "VENDIDO",
+      "models": []
+    },
+    {
+      "number": 45,
+      "name": "Cecilia",
+      "size": "12",
+      "receivedAt": "2025-09-29",
+      "location": "Pasarela 2025",
+      "state": "DEVOLUCIÓN",
+      "models": [
+        "Vianey"
+      ]
+    },
+    {
+      "number": 11,
+      "name": "Vestido Brocado",
+      "size": "0 – 2",
+      "receivedAt": "2025-06-13",
+      "location": "Pasarela 2025",
+      "state": "DEVUELTO",
+      "models": []
+    },
+    {
+      "number": 24,
+      "name": "Evelyn",
+      "size": "0 – 2",
+      "receivedAt": "2025-06-23",
+      "location": "Pasarela 2025",
+      "state": "DEVUELTO",
+      "models": []
+    },
+    {
+      "number": 29,
+      "name": "Gabriela",
+      "size": "0 – 2",
+      "receivedAt": "2025-06-10",
+      "location": "Pasarela 2025",
+      "state": "DEVUELTO",
+      "models": []
+    },
+    {
+      "number": 73,
+      "name": "Marcela",
+      "size": "10",
+      "receivedAt": "2025-11-25",
+      "location": null,
+      "state": "DEVOLUCIÓN",
+      "models": [
+        "Sofia"
+      ]
+    },
+    {
+      "number": 90,
+      "name": "Hillary",
+      "size": "10",
+      "receivedAt": "2025-12-18",
+      "location": null,
+      "state": "VENDIDO",
+      "models": [
+        "Sofia"
+      ]
+    },
+    {
+      "number": 91,
+      "name": "Ivette",
+      "size": "10",
+      "receivedAt": "2025-12-22",
+      "location": null,
+      "state": "VENDIDO",
+      "models": [
+        "Sofia"
+      ]
+    },
+    {
+      "number": 92,
+      "name": "Arlette",
+      "size": "10",
+      "receivedAt": "2025-12-22",
+      "location": null,
+      "state": "DEVUELTO",
+      "models": []
+    },
+    {
+      "number": 141,
+      "name": "Rosa",
+      "size": "10",
+      "receivedAt": "2026-04-16",
+      "location": null,
+      "state": "VENDIDO",
+      "models": []
+    },
+    {
+      "number": 79,
+      "name": "Lorena",
+      "size": "12",
+      "receivedAt": "2025-12-02",
+      "location": null,
+      "state": "VENDIDO",
+      "models": [
+        "Sofia"
+      ]
+    },
+    {
+      "number": 82,
+      "name": "La Divine Eco",
+      "size": "12",
+      "receivedAt": "2025-12-03",
+      "location": null,
+      "state": "VENDIDO",
+      "models": [
+        "Sofia"
+      ]
+    },
+    {
+      "number": 81,
+      "name": "Amparo Eco",
+      "size": "14",
+      "receivedAt": "2025-12-03",
+      "location": null,
+      "state": "VENDIDO",
+      "models": [
+        "Paulina"
+      ]
+    },
+    {
+      "number": 103,
+      "name": "Teresa",
+      "size": "14",
+      "receivedAt": "2026-02-09",
+      "location": null,
+      "state": "APARTADO",
+      "models": [
+        "Vero"
+      ]
+    },
+    {
+      "number": 87,
+      "name": "Ivana",
+      "size": "14/16",
+      "receivedAt": "2025-12-15",
+      "location": null,
+      "state": "VENDIDO",
+      "models": []
+    },
+    {
+      "number": 125,
+      "name": "Princesa",
+      "size": "16",
+      "receivedAt": "2026-03-06",
+      "location": null,
+      "state": "VENDIDO",
+      "models": []
+    },
+    {
+      "number": 67,
+      "name": "Granito",
+      "size": "2",
+      "receivedAt": "2025-11-14",
+      "location": null,
+      "state": "VENDIDO",
+      "models": [
+        "Irene",
+        "Heidy"
+      ]
+    },
+    {
+      "number": 101,
+      "name": "Camelia",
+      "size": "2",
+      "receivedAt": null,
+      "location": null,
+      "state": "VENDIDO",
+      "models": [
+        "No Foto"
+      ]
+    },
+    {
+      "number": 4,
+      "name": "IANA VD",
+      "size": "2 / 4",
+      "receivedAt": null,
+      "location": "Pasarela 2025",
+      "state": "DEVUELTO",
+      "models": []
+    },
+    {
+      "number": 53,
+      "name": "Daniela",
+      "size": "2 / 4",
+      "receivedAt": "2025-10-18",
+      "location": "Pasarela 2025",
+      "state": "DEVOLUCIÓN",
+      "models": [
+        "Heidy"
+      ]
+    },
+    {
+      "number": 54,
+      "name": "Issa",
+      "size": "2 / 4",
+      "receivedAt": "2025-10-20",
+      "location": null,
+      "state": "DEVUELTO",
+      "models": [
+        "Heidy"
+      ]
+    },
+    {
+      "number": 16,
+      "name": "Laura",
+      "size": "2-4",
+      "receivedAt": "2025-06-19",
+      "location": "Pasarela 2025",
+      "state": "DEVUELTO",
+      "models": []
+    },
+    {
+      "number": 64,
+      "name": "Ariadna",
+      "size": "2-4",
+      "receivedAt": "2025-11-04",
+      "location": null,
+      "state": "VENDIDO",
+      "models": [
+        "Heidy"
+      ]
+    },
+    {
+      "number": 108,
+      "name": "Lulú Eco",
+      "size": "20",
+      "receivedAt": "2026-02-18",
+      "location": null,
+      "state": "VENDIDO",
+      "models": [
+        "Aby"
+      ]
+    },
+    {
+      "number": 65,
+      "name": "Adriana",
+      "size": "4",
+      "receivedAt": "2025-11-04",
+      "location": null,
+      "state": "DEVUELTO",
+      "models": [
+        "Alison"
+      ]
+    },
+    {
+      "number": 69,
+      "name": "Nicole Milano",
+      "size": "4",
+      "receivedAt": "2025-11-20",
+      "location": null,
+      "state": "DEVUELTO",
+      "models": [
+        "Heidy"
+      ]
+    },
+    {
+      "number": 74,
+      "name": "Nahuatl",
+      "size": "4",
+      "receivedAt": "2025-11-26",
+      "location": null,
+      "state": "DEVUELTO",
+      "models": [
+        "Heidy"
+      ]
+    },
+    {
+      "number": 77,
+      "name": "Erica",
+      "size": "4",
+      "receivedAt": "2025-11-29",
+      "location": null,
+      "state": "VENDIDO",
+      "models": [
+        "Heidy"
+      ]
+    },
+    {
+      "number": 19,
+      "name": "Teresa",
+      "size": "4 – 6",
+      "receivedAt": "2025-06-19",
+      "location": "Pasarela 2025",
+      "state": "DEVUELTO",
+      "models": []
+    },
+    {
+      "number": 22,
+      "name": "Maritere",
+      "size": "4 – 6",
+      "receivedAt": "2025-06-19",
+      "location": "Pasarela 2025",
+      "state": "DEVUELTO",
+      "models": []
+    },
+    {
+      "number": 44,
+      "name": "Lucy",
+      "size": "4 – 6",
+      "receivedAt": "2025-09-25",
+      "location": "Pasarela 2025",
+      "state": "DEVUELTO",
+      "models": []
+    },
+    {
+      "number": 57,
+      "name": "Eloisa",
+      "size": "4 / 6",
+      "receivedAt": "2025-10-14",
+      "location": "Pasarela 2025",
+      "state": "VENDIDO",
+      "models": [
+        "Alison"
+      ]
+    },
+    {
+      "number": 86,
+      "name": "Imelda",
+      "size": "4/6",
+      "receivedAt": "2025-12-10",
+      "location": null,
+      "state": "DEVUELTO",
+      "models": [
+        "Alison"
+      ]
+    },
+    {
+      "number": 63,
+      "name": "Albionix Celebrart",
+      "size": "6",
+      "receivedAt": "2025-11-04",
+      "location": null,
+      "state": "DEVUELTO",
+      "models": [
+        "Sheyla"
+      ]
+    },
+    {
+      "number": 66,
+      "name": "Lourdes",
+      "size": "6",
+      "receivedAt": "2025-11-13",
+      "location": null,
+      "state": "DEVUELTO",
+      "models": [
+        "Sheyla"
+      ]
+    },
+    {
+      "number": 72,
+      "name": "Isabel",
+      "size": "6",
+      "receivedAt": "2025-11-25",
+      "location": null,
+      "state": "DEVOLUCIÓN",
+      "models": [
+        "Sheyla"
+      ]
+    },
+    {
+      "number": 78,
+      "name": "Cess",
+      "size": "6",
+      "receivedAt": "2025-11-29",
+      "location": null,
+      "state": "VENDIDO",
+      "models": [
+        "Heidy"
+      ]
+    },
+    {
+      "number": 98,
+      "name": "Analee",
+      "size": "6",
+      "receivedAt": "2026-01-09",
+      "location": null,
+      "state": "VENDIDO",
+      "models": [
+        "Angie"
+      ]
+    },
+    {
+      "number": 152,
+      "name": "Carlee",
+      "size": "6",
+      "receivedAt": null,
+      "location": null,
+      "state": "EN CORADURIA",
+      "models": []
+    },
+    {
+      "number": 35,
+      "name": "Ruth",
+      "size": "6 – 8",
+      "receivedAt": null,
+      "location": null,
+      "state": "DEVUELTO",
+      "models": []
+    },
+    {
+      "number": 52,
+      "name": "Rolland",
+      "size": "6 / 8",
+      "receivedAt": "2025-10-16",
+      "location": "Pasarela 2025",
+      "state": "DEVOLUCIÓN",
+      "models": [
+        "Daniela"
+      ]
+    },
+    {
+      "number": 17,
+      "name": "Aria",
+      "size": "8",
+      "receivedAt": "2025-06-19",
+      "location": null,
+      "state": "VENDIDO",
+      "models": []
+    },
+    {
+      "number": 68,
+      "name": "Cinthya",
+      "size": "8",
+      "receivedAt": "2025-11-15",
+      "location": null,
+      "state": "DEVUELTO",
+      "models": [
+        "Sofia"
+      ]
+    },
+    {
+      "number": 70,
+      "name": "Halixa",
+      "size": "8",
+      "receivedAt": "2025-11-20",
+      "location": null,
+      "state": "DEVUELTO",
+      "models": [
+        "Sofia"
+      ]
+    },
+    {
+      "number": 122,
+      "name": "Alina",
+      "size": "8",
+      "receivedAt": "2026-03-04",
+      "location": null,
+      "state": "VENDIDO",
+      "models": []
+    },
+    {
+      "number": 7,
+      "name": "GEMMA",
+      "size": "hecho a medida",
+      "receivedAt": "2025-06-12",
+      "location": null,
+      "state": null,
+      "models": []
+    }
+  ],
+  "models": [
+    "Aby",
+    "Alison",
+    "Angie",
+    "Aranzazú",
+    "Barbara",
+    "Barbara Veana",
+    "Dani",
+    "Daniela",
+    "Diana",
+    "Heidy",
+    "Irene",
+    "Maria",
+    "No Foto",
+    "Pau",
+    "Paulina",
+    "Sheyla",
+    "Sofia",
+    "Vero",
+    "Vianey",
+    "Wendy"
+  ]
+}

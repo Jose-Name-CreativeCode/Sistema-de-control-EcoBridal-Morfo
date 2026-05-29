@@ -7,8 +7,11 @@ type ModelsPageProps = {
     size?: string;
     created?: string;
     deleted?: string;
+    page?: string;
   }>;
 };
+
+const MODELS_PER_PAGE = 6;
 
 function formatCurrency(value: number | null) {
   if (value === null) {
@@ -54,6 +57,71 @@ export default async function ModelsPage({ searchParams }: ModelsPageProps) {
     search: params?.search,
     size: params?.size,
   });
+  const requestedPage = Number(params?.page ?? "1");
+  const totalPages = Math.max(
+    1,
+    Math.ceil(data.models.length / MODELS_PER_PAGE),
+  );
+  const currentPage =
+    Number.isFinite(requestedPage) && requestedPage > 0
+      ? Math.min(Math.floor(requestedPage), totalPages)
+      : 1;
+  const pageStart = (currentPage - 1) * MODELS_PER_PAGE;
+  const paginatedModels = data.models.slice(
+    pageStart,
+    pageStart + MODELS_PER_PAGE,
+  );
+  const visiblePages = new Set<number>([1, totalPages]);
+
+  if (totalPages <= 7) {
+    for (let page = 1; page <= totalPages; page += 1) {
+      visiblePages.add(page);
+    }
+  } else if (currentPage <= 4) {
+    for (let page = 1; page <= 5; page += 1) {
+      visiblePages.add(page);
+    }
+  } else if (currentPage >= totalPages - 3) {
+    for (let page = totalPages - 4; page <= totalPages; page += 1) {
+      visiblePages.add(page);
+    }
+  } else {
+    for (let page = currentPage - 1; page <= currentPage + 1; page += 1) {
+      visiblePages.add(page);
+    }
+  }
+
+  const paginationItems: Array<number | "start-ellipsis" | "end-ellipsis"> = [];
+  const orderedVisiblePages = Array.from(visiblePages)
+    .filter((page) => page >= 1 && page <= totalPages)
+    .sort((left, right) => left - right);
+
+  orderedVisiblePages.forEach((page, index) => {
+    paginationItems.push(page);
+
+    const nextPage = orderedVisiblePages[index + 1];
+
+    if (!nextPage) {
+      return;
+    }
+
+    if (nextPage - page > 1) {
+      paginationItems.push(
+        page < currentPage ? "start-ellipsis" : "end-ellipsis",
+      );
+    }
+  });
+
+  function buildPageHref(page: number) {
+    const query = new URLSearchParams();
+
+    if (params?.search) query.set("search", params.search);
+    if (params?.size) query.set("size", params.size);
+    if (page > 1) query.set("page", String(page));
+
+    const queryString = query.toString();
+    return queryString ? `/modelos?${queryString}` : "/modelos";
+  }
 
   return (
     <main className="flex w-full flex-1 flex-col gap-6">
@@ -154,7 +222,7 @@ export default async function ModelsPage({ searchParams }: ModelsPageProps) {
         </div>
 
         <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-          {data.models.map((model) => (
+          {paginatedModels.map((model) => (
             <article key={model.id} className="app-card overflow-hidden">
               <Link href={`/modelos/${model.id}`} className="block">
                 <div className="relative h-64 overflow-hidden bg-surface-strong sm:h-72">
@@ -260,6 +328,57 @@ export default async function ModelsPage({ searchParams }: ModelsPageProps) {
             </article>
           ))}
         </div>
+
+        {totalPages > 1 ? (
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-2 border-t border-line pt-6">
+            <Link
+              href={buildPageHref(Math.max(1, currentPage - 1))}
+              aria-disabled={currentPage === 1}
+              className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+                currentPage === 1
+                  ? "pointer-events-none border border-line bg-surface text-foreground/45"
+                  : "border border-line bg-white text-foreground hover:border-accent hover:text-accent"
+              }`}
+            >
+              Anterior
+            </Link>
+
+            {paginationItems.map((item, index) =>
+              typeof item === "number" ? (
+                <Link
+                  key={item}
+                  href={buildPageHref(item)}
+                  className={`min-w-10 rounded-full px-4 py-2 text-center text-sm font-medium transition ${
+                    item === currentPage
+                      ? "bg-accent text-white"
+                      : "border border-line bg-white text-foreground hover:border-accent hover:text-accent"
+                  }`}
+                >
+                  {item}
+                </Link>
+              ) : (
+                <span
+                  key={`${item}-${index}`}
+                  className="px-2 py-2 text-sm text-foreground/55"
+                >
+                  ...
+                </span>
+              ),
+            )}
+
+            <Link
+              href={buildPageHref(Math.min(totalPages, currentPage + 1))}
+              aria-disabled={currentPage === totalPages}
+              className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+                currentPage === totalPages
+                  ? "pointer-events-none border border-line bg-surface text-foreground/45"
+                  : "border border-line bg-white text-foreground hover:border-accent hover:text-accent"
+              }`}
+            >
+              Siguiente
+            </Link>
+          </div>
+        ) : null}
       </section>
     </main>
   );

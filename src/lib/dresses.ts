@@ -39,7 +39,15 @@ export type DressFilters = {
   size?: string;
   workflowStatus?: WorkflowStatus | "";
   instagramStatus?: InstagramStatus | "";
-  novelty?: "all" | "new" | "existing";
+  novelty?:
+    | "all"
+    | "new"
+    | "existing"
+    | "used"
+    | "sample"
+    | "sold"
+    | "returned"
+    | "in_stock";
   sort?: DressSortOption;
 };
 
@@ -50,9 +58,11 @@ export type DressListItem = {
   brand: string | null;
   size: string;
   color: string | null;
+  condition: DressCondition;
   isNew: boolean;
   workflowStatus: WorkflowStatus;
   instagramStatus: InstagramStatus;
+  notes?: string | null;
   receivedAt: Date | null;
   previewPhotoUrl: string | null;
   previewPhotoType: "COVER" | "FRONT" | "BACK" | "DETAIL" | "WORN_BY_MODEL" | "VIDEO" | null;
@@ -179,6 +189,7 @@ export const demoDresses: DressListItem[] = importedDressNames.map((name, index)
     brand: null,
     size: "Por definir",
     color: null,
+    condition: state?.isNew ? "NEW" : "USED",
     isNew: state?.isNew ?? false,
     workflowStatus: state?.workflowStatus ?? "PENDING_PHOTOS",
     instagramStatus: state?.instagramStatus ?? "NOT_PUBLISHED",
@@ -367,6 +378,28 @@ export function getInstagramStatusBadgeClasses(status: InstagramStatus) {
   return "bg-stone-200 text-stone-800";
 }
 
+export function hasDressTag(notes: string | null | undefined, tag: "VENDIDO" | "DEVUELTO") {
+  if (!notes) {
+    return false;
+  }
+
+  const normalizedNotes = notes.toUpperCase();
+
+  if (tag === "VENDIDO") {
+    return normalizedNotes.includes("VENDIDO");
+  }
+
+  return (
+    normalizedNotes.includes("DEVUELTO") ||
+    normalizedNotes.includes("DEVOLUCIÓN") ||
+    normalizedNotes.includes("DEVOLUCION")
+  );
+}
+
+export function isDressInStock(notes: string | null | undefined) {
+  return !hasDressTag(notes, "VENDIDO") && !hasDressTag(notes, "DEVUELTO");
+}
+
 export async function getDressCatalogData(
   filters: DressFilters = {},
 ): Promise<DressCatalogData> {
@@ -396,6 +429,7 @@ export async function getDressCatalogData(
           brand: true,
           size: true,
           color: true,
+          condition: true,
           isNew: true,
           workflowStatus: true,
           instagramStatus: true,
@@ -462,6 +496,7 @@ export async function getDressCatalogData(
         brand: dress.brand,
         size: dress.size,
         color: dress.color,
+        condition: dress.condition,
         isNew: dress.isNew,
         workflowStatus: dress.workflowStatus,
         instagramStatus: dress.instagramStatus,
@@ -664,7 +699,7 @@ function buildDemoQuickEditRow(dress: DressListItem): DressQuickEditRow {
     ...dress,
     previewPhotoUrl: preview?.imageUrl ?? null,
     previewPhotoType: preview?.photoType ?? null,
-    condition: dress.isNew ? "NEW" : "USED",
+    condition: dress.condition,
     price: {
       "demo-1": 18900,
       "demo-14": 16600,
@@ -750,6 +785,81 @@ function buildDressWhere(filters: DressFilters): Prisma.DressWhereInput {
     where.isNew = false;
   }
 
+  if (filters.novelty === "used") {
+    where.condition = "USED";
+  }
+
+  if (filters.novelty === "sample") {
+    where.condition = "SAMPLE";
+  }
+
+  if (filters.novelty === "sold") {
+    where.notes = {
+      contains: "VENDIDO",
+      mode: "insensitive",
+    };
+  }
+
+  if (filters.novelty === "returned") {
+    where.OR = [
+      ...(where.OR ?? []),
+      {
+        notes: {
+          contains: "DEVUELTO",
+          mode: "insensitive",
+        },
+      },
+      {
+        notes: {
+          contains: "DEVOLUCIÓN",
+          mode: "insensitive",
+        },
+      },
+      {
+        notes: {
+          contains: "DEVOLUCION",
+          mode: "insensitive",
+        },
+      },
+    ];
+  }
+
+  if (filters.novelty === "in_stock") {
+    const existingNot = where.NOT
+      ? Array.isArray(where.NOT)
+        ? where.NOT
+        : [where.NOT]
+      : [];
+
+    where.NOT = [
+      ...existingNot,
+      {
+        notes: {
+          contains: "VENDIDO",
+          mode: "insensitive",
+        },
+      },
+      {
+        notes: {
+          contains: "DEVUELTO",
+          mode: "insensitive",
+        },
+      },
+      {
+        notes: {
+          contains: "DEVOLUCIÓN",
+          mode: "insensitive",
+        },
+      },
+      {
+        notes: {
+          contains: "DEVOLUCION",
+          mode: "insensitive",
+        },
+      },
+    ];
+  }
+
   return where;
 }
 
@@ -788,6 +898,29 @@ function applyDemoFilters(dresses: DressListItem[], filters: DressFilters) {
     }
 
     if (filters.novelty === "existing" && dress.isNew) {
+      return false;
+    }
+
+    if (filters.novelty === "used" && dress.condition !== "USED") {
+      return false;
+    }
+
+    if (filters.novelty === "sample" && dress.condition !== "SAMPLE") {
+      return false;
+    }
+
+    if (filters.novelty === "sold" && !hasDressTag(dress.notes, "VENDIDO")) {
+      return false;
+    }
+
+    if (
+      filters.novelty === "returned" &&
+      !hasDressTag(dress.notes, "DEVUELTO")
+    ) {
+      return false;
+    }
+
+    if (filters.novelty === "in_stock" && !isDressInStock(dress.notes)) {
       return false;
     }
 

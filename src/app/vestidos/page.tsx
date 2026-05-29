@@ -57,7 +57,13 @@ export default async function DressesPage({ searchParams }: DressesPageProps) {
         | ""
         | undefined) ?? "",
     novelty:
-      params?.novelty === "new" || params?.novelty === "existing"
+      params?.novelty === "new" ||
+      params?.novelty === "existing" ||
+      params?.novelty === "used" ||
+      params?.novelty === "sample" ||
+      params?.novelty === "sold" ||
+      params?.novelty === "returned" ||
+      params?.novelty === "in_stock"
         ? params.novelty
         : "all",
     sort:
@@ -297,6 +303,11 @@ export default async function DressesPage({ searchParams }: DressesPageProps) {
             <option value="all">Todos</option>
             <option value="new">Solo nuevos</option>
             <option value="existing">Solo existentes</option>
+            <option value="used">Usados</option>
+            <option value="sample">Propios de EcoBridal</option>
+            <option value="in_stock">En existencia</option>
+            <option value="sold">Vendidos</option>
+            <option value="returned">Devueltos</option>
           </select>
 
           <select

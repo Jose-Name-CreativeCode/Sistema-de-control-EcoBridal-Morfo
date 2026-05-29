@@ -1,7 +1,12 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  allowedDevOrigins: ["*.devtunnels.ms"],
+  experimental: {
+    serverActions: {
+      allowedOrigins: ["*.devtunnels.ms"],
+    },
+  },
 };
 
 export default nextConfig;
