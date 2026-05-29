@@ -35,9 +35,20 @@ function isActive(activeHref: string, href: string) {
   return activeHref === href;
 }
 
-export function AppShell({ children }: { children: React.ReactNode }) {
+export function AppShell({
+  children,
+  authSlot,
+}: {
+  children: React.ReactNode;
+  authSlot?: React.ReactNode;
+}) {
   const pathname = usePathname();
   const activeHref = getActiveHref(pathname);
+  const isLoginPage = pathname === "/login";
+
+  if (isLoginPage) {
+    return <div className="min-h-screen bg-transparent">{children}</div>;
+  }
 
   return (
     <div className="min-h-screen bg-transparent">
@@ -88,7 +99,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </div>
             </nav>
 
-            <div className="hidden lg:block lg:min-w-[180px]" />
+            <div className="flex justify-center lg:min-w-[180px] lg:justify-end">
+              {authSlot ?? <div className="hidden lg:block lg:min-w-[180px]" />}
+            </div>
           </div>
         </aside>
 
