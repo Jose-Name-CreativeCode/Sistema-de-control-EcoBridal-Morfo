@@ -11,6 +11,7 @@ import {
   updateDressDetailAction,
   updateDressStatusesAction,
 } from "@/app/vestidos/actions";
+import { DressGalleryCloudinaryForm } from "@/components/dress-gallery-cloudinary-form";
 import { DressProductGallery } from "@/components/dress-product-gallery";
 import { getDressModelOptions } from "@/lib/models";
 import {
@@ -126,13 +127,13 @@ export default async function DressDetailPage({
       .filter((value): value is string => Boolean(value)),
   );
   const galleryPhotos = {
-    cover:
+    coverUrl:
       dress.photos.find((photo) => photo.photoType === "COVER")?.imageUrl ?? "",
-    front:
+    frontUrl:
       dress.photos.find((photo) => photo.photoType === "FRONT")?.imageUrl ?? "",
-    back:
+    backUrl:
       dress.photos.find((photo) => photo.photoType === "BACK")?.imageUrl ?? "",
-    detail:
+    detailUrl:
       dress.photos.find((photo) => photo.photoType === "DETAIL")?.imageUrl ??
       "",
   };
@@ -643,72 +644,18 @@ export default async function DressDetailPage({
                   Configurar galería
                 </p>
                 <h2 className="font-heading text-4xl text-foreground">
-                  Links de fotos del vestido
+                  Fotos del vestido
                 </h2>
               </div>
             </div>
 
-            <form
+            <DressGalleryCloudinaryForm
+              dressId={dress.id}
+              dressCode={dress.internalCode}
+              dressName={dress.name}
               action={saveDressGalleryLinksAction}
-              className="mt-6 grid gap-4"
-            >
-              <input type="hidden" name="dressId" value={dress.id} />
-              <div className="grid gap-4 md:grid-cols-2">
-                <label className="grid gap-2 text-sm text-foreground/75">
-                  Foto principal
-                  <input
-                    type="url"
-                    name="coverUrl"
-                    defaultValue={galleryPhotos.cover}
-                    placeholder="https://... foto cuerpo completo"
-                    className="app-field"
-                  />
-                </label>
-                <label className="grid gap-2 text-sm text-foreground/75">
-                  Foto medio cuerpo
-                  <input
-                    type="url"
-                    name="frontUrl"
-                    defaultValue={galleryPhotos.front}
-                    placeholder="https://... foto de la mitad del cuerpo para arriba"
-                    className="app-field"
-                  />
-                </label>
-                <label className="grid gap-2 text-sm text-foreground/75">
-                  Foto espalda
-                  <input
-                    type="url"
-                    name="backUrl"
-                    defaultValue={galleryPhotos.back}
-                    placeholder="https://... foto de espalda"
-                    className="app-field"
-                  />
-                </label>
-                <label className="grid gap-2 text-sm text-foreground/75">
-                  Foto detalle
-                  <input
-                    type="url"
-                    name="detailUrl"
-                    defaultValue={galleryPhotos.detail}
-                    placeholder="https://... detalle del vestido"
-                    className="app-field"
-                  />
-                </label>
-              </div>
-
-              <div className="rounded-2xl border border-line bg-surface px-4 py-4 text-sm leading-7 text-foreground/72">
-                Puedes pegar aquí links directos desde Cloudinary, OneDrive o
-                donde tengas las fotos. La galería principal del vestido usará
-                estas imágenes.
-              </div>
-
-              <button
-                type="submit"
-                className="app-button-primary w-full sm:w-auto"
-              >
-                Guardar links de galería
-              </button>
-            </form>
+              initialPhotos={galleryPhotos}
+            />
           </section>
 
           <section className="mt-8 grid gap-6 lg:grid-cols-2 lg:items-stretch">
