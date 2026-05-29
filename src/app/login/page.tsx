@@ -10,11 +10,15 @@ type LoginPageProps = {
 
 const errorMessages: Record<string, string> = {
   invalid: "Ese correo o contraseña no coincide con los usuarios autorizados.",
-  config: "La seguridad todavía no está configurada. Falta agregar las variables de acceso.",
+  config:
+    "La seguridad todavía no está configurada. Falta agregar las variables de acceso.",
 };
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
-  const [query, session] = await Promise.all([searchParams, getCurrentSession()]);
+  const [query, session] = await Promise.all([
+    searchParams,
+    getCurrentSession(),
+  ]);
 
   if (session) {
     redirect("/");
@@ -26,7 +30,9 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
   return (
     <main className="flex min-h-screen items-center justify-center px-4 py-10">
       <section className="w-full max-w-md rounded-[28px] border border-[rgba(87,127,178,0.12)] bg-[rgba(235,229,220,0.98)] p-6 shadow-[0_24px_80px_rgba(0,0,0,0.16)] sm:p-8">
-        <p className="text-sm uppercase tracking-[0.28em] text-accent-strong">Acceso privado</p>
+        <p className="text-sm uppercase tracking-[0.28em] text-accent-strong">
+          Acceso privado
+        </p>
         <h1 className="mt-3 font-heading text-4xl leading-[0.95] text-foreground">
           EcoBridal Control
         </h1>
@@ -36,8 +42,8 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
 
         {!authReady ? (
           <div className="mt-6 rounded-2xl border border-support-coral/25 bg-support-coral/10 px-4 py-4 text-sm leading-7 text-foreground">
-            Falta configurar `AUTH_SECRET`, `AUTH_SHARED_PASSWORD` y `AUTH_ALLOWED_EMAILS`
-            en el proyecto.
+            Falta configurar `AUTH_SECRET`, `AUTH_SHARED_PASSWORD` y
+            `AUTH_ALLOWED_EMAILS` en el proyecto.
           </div>
         ) : null}
 
@@ -66,7 +72,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
               required
               type="password"
               name="password"
-              placeholder="Tu contraseña privada"
+              placeholder="contraseña"
               className="app-field"
               autoComplete="current-password"
             />
