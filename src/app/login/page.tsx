@@ -31,7 +31,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
     <main className="flex min-h-screen items-center justify-center px-4 py-10">
       <section className="w-full max-w-md rounded-[28px] border border-[rgba(87,127,178,0.12)] bg-[rgba(235,229,220,0.98)] p-6 shadow-[0_24px_80px_rgba(0,0,0,0.16)] sm:p-8">
         <p className="text-sm uppercase tracking-[0.28em] text-accent-strong">
-          Acceso privado
+          Morfo Studio
         </p>
         <h1 className="mt-3 font-heading text-4xl leading-[0.95] text-foreground">
           EcoBridal Control
@@ -55,12 +55,12 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
 
         <form action={loginAction} className="mt-6 grid gap-4">
           <label className="grid gap-2 text-sm text-foreground/75">
-            Correo autorizado
+            Email
             <input
               required
               type="email"
               name="email"
-              placeholder="tu-correo@gmail.com"
+              placeholder="correo"
               className="app-field"
               autoComplete="email"
             />
