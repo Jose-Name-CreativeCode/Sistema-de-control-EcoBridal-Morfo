@@ -8,9 +8,9 @@ export const metadata: Metadata = {
   title: "EcoBridal Control",
   description: "Sistema interno para control de vestidos, modelos, fotografia e Instagram.",
   icons: {
-    icon: "/logo-ecobridal.png",
-    shortcut: "/logo-ecobridal.png",
-    apple: "/logo-ecobridal.png",
+    icon: "/logo-ecobridal.png?v=morfo",
+    shortcut: "/logo-ecobridal.png?v=morfo",
+    apple: "/logo-ecobridal.png?v=morfo",
   },
 };
 
