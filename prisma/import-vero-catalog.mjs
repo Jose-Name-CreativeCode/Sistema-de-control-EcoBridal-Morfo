@@ -59,11 +59,13 @@ async function run() {
     await client.query('delete from "ModelProfile"');
 
     const modelIdByName = new Map();
+    const modelSizesById = new Map();
 
     for (const modelName of models) {
       const modelId = randomUUID();
 
       modelIdByName.set(modelName, modelId);
+      modelSizesById.set(modelId, new Set());
 
       await client.query(
         `
@@ -133,6 +135,10 @@ async function run() {
           continue;
         }
 
+        if (dress.size && dress.size !== "Por definir") {
+          modelSizesById.get(modelId)?.add(dress.size);
+        }
+
         await client.query(
           `
             insert into "DressAssignment" (
@@ -160,6 +166,23 @@ async function run() {
             modelId,
             `Importada desde Excel de Vero${dress.location ? ` · ${dress.location}` : ""}.`,
           ],
+        );
+      }
+    }
+
+    for (const [modelId, sizes] of modelSizesById.entries()) {
+      for (const size of sizes) {
+        await client.query(
+          `
+            insert into "ModelSize" (
+              "id",
+              "modelId",
+              "size",
+              "createdAt"
+            )
+            values ($1, $2, $3, now())
+          `,
+          [randomUUID(), modelId, size],
         );
       }
     }
