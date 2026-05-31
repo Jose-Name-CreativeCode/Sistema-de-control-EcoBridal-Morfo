@@ -43,8 +43,7 @@ function buildDressNotesWithTags({
     .filter((line) => {
       const normalized = line.toUpperCase();
       return (
-        normalized !== "ESTADO: VENDIDO" &&
-        normalized !== "ESTADO: DEVUELTO"
+        normalized !== "ESTADO: VENDIDOs" && normalized !== "ESTADO: DEVUELTO"
       );
     });
 
@@ -69,8 +68,12 @@ export async function createDressAction(formData: FormData) {
   const brand = String(formData.get("brand") ?? "").trim();
   const size = String(formData.get("size") ?? "").trim();
   const condition = String(formData.get("condition") ?? "USED");
-  const workflowStatus = String(formData.get("workflowStatus") ?? "PENDING_PHOTOS");
-  const instagramStatus = String(formData.get("instagramStatus") ?? "NOT_PUBLISHED");
+  const workflowStatus = String(
+    formData.get("workflowStatus") ?? "PENDING_PHOTOS",
+  );
+  const instagramStatus = String(
+    formData.get("instagramStatus") ?? "NOT_PUBLISHED",
+  );
   const receivedAt = String(formData.get("receivedAt") ?? "").trim();
   const notes = String(formData.get("notes") ?? "").trim();
   const price = parseOptionalNumber(formData.get("price"));
@@ -321,7 +324,8 @@ export async function addDressPhotoAction(formData: FormData) {
 
   const photoType = String(formData.get("photoType") ?? "COVER");
   const imageDataUrl = String(formData.get("imageDataUrl") ?? "").trim();
-  const imageUrl = imageDataUrl || String(formData.get("imageUrl") ?? "").trim();
+  const imageUrl =
+    imageDataUrl || String(formData.get("imageUrl") ?? "").trim();
   const altText = parseOptionalString(formData.get("altText"));
   const sortOrder = parseOptionalNumber(formData.get("sortOrder")) ?? 0;
 
@@ -425,7 +429,9 @@ export async function saveDressGalleryLinksAction(formData: FormData) {
 
   for (const [index, slot] of slots.entries()) {
     const imageUrl = String(formData.get(slot.field) ?? "").trim();
-    const existingPhoto = existingPhotos.find((photo) => photo.photoType === slot.type);
+    const existingPhoto = existingPhotos.find(
+      (photo) => photo.photoType === slot.type,
+    );
 
     if (!imageUrl) {
       if (existingPhoto) {
@@ -468,8 +474,12 @@ export async function updateDressStatusesAction(formData: FormData) {
     redirect(`/vestidos/${dressId}?demo=1`);
   }
 
-  const workflowStatus = String(formData.get("workflowStatus") ?? "PENDING_PHOTOS");
-  const instagramStatus = String(formData.get("instagramStatus") ?? "NOT_PUBLISHED");
+  const workflowStatus = String(
+    formData.get("workflowStatus") ?? "PENDING_PHOTOS",
+  );
+  const instagramStatus = String(
+    formData.get("instagramStatus") ?? "NOT_PUBLISHED",
+  );
 
   await prisma.dress.update({
     where: { id: dressId },
@@ -511,7 +521,9 @@ export async function assignModelToDressAction(formData: FormData) {
         .filter(Boolean),
     ),
   );
-  const assignmentStatus = String(formData.get("assignmentStatus") ?? "SUGGESTED");
+  const assignmentStatus = String(
+    formData.get("assignmentStatus") ?? "SUGGESTED",
+  );
   const scheduledDateValue = String(formData.get("scheduledDate") ?? "").trim();
   const costAgreed = parseOptionalNumber(formData.get("costAgreed"));
   const notes = parseOptionalString(formData.get("notes"));
@@ -535,9 +547,13 @@ export async function assignModelToDressAction(formData: FormData) {
     },
   });
 
-  const existingModelIds = new Set(existingAssignments.map((assignment) => assignment.modelId));
+  const existingModelIds = new Set(
+    existingAssignments.map((assignment) => assignment.modelId),
+  );
 
-  const assignmentsToCreate = modelIds.filter((modelId) => !existingModelIds.has(modelId));
+  const assignmentsToCreate = modelIds.filter(
+    (modelId) => !existingModelIds.has(modelId),
+  );
 
   if (assignmentsToCreate.length > 0) {
     await prisma.dressAssignment.createMany({
@@ -605,7 +621,9 @@ export async function updateDressAssignmentAction(formData: FormData) {
     redirect(`/vestidos/${dressId}?demo=1`);
   }
 
-  const assignmentStatus = String(formData.get("assignmentStatus") ?? "SUGGESTED");
+  const assignmentStatus = String(
+    formData.get("assignmentStatus") ?? "SUGGESTED",
+  );
   const scheduledDateValue = String(formData.get("scheduledDate") ?? "").trim();
   const notes = parseOptionalString(formData.get("notes"));
 
