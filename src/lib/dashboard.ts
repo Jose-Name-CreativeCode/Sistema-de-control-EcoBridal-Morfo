@@ -112,9 +112,7 @@ export async function getDashboardData(): Promise<DashboardData> {
       ["PHOTOGRAPHED", "EDITED", "READY_TO_POST", "PUBLISHED"].includes(dress.workflowStatus),
     );
     const readyForInstagram = dresses.filter(
-      (dress) =>
-        dress.workflowStatus === "READY_TO_POST" ||
-        dress.instagramStatus === "SCHEDULED",
+      (dress) => dress.instagramStatus !== "PUBLISHED",
     );
 
     return {
@@ -199,9 +197,7 @@ function buildDemoDashboardData(): DashboardData {
     ["PHOTOGRAPHED", "EDITED", "READY_TO_POST", "PUBLISHED"].includes(dress.workflowStatus),
   );
   const readyForInstagram = demoDresses.filter(
-    (dress) =>
-      dress.workflowStatus === "READY_TO_POST" ||
-      dress.instagramStatus === "SCHEDULED",
+    (dress) => dress.instagramStatus !== "PUBLISHED",
   );
 
   return {
