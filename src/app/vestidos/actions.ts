@@ -43,7 +43,7 @@ function buildDressNotesWithTags({
     .filter((line) => {
       const normalized = line.toUpperCase();
       return (
-        normalized !== "ESTADO: VENDIDOs" && normalized !== "ESTADO: DEVUELTO"
+        normalized !== "ESTADO: VENDIDO" && normalized !== "ESTADO: DEVUELTO"
       );
     });
 
