@@ -31,6 +31,25 @@ function savePoses(items: PoseItem[]) {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
 }
 
+function dataUrlToBlob(dataUrl: string) {
+  const [header, payload] = dataUrl.split(",");
+
+  if (!header || !payload) {
+    return null;
+  }
+
+  const mimeMatch = header.match(/data:(.*?);base64/);
+  const mimeType = mimeMatch?.[1] ?? "application/octet-stream";
+  const binary = window.atob(payload);
+  const bytes = new Uint8Array(binary.length);
+
+  for (let index = 0; index < binary.length; index += 1) {
+    bytes[index] = binary.charCodeAt(index);
+  }
+
+  return new Blob([bytes], { type: mimeType });
+}
+
 export function PoseLibraryManager() {
   const formSectionRef = useRef<HTMLElement | null>(null);
   const titleInputRef = useRef<HTMLInputElement | null>(null);
@@ -152,6 +171,27 @@ export function PoseLibraryManager() {
     const nextIndex =
       zoomedPoseIndex === filteredPoses.length - 1 ? 0 : zoomedPoseIndex + 1;
     setZoomedPose(filteredPoses[nextIndex]);
+  }
+
+  function openPdf(pose: PoseItem) {
+    if (!pose.pdfUrl) {
+      return;
+    }
+
+    if (pose.pdfUrl.startsWith("data:application/pdf")) {
+      const blob = dataUrlToBlob(pose.pdfUrl);
+
+      if (!blob) {
+        return;
+      }
+
+      const blobUrl = URL.createObjectURL(blob);
+      window.open(blobUrl, "_blank", "noopener,noreferrer");
+      window.setTimeout(() => URL.revokeObjectURL(blobUrl), 60_000);
+      return;
+    }
+
+    window.open(pose.pdfUrl, "_blank", "noopener,noreferrer");
   }
 
   useEffect(() => {
@@ -325,14 +365,13 @@ export function PoseLibraryManager() {
                       <p className="text-sm leading-6 text-foreground/68">
                         Abre la guía en una pestaña nueva.
                       </p>
-                      <a
-                        href={pose.pdfUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
+                      <button
+                        type="button"
+                        onClick={() => openPdf(pose)}
                         className="app-button-primary"
                       >
                         Abrir PDF
-                      </a>
+                      </button>
                     </div>
                   ) : (
                     <button
