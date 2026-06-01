@@ -50,6 +50,16 @@ function dataUrlToBlob(dataUrl: string) {
   return new Blob([bytes], { type: mimeType });
 }
 
+function openBlobInNewTab(blob: Blob) {
+  const blobUrl = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = blobUrl;
+  anchor.target = "_blank";
+  anchor.rel = "noopener noreferrer";
+  anchor.click();
+  window.setTimeout(() => URL.revokeObjectURL(blobUrl), 60_000);
+}
+
 export function PoseLibraryManager() {
   const formSectionRef = useRef<HTMLElement | null>(null);
   const titleInputRef = useRef<HTMLInputElement | null>(null);
@@ -185,13 +195,47 @@ export function PoseLibraryManager() {
         return;
       }
 
+      openBlobInNewTab(blob);
+      return;
+    }
+
+    const anchor = document.createElement("a");
+    anchor.href = pose.pdfUrl;
+    anchor.target = "_blank";
+    anchor.rel = "noopener noreferrer";
+    anchor.click();
+  }
+
+  function downloadPdf(pose: PoseItem) {
+    if (!pose.pdfUrl) {
+      return;
+    }
+
+    const fileName = `${pose.title || "pose"}-${pose.size}.pdf`
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+
+    if (pose.pdfUrl.startsWith("data:application/pdf")) {
+      const blob = dataUrlToBlob(pose.pdfUrl);
+
+      if (!blob) {
+        return;
+      }
+
       const blobUrl = URL.createObjectURL(blob);
-      window.open(blobUrl, "_blank", "noopener,noreferrer");
+      const anchor = document.createElement("a");
+      anchor.href = blobUrl;
+      anchor.download = `${fileName || "pose"}.pdf`;
+      anchor.click();
       window.setTimeout(() => URL.revokeObjectURL(blobUrl), 60_000);
       return;
     }
 
-    window.open(pose.pdfUrl, "_blank", "noopener,noreferrer");
+    const anchor = document.createElement("a");
+    anchor.href = pose.pdfUrl;
+    anchor.download = `${fileName || "pose"}.pdf`;
+    anchor.click();
   }
 
   useEffect(() => {
@@ -365,13 +409,22 @@ export function PoseLibraryManager() {
                       <p className="text-sm leading-6 text-foreground/68">
                         Abre la guía en una pestaña nueva.
                       </p>
-                      <button
-                        type="button"
-                        onClick={() => openPdf(pose)}
-                        className="app-button-primary"
-                      >
-                        Abrir PDF
-                      </button>
+                      <div className="flex flex-wrap justify-center gap-3">
+                        <button
+                          type="button"
+                          onClick={() => openPdf(pose)}
+                          className="app-button-primary"
+                        >
+                          Abrir PDF
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => downloadPdf(pose)}
+                          className="app-button-secondary"
+                        >
+                          Descargar PDF
+                        </button>
+                      </div>
                     </div>
                   ) : (
                     <button
