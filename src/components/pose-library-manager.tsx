@@ -8,6 +8,7 @@ type PoseItem = {
   size: string;
   notes: string;
   imageUrl: string;
+  pdfUrl?: string | null;
 };
 
 const STORAGE_KEY = "ecobridal-pose-library";
@@ -40,6 +41,7 @@ export function PoseLibraryManager() {
   const [size, setSize] = useState("8");
   const [notes, setNotes] = useState("");
   const [imageUrl, setImageUrl] = useState("");
+  const [pdfUrl, setPdfUrl] = useState("");
   const [zoomedPose, setZoomedPose] = useState<PoseItem | null>(null);
 
   const filteredPoses = filterSize ? poses.filter((item) => item.size === filterSize) : poses;
@@ -54,6 +56,17 @@ export function PoseLibraryManager() {
     setSize("8");
     setNotes("");
     setImageUrl("");
+    setPdfUrl("");
+  }
+
+  function looksLikePdf(value: string) {
+    const normalizedValue = value.trim().toLowerCase();
+
+    return (
+      normalizedValue.endsWith(".pdf") ||
+      normalizedValue.includes(".pdf?") ||
+      normalizedValue.startsWith("data:application/pdf")
+    );
   }
 
   function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
@@ -64,14 +77,27 @@ export function PoseLibraryManager() {
     const reader = new FileReader();
     reader.onload = () => {
       if (typeof reader.result === "string") {
+        if (file.type === "application/pdf") {
+          setPdfUrl(reader.result);
+          setImageUrl("");
+          return;
+        }
+
         setImageUrl(reader.result);
+        setPdfUrl("");
       }
     };
+
+    if (file.type === "application/pdf") {
+      reader.readAsDataURL(file);
+      return;
+    }
+
     reader.readAsDataURL(file);
   }
 
   function handleSave() {
-    if (!title.trim() || !imageUrl.trim()) {
+    if (!title.trim() || (!imageUrl.trim() && !pdfUrl.trim())) {
       return;
     }
 
@@ -81,6 +107,7 @@ export function PoseLibraryManager() {
       size,
       notes: notes.trim(),
       imageUrl: imageUrl.trim(),
+      pdfUrl: pdfUrl.trim() || null,
     };
 
     const nextPoses = editingId
@@ -98,6 +125,7 @@ export function PoseLibraryManager() {
     setSize(item.size);
     setNotes(item.notes);
     setImageUrl(item.imageUrl);
+    setPdfUrl(item.pdfUrl ?? "");
     formSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     window.setTimeout(() => {
       titleInputRef.current?.focus();
@@ -210,18 +238,29 @@ export function PoseLibraryManager() {
               Subir imagen
               <input
                 type="file"
-                accept="image/*"
+                accept="image/*,application/pdf"
                 onChange={handleFileChange}
                 className="rounded-2xl border border-line bg-white px-4 py-3 text-sm"
               />
             </label>
 
             <label className="grid gap-2 text-sm text-foreground/75 lg:col-span-2">
-              O pegar link de imagen
+              O pegar link de imagen o PDF
               <input
-                value={imageUrl}
-                onChange={(event) => setImageUrl(event.target.value)}
-                placeholder="https://... pose modelo"
+                value={pdfUrl || imageUrl}
+                onChange={(event) => {
+                  const nextValue = event.target.value;
+
+                  if (looksLikePdf(nextValue)) {
+                    setPdfUrl(nextValue);
+                    setImageUrl("");
+                    return;
+                  }
+
+                  setImageUrl(nextValue);
+                  setPdfUrl("");
+                }}
+                placeholder="https://... pose modelo o guia.pdf"
                 className="app-field"
               />
             </label>
@@ -278,23 +317,45 @@ export function PoseLibraryManager() {
             {filteredPoses.map((pose) => (
               <article key={pose.id} className="app-card overflow-hidden">
                 <div className="flex min-h-[20rem] items-center justify-center overflow-hidden bg-[linear-gradient(180deg,rgba(239,241,250,0.95),rgba(232,227,221,0.92))] p-4 sm:min-h-[24rem] sm:p-6">
-                  <button
-                    type="button"
-                    onClick={() => setZoomedPose(pose)}
-                    className="flex w-full items-center justify-center"
-                  >
-                    <img
-                      src={pose.imageUrl}
-                      alt={pose.title}
-                      className="max-h-[16rem] w-full rounded-[1.2rem] object-contain shadow-[0_18px_40px_rgba(15,23,42,0.08)] transition duration-200 hover:scale-[1.01] sm:max-h-[22rem]"
-                    />
-                  </button>
+                  {pose.pdfUrl ? (
+                    <div className="flex w-full flex-col items-center justify-center gap-4 rounded-[1.2rem] border border-line bg-white px-6 py-8 text-center shadow-[0_18px_40px_rgba(15,23,42,0.08)]">
+                      <p className="font-heading text-2xl leading-none text-foreground">
+                        PDF de poses
+                      </p>
+                      <p className="text-sm leading-6 text-foreground/68">
+                        Abre la guía en una pestaña nueva.
+                      </p>
+                      <a
+                        href={pose.pdfUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="app-button-primary"
+                      >
+                        Abrir PDF
+                      </a>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setZoomedPose(pose)}
+                      className="flex w-full items-center justify-center"
+                    >
+                      <img
+                        src={pose.imageUrl}
+                        alt={pose.title}
+                        className="max-h-[16rem] w-full rounded-[1.2rem] object-contain shadow-[0_18px_40px_rgba(15,23,42,0.08)] transition duration-200 hover:scale-[1.01] sm:max-h-[22rem]"
+                      />
+                    </button>
+                  )}
                 </div>
                 <div className="grid gap-4 p-5">
                   <div className="flex items-center justify-between gap-3">
                     <p className="font-heading text-2xl leading-none text-foreground">{pose.title}</p>
                     <span className="app-badge bg-slate-200 text-slate-700">Talla {pose.size}</span>
                   </div>
+                  <p className="text-xs uppercase tracking-[0.2em] text-foreground/52">
+                    {pose.pdfUrl ? "Formato PDF" : "Formato imagen"}
+                  </p>
                   <p className="text-sm leading-7 text-foreground/72">{pose.notes || "Sin notas"}</p>
                   <div className="flex gap-3">
                     <button
@@ -325,7 +386,7 @@ export function PoseLibraryManager() {
         </article>
       </section>
 
-      {zoomedPose ? (
+      {zoomedPose && !zoomedPose.pdfUrl ? (
         <div
           className="fixed inset-0 z-[120] flex items-center justify-center bg-black/78 px-3 py-4 sm:px-6 sm:py-10"
           role="dialog"
