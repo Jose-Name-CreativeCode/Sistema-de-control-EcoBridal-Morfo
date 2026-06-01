@@ -13,6 +13,8 @@ type PoseItem = {
 
 const STORAGE_KEY = "ecobridal-pose-library";
 const sizes = ["2", "4", "6", "8", "10", "12", "14", "16", "18", "20"] as const;
+const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME?.trim() ?? "";
+const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET?.trim() ?? "";
 
 function readPoses(): PoseItem[] {
   if (typeof window === "undefined") {
@@ -71,7 +73,11 @@ export function PoseLibraryManager() {
   const [notes, setNotes] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [pdfUrl, setPdfUrl] = useState("");
+  const [selectedFileName, setSelectedFileName] = useState("");
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState("");
   const [zoomedPose, setZoomedPose] = useState<PoseItem | null>(null);
+  const cloudinaryReady = Boolean(cloudName && uploadPreset);
 
   const filteredPoses = filterSize ? poses.filter((item) => item.size === filterSize) : poses;
 
@@ -86,6 +92,9 @@ export function PoseLibraryManager() {
     setNotes("");
     setImageUrl("");
     setPdfUrl("");
+    setSelectedFileName("");
+    setUploadError("");
+    setIsUploading(false);
   }
 
   function looksLikePdf(value: string) {
@@ -103,30 +112,58 @@ export function PoseLibraryManager() {
 
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (typeof reader.result === "string") {
-        if (file.type === "application/pdf") {
-          setPdfUrl(reader.result);
-          setImageUrl("");
-          return;
-        }
+    setSelectedFileName(file.name);
+    setUploadError("");
 
-        setImageUrl(reader.result);
-        setPdfUrl("");
-      }
-    };
-
-    if (file.type === "application/pdf") {
-      reader.readAsDataURL(file);
+    if (!cloudinaryReady) {
+      setUploadError("Falta configurar Cloudinary para subir archivos desde esta pantalla.");
+      event.target.value = "";
       return;
     }
 
-    reader.readAsDataURL(file);
+    setIsUploading(true);
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", uploadPreset);
+    formData.append("folder", "ecobridal/poses");
+    formData.append("public_id", `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, "-")}`);
+
+    fetch(`https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`, {
+      method: "POST",
+      body: formData,
+    })
+      .then(async (response) => {
+        const payload = (await response.json()) as {
+          secure_url?: string;
+          error?: { message?: string };
+        };
+
+        if (!response.ok || !payload.secure_url) {
+          throw new Error(payload.error?.message ?? "No se pudo subir el archivo.");
+        }
+
+        if (file.type === "application/pdf" || looksLikePdf(payload.secure_url)) {
+          setPdfUrl(payload.secure_url);
+          setImageUrl("");
+        } else {
+          setImageUrl(payload.secure_url);
+          setPdfUrl("");
+        }
+      })
+      .catch((error: unknown) => {
+        setUploadError(
+          error instanceof Error ? error.message : "No se pudo subir el archivo a Cloudinary.",
+        );
+      })
+      .finally(() => {
+        setIsUploading(false);
+        event.target.value = "";
+      });
   }
 
   function handleSave() {
-    if (!title.trim() || (!imageUrl.trim() && !pdfUrl.trim())) {
+    if (!title.trim() || (!imageUrl.trim() && !pdfUrl.trim()) || isUploading) {
       return;
     }
 
@@ -349,6 +386,26 @@ export function PoseLibraryManager() {
               />
             </label>
 
+            {selectedFileName ? (
+              <div className="rounded-xl border border-line bg-surface px-4 py-3 text-sm text-foreground/72 lg:col-span-2">
+                Archivo elegido: {selectedFileName}
+                {isUploading ? " · Subiendo a Cloudinary..." : null}
+              </div>
+            ) : null}
+
+            {uploadError ? (
+              <div className="rounded-xl border border-support-coral/20 bg-support-coral/8 px-4 py-3 text-sm text-support-coral lg:col-span-2">
+                {uploadError}
+              </div>
+            ) : null}
+
+            {!cloudinaryReady ? (
+              <div className="rounded-xl border border-support-coral/20 bg-support-coral/8 px-4 py-3 text-sm text-foreground lg:col-span-2">
+                Faltan `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` y `NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET`
+                para subir archivos directo desde `Poses`.
+              </div>
+            ) : null}
+
             <label className="grid gap-2 text-sm text-foreground/75 lg:col-span-2">
               Notas
               <textarea
@@ -361,7 +418,12 @@ export function PoseLibraryManager() {
             </label>
 
             <div className="flex flex-wrap gap-3 lg:col-span-2">
-              <button type="button" onClick={handleSave} className="app-button-primary">
+              <button
+                type="button"
+                onClick={handleSave}
+                disabled={isUploading}
+                className="app-button-primary disabled:cursor-not-allowed disabled:opacity-60"
+              >
                 {editingId ? "Guardar cambio" : "Guardar pose"}
               </button>
               {editingId ? (
