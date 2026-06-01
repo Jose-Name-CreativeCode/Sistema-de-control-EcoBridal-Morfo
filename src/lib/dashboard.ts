@@ -161,7 +161,6 @@ export async function getDashboardData(): Promise<DashboardData> {
       })),
       publicationQueue: readyForInstagram
         .filter((dress) => !instagramDressIds.has(dress.id))
-        .slice(0, 4)
         .map((dress) => ({
           title: `${dress.name} pendiente de Instagram`,
           subtitle: `${dress.internalCode} ya está listo para registrar su publicación.`,
@@ -240,7 +239,6 @@ function buildDemoDashboardData(): DashboardData {
     upcomingAssignments: assignments.slice(0, 5),
     publicationQueue: readyForInstagram
       .filter((dress) => !(demoInstagramPosts[dress.id]?.length))
-      .slice(0, 4)
       .map((dress) => ({
         title: `${dress.name} pendiente de Instagram`,
         subtitle: `${dress.internalCode} ya está listo para registrar su publicación.`,
