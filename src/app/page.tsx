@@ -88,7 +88,7 @@ export default async function Home() {
               </h2>
             </div>
 
-            <div className="mt-5 grid gap-3">
+            <div className="mt-5 grid max-h-[28rem] gap-3 overflow-y-auto pr-1">
               {dashboard.publicationQueue.length > 0 ? (
                 dashboard.publicationQueue.map((task) => (
                   <Link
