@@ -14,6 +14,20 @@ export const metadata: Metadata = {
   },
 };
 
+function getDisplayName(email: string) {
+  const normalizedEmail = email.trim().toLowerCase();
+
+  if (normalizedEmail === "manolonat17@gmail.com") {
+    return "Jose";
+  }
+
+  if (normalizedEmail === "verogr2000@gmail.com") {
+    return "Vero";
+  }
+
+  return email;
+}
+
 export default async function RootLayout({
   children,
 }: Readonly<{
@@ -29,7 +43,7 @@ export default async function RootLayout({
             session ? (
               <div className="flex items-center gap-2">
                 <span className="hidden rounded-full border border-white/10 bg-white/6 px-3 py-2 text-xs text-white/78 lg:inline-flex">
-                  {session.email}
+                  {getDisplayName(session.email)}
                 </span>
                 <form action={logoutAction}>
                   <button type="submit" className="app-button-secondary px-3 py-2">
