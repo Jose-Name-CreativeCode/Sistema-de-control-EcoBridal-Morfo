@@ -38,6 +38,54 @@ function getWrappedIndex(length: number, currentIndex: number, direction: -1 | 1
   return (currentIndex + direction + length) % length;
 }
 
+function getGoogleDriveFileId(url: string) {
+  const normalizedUrl = url.trim();
+  const filePathMatch = normalizedUrl.match(/\/file\/d\/([^/]+)/i);
+
+  if (filePathMatch?.[1]) {
+    return filePathMatch[1];
+  }
+
+  try {
+    const parsedUrl = new URL(normalizedUrl);
+    return parsedUrl.searchParams.get("id");
+  } catch {
+    return null;
+  }
+}
+
+function isPdfUrl(url: string) {
+  const normalizedUrl = url.trim().toLowerCase();
+
+  return (
+    normalizedUrl.includes("drive.google.com") ||
+    normalizedUrl.endsWith(".pdf") ||
+    normalizedUrl.includes(".pdf?") ||
+    normalizedUrl.includes("application/pdf")
+  );
+}
+
+function getEmbeddedPdfUrl(url: string) {
+  const googleDriveFileId = getGoogleDriveFileId(url);
+
+  if (googleDriveFileId) {
+    return `https://drive.google.com/file/d/${googleDriveFileId}/preview`;
+  }
+
+  return url.trim();
+}
+
+function getPosePreviewMeta(url: string) {
+  const normalizedUrl = url.trim();
+  const pdf = isPdfUrl(normalizedUrl);
+
+  return {
+    originalUrl: normalizedUrl,
+    isPdf: pdf,
+    embedUrl: pdf ? getEmbeddedPdfUrl(normalizedUrl) : normalizedUrl,
+  };
+}
+
 export function PoseLibraryManager() {
   const formSectionRef = useRef<HTMLElement | null>(null);
   const titleInputRef = useRef<HTMLInputElement | null>(null);
@@ -197,13 +245,16 @@ export function PoseLibraryManager() {
             </label>
 
             <label className="grid gap-2 text-sm text-foreground/75 lg:col-span-2">
-              Link de la imagen
+              Link de la imagen o PDF
               <input
                 value={imageUrl}
                 onChange={(event) => setImageUrl(event.target.value)}
-                placeholder="https://... pose modelo"
+                placeholder="https://... pose modelo o PDF de Google Drive"
                 className="app-field"
               />
+              <span className="text-xs leading-6 text-foreground/58">
+                Puedes pegar una imagen normal o un PDF compartido desde Google Drive.
+              </span>
             </label>
 
             <label className="grid gap-2 text-sm text-foreground/75 lg:col-span-2">
@@ -257,42 +308,71 @@ export function PoseLibraryManager() {
           <div className="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
             {filteredPoses.map((pose) => (
               <article key={pose.id} className="app-card overflow-hidden">
-                <div className="flex min-h-[20rem] items-center justify-center overflow-hidden bg-[linear-gradient(180deg,rgba(239,241,250,0.95),rgba(232,227,221,0.92))] p-4 sm:min-h-[24rem] sm:p-6">
-                  <button
-                    type="button"
-                    onClick={() => setZoomedPose(pose)}
-                    className="flex w-full items-center justify-center"
-                  >
-                    <img
-                      src={pose.imageUrl}
-                      alt={pose.title}
-                      className="max-h-[16rem] w-full rounded-[1.2rem] object-contain shadow-[0_18px_40px_rgba(15,23,42,0.08)] transition duration-200 hover:scale-[1.01] sm:max-h-[22rem]"
-                    />
-                  </button>
-                </div>
-                <div className="grid gap-4 p-5">
-                  <div className="flex items-center justify-between gap-3">
-                    <p className="font-heading text-2xl leading-none text-foreground">{pose.title}</p>
-                    <span className="app-badge bg-slate-200 text-slate-700">Talla {pose.size}</span>
-                  </div>
-                  <p className="text-sm leading-7 text-foreground/72">{pose.notes || "Sin notas"}</p>
-                  <div className="flex gap-3">
-                    <button
-                      type="button"
-                      onClick={() => handleEdit(pose)}
-                      className="app-button-secondary"
-                    >
-                      Editar
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => handleDelete(pose.id)}
-                      className="rounded-xl border border-support-coral/30 px-4 py-3 text-sm font-medium text-support-coral transition hover:bg-support-coral hover:text-white"
-                    >
-                      Borrar
-                    </button>
-                  </div>
-                </div>
+                {(() => {
+                  const preview = getPosePreviewMeta(pose.imageUrl);
+
+                  return (
+                    <>
+                      <div className="flex min-h-[20rem] items-center justify-center overflow-hidden bg-[linear-gradient(180deg,rgba(239,241,250,0.95),rgba(232,227,221,0.92))] p-4 sm:min-h-[24rem] sm:p-6">
+                        <button
+                          type="button"
+                          onClick={() => setZoomedPose(pose)}
+                          className="flex h-full w-full items-center justify-center"
+                        >
+                          {preview.isPdf ? (
+                            <div className="flex h-full w-full flex-col gap-3">
+                              <iframe
+                                src={preview.embedUrl}
+                                title={pose.title}
+                                className="min-h-[15rem] w-full rounded-[1.2rem] border border-line bg-white shadow-[0_18px_40px_rgba(15,23,42,0.08)] sm:min-h-[20rem]"
+                              />
+                              <span className="text-sm font-medium text-foreground/72">
+                                Vista previa del PDF
+                              </span>
+                            </div>
+                          ) : (
+                            <img
+                              src={preview.embedUrl}
+                              alt={pose.title}
+                              className="max-h-[16rem] w-full rounded-[1.2rem] object-contain shadow-[0_18px_40px_rgba(15,23,42,0.08)] transition duration-200 hover:scale-[1.01] sm:max-h-[22rem]"
+                            />
+                          )}
+                        </button>
+                      </div>
+                      <div className="grid gap-4 p-5">
+                        <div className="flex items-center justify-between gap-3">
+                          <p className="font-heading text-2xl leading-none text-foreground">{pose.title}</p>
+                          <span className="app-badge bg-slate-200 text-slate-700">Talla {pose.size}</span>
+                        </div>
+                        <p className="text-sm leading-7 text-foreground/72">{pose.notes || "Sin notas"}</p>
+                        <div className="flex flex-wrap gap-3">
+                          <a
+                            href={preview.originalUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="app-button-secondary"
+                          >
+                            {preview.isPdf ? "Abrir PDF" : "Abrir imagen"}
+                          </a>
+                          <button
+                            type="button"
+                            onClick={() => handleEdit(pose)}
+                            className="app-button-secondary"
+                          >
+                            Editar
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDelete(pose.id)}
+                            className="rounded-xl border border-support-coral/30 px-4 py-3 text-sm font-medium text-support-coral transition hover:bg-support-coral hover:text-white"
+                          >
+                            Borrar
+                          </button>
+                        </div>
+                      </div>
+                    </>
+                  );
+                })()}
               </article>
             ))}
 
@@ -313,6 +393,10 @@ export function PoseLibraryManager() {
           aria-label={`Vista ampliada de ${zoomedPose.title}`}
           onClick={() => setZoomedPose(null)}
         >
+          {(() => {
+            const preview = getPosePreviewMeta(zoomedPose.imageUrl);
+
+            return (
           <div
             className="relative flex max-h-full w-full max-w-6xl flex-col gap-4 rounded-[1.4rem] bg-white p-3 shadow-2xl sm:rounded-[1.8rem] sm:p-4"
             onClick={(event) => event.stopPropagation()}
@@ -349,11 +433,19 @@ export function PoseLibraryManager() {
                   </button>
                 ) : null}
 
-                <img
-                  src={zoomedPose.imageUrl}
-                  alt={zoomedPose.title}
-                  className="max-h-[70vh] w-full rounded-[1rem] object-contain sm:max-h-[75vh] sm:rounded-[1.25rem]"
-                />
+                {preview.isPdf ? (
+                  <iframe
+                    src={preview.embedUrl}
+                    title={zoomedPose.title}
+                    className="min-h-[70vh] w-full rounded-[1rem] border border-line bg-white sm:rounded-[1.25rem]"
+                  />
+                ) : (
+                  <img
+                    src={preview.embedUrl}
+                    alt={zoomedPose.title}
+                    className="max-h-[70vh] w-full rounded-[1rem] object-contain sm:max-h-[75vh] sm:rounded-[1.25rem]"
+                  />
+                )}
 
                 {filteredPoses.length > 1 ? (
                   <button
@@ -367,7 +459,19 @@ export function PoseLibraryManager() {
                 ) : null}
               </div>
             </div>
+            <div className="flex justify-end">
+              <a
+                href={preview.originalUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="app-button-secondary"
+              >
+                {preview.isPdf ? "Abrir PDF original" : "Abrir imagen original"}
+              </a>
+            </div>
           </div>
+            );
+          })()}
         </div>
       ) : null}
     </main>
