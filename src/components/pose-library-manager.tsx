@@ -65,6 +65,17 @@ function isPdfUrl(url: string) {
   );
 }
 
+function isSocialReferenceUrl(url: string) {
+  const normalizedUrl = url.trim().toLowerCase();
+
+  return (
+    normalizedUrl.includes("instagram.com") ||
+    normalizedUrl.includes("instagr.am") ||
+    normalizedUrl.includes("pinterest.com") ||
+    normalizedUrl.includes("pin.it")
+  );
+}
+
 function getEmbeddedPdfUrl(url: string) {
   const googleDriveFileId = getGoogleDriveFileId(url);
 
@@ -78,10 +89,12 @@ function getEmbeddedPdfUrl(url: string) {
 function getPosePreviewMeta(url: string) {
   const normalizedUrl = url.trim();
   const pdf = isPdfUrl(normalizedUrl);
+  const socialReference = isSocialReferenceUrl(normalizedUrl);
 
   return {
     originalUrl: normalizedUrl,
     isPdf: pdf,
+    isSocialReference: socialReference,
     embedUrl: pdf ? getEmbeddedPdfUrl(normalizedUrl) : normalizedUrl,
   };
 }
@@ -249,11 +262,11 @@ export function PoseLibraryManager() {
               <input
                 value={imageUrl}
                 onChange={(event) => setImageUrl(event.target.value)}
-                placeholder="https://... pose modelo o PDF de Google Drive"
+                placeholder="https://... imagen, PDF de Google Drive, Instagram o Pinterest"
                 className="app-field"
               />
               <span className="text-xs leading-6 text-foreground/58">
-                Puedes pegar una imagen normal o un PDF compartido desde Google Drive.
+                Puedes pegar una imagen, un PDF compartido desde Google Drive o una referencia de Instagram o Pinterest.
               </span>
             </label>
 
@@ -330,6 +343,20 @@ export function PoseLibraryManager() {
                                 Vista previa del PDF
                               </span>
                             </div>
+                          ) : preview.isSocialReference ? (
+                            <div className="flex h-full w-full flex-col items-center justify-center rounded-[1.2rem] border border-line bg-white px-6 py-8 text-center shadow-[0_18px_40px_rgba(15,23,42,0.08)]">
+                              <span className="app-badge bg-slate-200 text-slate-700">
+                                {preview.originalUrl.toLowerCase().includes("pinterest")
+                                  ? "Pinterest"
+                                  : "Instagram"}
+                              </span>
+                              <p className="mt-4 font-heading text-2xl leading-none text-foreground">
+                                Referencia externa
+                              </p>
+                              <p className="mt-3 text-sm leading-6 text-foreground/68">
+                                Este tipo de link no se embebe aquí. Usa el botón para abrir la referencia original.
+                              </p>
+                            </div>
                           ) : (
                             <img
                               src={preview.embedUrl}
@@ -352,7 +379,13 @@ export function PoseLibraryManager() {
                             rel="noopener noreferrer"
                             className="app-button-secondary"
                           >
-                            {preview.isPdf ? "Abrir PDF" : "Abrir imagen"}
+                            {preview.isPdf
+                              ? "Abrir PDF"
+                              : preview.isSocialReference
+                                ? preview.originalUrl.toLowerCase().includes("pinterest")
+                                  ? "Abrir Pinterest"
+                                  : "Abrir Instagram"
+                                : "Abrir imagen"}
                           </a>
                           <button
                             type="button"
@@ -439,6 +472,20 @@ export function PoseLibraryManager() {
                     title={zoomedPose.title}
                     className="min-h-[70vh] w-full rounded-[1rem] border border-line bg-white sm:rounded-[1.25rem]"
                   />
+                ) : preview.isSocialReference ? (
+                  <div className="flex min-h-[70vh] w-full flex-col items-center justify-center rounded-[1rem] border border-line bg-white px-6 py-8 text-center sm:rounded-[1.25rem]">
+                    <span className="app-badge bg-slate-200 text-slate-700">
+                      {preview.originalUrl.toLowerCase().includes("pinterest")
+                        ? "Pinterest"
+                        : "Instagram"}
+                    </span>
+                    <p className="mt-4 font-heading text-3xl leading-none text-foreground">
+                      Referencia externa
+                    </p>
+                    <p className="mt-3 max-w-xl text-sm leading-7 text-foreground/68">
+                      Instagram y Pinterest no se embeben de forma confiable aquí. Usa el botón de abajo para abrir la referencia original.
+                    </p>
+                  </div>
                 ) : (
                   <img
                     src={preview.embedUrl}
@@ -466,7 +513,13 @@ export function PoseLibraryManager() {
                 rel="noopener noreferrer"
                 className="app-button-secondary"
               >
-                {preview.isPdf ? "Abrir PDF original" : "Abrir imagen original"}
+                {preview.isPdf
+                  ? "Abrir PDF original"
+                  : preview.isSocialReference
+                    ? preview.originalUrl.toLowerCase().includes("pinterest")
+                      ? "Abrir Pinterest"
+                      : "Abrir Instagram"
+                    : "Abrir imagen original"}
               </a>
             </div>
           </div>
