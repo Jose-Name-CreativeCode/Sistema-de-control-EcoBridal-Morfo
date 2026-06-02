@@ -47,7 +47,7 @@ export type DashboardData = {
 const defaultDashboardLinks: DashboardExcelLink[] = [
   {
     key: "excel_1",
-    label: "Excel nuestro ecobridal -> morfo",
+    label: "Excel nuestro ecobridal morfo",
     url: "",
   },
   {
