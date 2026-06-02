@@ -79,9 +79,7 @@ export default async function NewDressPage({
             <div className="app-field flex min-h-12 items-center text-foreground/72">
               {nextInternalCode}
             </div>
-            <p className="text-xs leading-5 text-foreground/55">
-              Se genera automáticamente para evitar repetir códigos.
-            </p>
+            <p className="text-xs leading-5 text-foreground/55"></p>
           </label>
 
           <label className="grid gap-2 text-sm text-foreground/75">
@@ -92,9 +90,7 @@ export default async function NewDressPage({
               placeholder="Ariadna"
               className="app-field"
             />
-            <p className="text-xs leading-5 text-transparent select-none">
-              Se genera automáticamente para evitar repetir códigos.
-            </p>
+            <p className="text-xs leading-5 text-transparent select-none"></p>
           </label>
 
           <label className="grid gap-2 text-sm text-foreground/75">
