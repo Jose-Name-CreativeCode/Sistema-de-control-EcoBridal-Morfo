@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 type PoseItem = {
   id: string;
@@ -28,6 +28,17 @@ function readPoses(): PoseItem[] {
 
 function savePoses(items: PoseItem[]) {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+}
+
+function getNextPoseTitle(items: PoseItem[]) {
+  const highestSequence = items.reduce((currentHighest, item) => {
+    const match = item.title.match(/^POSE-(\d+)$/i);
+    const sequence = match ? Number(match[1]) : 0;
+
+    return sequence > currentHighest ? sequence : currentHighest;
+  }, 0);
+
+  return `POSE-${String(highestSequence + 1).padStart(3, "0")}`;
 }
 
 function getWrappedIndex(length: number, currentIndex: number, direction: -1 | 1) {
@@ -101,7 +112,7 @@ function getPosePreviewMeta(url: string) {
 
 export function PoseLibraryManager() {
   const formSectionRef = useRef<HTMLElement | null>(null);
-  const titleInputRef = useRef<HTMLInputElement | null>(null);
+  const imageUrlInputRef = useRef<HTMLInputElement | null>(null);
   const [poses, setPoses] = useState<PoseItem[]>(() => readPoses());
   const [editingId, setEditingId] = useState<string | null>(null);
   const [filterSize, setFilterSize] = useState("");
@@ -116,6 +127,7 @@ export function PoseLibraryManager() {
   const zoomedPoseIndex = zoomedPose
     ? filteredPoses.findIndex((item) => item.id === zoomedPose.id)
     : -1;
+  const nextPoseTitle = useMemo(() => getNextPoseTitle(poses), [poses]);
 
   function resetForm() {
     setEditingId(null);
@@ -126,13 +138,15 @@ export function PoseLibraryManager() {
   }
 
   function handleSave() {
-    if (!title.trim() || !imageUrl.trim()) {
+    if (!imageUrl.trim()) {
       return;
     }
 
+    const poseTitle = editingId ? title : nextPoseTitle;
+
     const nextPose: PoseItem = {
       id: editingId ?? crypto.randomUUID(),
-      title: title.trim(),
+      title: poseTitle,
       size,
       notes: notes.trim(),
       imageUrl: imageUrl.trim(),
@@ -155,7 +169,7 @@ export function PoseLibraryManager() {
     setImageUrl(item.imageUrl);
     formSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     window.setTimeout(() => {
-      titleInputRef.current?.focus();
+      imageUrlInputRef.current?.focus();
     }, 180);
   }
 
@@ -235,16 +249,19 @@ export function PoseLibraryManager() {
           </div>
 
           <div className="mt-6 grid gap-4 lg:grid-cols-2">
-            <label className="grid gap-2 text-sm text-foreground/75 lg:col-span-2">
-              Nombre o referencia
-              <input
-                ref={titleInputRef}
-                value={title}
-                onChange={(event) => setTitle(event.target.value)}
-                placeholder="Pose espalda elegante"
-                className="app-field"
-              />
-            </label>
+            <div className="rounded-[1.2rem] border border-line bg-[rgba(250,248,244,0.98)] px-4 py-4 lg:col-span-2">
+              <p className="text-sm uppercase tracking-[0.18em] text-foreground/58">
+                ID de la pose
+              </p>
+              <p className="mt-2 font-heading text-2xl leading-none text-foreground">
+                {editingId ? title : nextPoseTitle}
+              </p>
+              <p className="mt-2 text-sm leading-6 text-foreground/68">
+                {editingId
+                  ? "Este identificador ya está asignado a la pose."
+                  : "El sistema genera el siguiente ID automáticamente para evitar repetidos."}
+              </p>
+            </div>
 
             <label className="grid gap-2 text-sm text-foreground/75">
               Talla
@@ -260,6 +277,7 @@ export function PoseLibraryManager() {
             <label className="grid gap-2 text-sm text-foreground/75 lg:col-span-2">
               Link de la imagen o PDF
               <input
+                ref={imageUrlInputRef}
                 value={imageUrl}
                 onChange={(event) => setImageUrl(event.target.value)}
                 placeholder="https://... imagen, PDF de Google Drive, Instagram o Pinterest"
