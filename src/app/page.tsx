@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { saveDashboardLinkAction } from "@/app/dashboard-actions";
 import { DashboardReminders } from "@/components/dashboard-reminders";
 import { getDashboardData } from "@/lib/dashboard";
 
@@ -105,6 +106,64 @@ export default async function Home() {
                   No hay vestidos pendientes de publicación.
                 </div>
               )}
+            </div>
+          </article>
+        </div>
+
+        <div className="mt-8">
+          <article className="app-card p-5">
+            <div className="border-b border-line pb-4">
+              <p className="text-sm uppercase tracking-[0.2em] text-foreground/55">
+                Links rápidos
+              </p>
+              <h2 className="mt-2 font-heading text-3xl text-foreground sm:text-4xl">
+                Exceles compartidos
+              </h2>
+            </div>
+
+            <div className="mt-5 grid gap-4 lg:grid-cols-2">
+              {dashboard.excelLinks.map((item) => (
+                <div
+                  key={item.key}
+                  className="rounded-[1.2rem] border border-line bg-[rgba(250,248,244,0.98)] p-4"
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <p className="font-medium text-foreground">{item.label}</p>
+                    {item.url ? (
+                      <a
+                        href={item.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="app-button-primary px-4 py-2"
+                      >
+                        Abrir
+                      </a>
+                    ) : (
+                      <span className="app-badge bg-slate-200 text-slate-700">
+                        Sin link
+                      </span>
+                    )}
+                  </div>
+
+                  <form action={saveDashboardLinkAction} className="mt-4 grid gap-3">
+                    <input type="hidden" name="key" value={item.key} />
+                    <input type="hidden" name="label" value={item.label} />
+                    <label className="grid gap-2 text-sm text-foreground/75">
+                      Link del Excel
+                      <input
+                        type="url"
+                        name="url"
+                        defaultValue={item.url}
+                        placeholder="https://..."
+                        className="app-field"
+                      />
+                    </label>
+                    <button type="submit" className="app-button-secondary w-full sm:w-auto">
+                      Guardar link
+                    </button>
+                  </form>
+                </div>
+              ))}
             </div>
           </article>
         </div>

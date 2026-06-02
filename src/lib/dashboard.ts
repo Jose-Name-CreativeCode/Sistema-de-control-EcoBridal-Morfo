@@ -28,6 +28,12 @@ type DashboardAssignment = {
   href: string;
 };
 
+type DashboardExcelLink = {
+  key: string;
+  label: string;
+  url: string;
+};
+
 export type DashboardData = {
   databaseReady: boolean;
   metrics: DashboardMetric[];
@@ -35,7 +41,37 @@ export type DashboardData = {
   missingAssets: DashboardTask[];
   upcomingAssignments: DashboardAssignment[];
   publicationQueue: DashboardTask[];
+  excelLinks: DashboardExcelLink[];
 };
+
+const defaultDashboardLinks: DashboardExcelLink[] = [
+  {
+    key: "excel_1",
+    label: "Excel 1",
+    url: "",
+  },
+  {
+    key: "excel_2",
+    label: "Excel 2",
+    url: "",
+  },
+];
+
+function buildDashboardExcelLinks(
+  records: Array<{ key: string; label: string; url: string | null }> = [],
+) {
+  const recordMap = new Map(records.map((record) => [record.key, record]));
+
+  return defaultDashboardLinks.map((item) => {
+    const record = recordMap.get(item.key);
+
+    return {
+      key: item.key,
+      label: record?.label ?? item.label,
+      url: record?.url ?? "",
+    };
+  });
+}
 
 export async function getDashboardData(): Promise<DashboardData> {
   if (!isDatabaseConfigured()) {
@@ -49,6 +85,7 @@ export async function getDashboardData(): Promise<DashboardData> {
       assignments,
       photoFolders,
       instagramPosts,
+      dashboardLinks,
     ] = await Promise.all([
       prisma.dress.findMany({
         select: {
@@ -98,6 +135,16 @@ export async function getDashboardData(): Promise<DashboardData> {
       prisma.dressInstagramPost.findMany({
         select: {
           dressId: true,
+        },
+      }),
+      prisma.dashboardLink.findMany({
+        select: {
+          key: true,
+          label: true,
+          url: true,
+        },
+        orderBy: {
+          label: "asc",
         },
       }),
     ]);
@@ -166,6 +213,7 @@ export async function getDashboardData(): Promise<DashboardData> {
           subtitle: `${dress.internalCode} ya está listo para registrar su publicación.`,
           href: `/vestidos/${dress.id}`,
         })),
+      excelLinks: buildDashboardExcelLinks(dashboardLinks),
     };
   } catch {
     return buildDemoDashboardData();
@@ -244,5 +292,6 @@ function buildDemoDashboardData(): DashboardData {
         subtitle: `${dress.internalCode} ya está listo para registrar su publicación.`,
         href: `/vestidos/${dress.id}`,
       })),
+    excelLinks: buildDashboardExcelLinks(),
   };
 }
