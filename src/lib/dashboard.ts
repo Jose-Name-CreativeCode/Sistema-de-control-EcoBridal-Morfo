@@ -34,6 +34,19 @@ type DashboardExcelLink = {
   url: string;
 };
 
+const pendingPhotoWorkflowStatuses = [
+  "PENDING_PHOTOS",
+  "MODEL_ASSIGNED",
+  "IN_SESSION",
+] as const;
+
+const completedPhotoWorkflowStatuses = [
+  "PHOTOGRAPHED",
+  "EDITED",
+  "READY_TO_POST",
+  "PUBLISHED",
+] as const;
+
 export type DashboardData = {
   databaseReady: boolean;
   metrics: DashboardMetric[];
@@ -71,6 +84,18 @@ function buildDashboardExcelLinks(
       url: record?.url ?? "",
     };
   });
+}
+
+function isPendingPhotoWorkflow(status: string) {
+  return pendingPhotoWorkflowStatuses.includes(
+    status as (typeof pendingPhotoWorkflowStatuses)[number],
+  );
+}
+
+function isCompletedPhotoWorkflow(status: string) {
+  return completedPhotoWorkflowStatuses.includes(
+    status as (typeof completedPhotoWorkflowStatuses)[number],
+  );
 }
 
 export async function getDashboardData(): Promise<DashboardData> {
@@ -155,14 +180,10 @@ export async function getDashboardData(): Promise<DashboardData> {
     );
 
     const pendingPhoto = dresses.filter((dress) =>
-      ["PENDING_PHOTOS", "MODEL_ASSIGNED", "IN_SESSION"].includes(
-        dress.workflowStatus,
-      ),
+      isPendingPhotoWorkflow(dress.workflowStatus),
     );
     const readyForFolder = dresses.filter((dress) =>
-      ["PHOTOGRAPHED", "EDITED", "READY_TO_POST", "PUBLISHED"].includes(
-        dress.workflowStatus,
-      ),
+      isCompletedPhotoWorkflow(dress.workflowStatus),
     );
     const readyForInstagram = dresses.filter(
       (dress) => dress.instagramStatus !== "PUBLISHED",
@@ -245,14 +266,10 @@ function buildDemoDashboardData(): DashboardData {
   );
 
   const pendingPhoto = demoDresses.filter((dress) =>
-    ["PENDING_PHOTOS", "MODEL_ASSIGNED", "IN_SESSION"].includes(
-      dress.workflowStatus,
-    ),
+    isPendingPhotoWorkflow(dress.workflowStatus),
   );
   const readyForFolder = demoDresses.filter((dress) =>
-    ["PHOTOGRAPHED", "EDITED", "READY_TO_POST", "PUBLISHED"].includes(
-      dress.workflowStatus,
-    ),
+    isCompletedPhotoWorkflow(dress.workflowStatus),
   );
   const readyForInstagram = demoDresses.filter(
     (dress) => dress.instagramStatus !== "PUBLISHED",

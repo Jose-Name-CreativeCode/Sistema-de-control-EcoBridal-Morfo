@@ -14,18 +14,14 @@ export const metadata: Metadata = {
   },
 };
 
+const displayNameByEmail: Record<string, string> = {
+  "manolonat17@gmail.com": "Jose",
+  "verogr2000@gmail.com": "Vero",
+};
+
 function getDisplayName(email: string) {
   const normalizedEmail = email.trim().toLowerCase();
-
-  if (normalizedEmail === "manolonat17@gmail.com") {
-    return "Jose";
-  }
-
-  if (normalizedEmail === "verogr2000@gmail.com") {
-    return "Vero";
-  }
-
-  return email;
+  return displayNameByEmail[normalizedEmail] ?? email;
 }
 
 export default async function RootLayout({

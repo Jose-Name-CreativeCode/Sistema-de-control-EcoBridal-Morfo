@@ -30,6 +30,14 @@ function savePoses(items: PoseItem[]) {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
 }
 
+function getWrappedIndex(length: number, currentIndex: number, direction: -1 | 1) {
+  if (!length) {
+    return -1;
+  }
+
+  return (currentIndex + direction + length) % length;
+}
+
 export function PoseLibraryManager() {
   const formSectionRef = useRef<HTMLElement | null>(null);
   const titleInputRef = useRef<HTMLInputElement | null>(null);
@@ -100,15 +108,13 @@ export function PoseLibraryManager() {
 
   function handlePrevPose() {
     if (!filteredPoses.length || zoomedPoseIndex === -1) return;
-    const nextIndex =
-      zoomedPoseIndex === 0 ? filteredPoses.length - 1 : zoomedPoseIndex - 1;
+    const nextIndex = getWrappedIndex(filteredPoses.length, zoomedPoseIndex, -1);
     setZoomedPose(filteredPoses[nextIndex]);
   }
 
   function handleNextPose() {
     if (!filteredPoses.length || zoomedPoseIndex === -1) return;
-    const nextIndex =
-      zoomedPoseIndex === filteredPoses.length - 1 ? 0 : zoomedPoseIndex + 1;
+    const nextIndex = getWrappedIndex(filteredPoses.length, zoomedPoseIndex, 1);
     setZoomedPose(filteredPoses[nextIndex]);
   }
 
@@ -123,16 +129,14 @@ export function PoseLibraryManager() {
       if (event.key === "ArrowLeft") {
         event.preventDefault();
         if (!filteredPoses.length || zoomedPoseIndex === -1) return;
-        const nextIndex =
-          zoomedPoseIndex === 0 ? filteredPoses.length - 1 : zoomedPoseIndex - 1;
+        const nextIndex = getWrappedIndex(filteredPoses.length, zoomedPoseIndex, -1);
         setZoomedPose(filteredPoses[nextIndex]);
       }
 
       if (event.key === "ArrowRight") {
         event.preventDefault();
         if (!filteredPoses.length || zoomedPoseIndex === -1) return;
-        const nextIndex =
-          zoomedPoseIndex === filteredPoses.length - 1 ? 0 : zoomedPoseIndex + 1;
+        const nextIndex = getWrappedIndex(filteredPoses.length, zoomedPoseIndex, 1);
         setZoomedPose(filteredPoses[nextIndex]);
       }
     }
@@ -229,7 +233,7 @@ export function PoseLibraryManager() {
 
       <section className="app-page">
         <article>
-            <div className="flex flex-col gap-4 border-b border-line pb-4 sm:flex-row sm:items-end sm:justify-between">
+          <div className="flex flex-col gap-4 border-b border-line pb-4 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">Visualizar</p>
               <h2 className="mt-2 font-heading text-3xl leading-none text-foreground sm:text-4xl">

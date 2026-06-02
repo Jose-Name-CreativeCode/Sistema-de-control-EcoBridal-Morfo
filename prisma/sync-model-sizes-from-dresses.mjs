@@ -27,8 +27,6 @@ async function run() {
         and trim(coalesce(d."size", '')) <> 'Por definir'
     `);
 
-    let inserted = 0;
-
     for (const row of rows) {
       await client.query(
         `
@@ -43,8 +41,6 @@ async function run() {
         `,
         [row.modelId, row.size],
       );
-
-      inserted += 1;
     }
 
     await client.query("COMMIT");

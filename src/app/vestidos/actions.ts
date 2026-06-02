@@ -24,40 +24,6 @@ function parseOptionalString(value: FormDataEntryValue | null) {
   return trimmed ? trimmed : null;
 }
 
-function buildDressNotesWithTags({
-  currentNotes,
-  nextNotes,
-  sold,
-  returned,
-}: {
-  currentNotes: string | null;
-  nextNotes: string | null;
-  sold: boolean;
-  returned: boolean;
-}) {
-  const baseNotes = nextNotes ?? currentNotes ?? "";
-  const lines = baseNotes
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .filter((line) => {
-      const normalized = line.toUpperCase();
-      return (
-        normalized !== "ESTADO: VENDIDO" && normalized !== "ESTADO: DEVUELTO"
-      );
-    });
-
-  if (sold) {
-    lines.unshift("Estado: VENDIDO");
-  }
-
-  if (returned) {
-    lines.unshift("Estado: DEVUELTO");
-  }
-
-  return lines.length > 0 ? lines.join("\n") : null;
-}
-
 export async function createDressAction(formData: FormData) {
   if (!isDatabaseConfigured()) {
     redirect("/vestidos/nuevo?demo=1");
