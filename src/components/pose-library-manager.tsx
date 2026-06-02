@@ -8,13 +8,10 @@ type PoseItem = {
   size: string;
   notes: string;
   imageUrl: string;
-  pdfUrl?: string | null;
 };
 
 const STORAGE_KEY = "ecobridal-pose-library";
 const sizes = ["2", "4", "6", "8", "10", "12", "14", "16", "18", "20"] as const;
-const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME?.trim() ?? "";
-const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET?.trim() ?? "";
 
 function readPoses(): PoseItem[] {
   if (typeof window === "undefined") {
@@ -33,35 +30,6 @@ function savePoses(items: PoseItem[]) {
   window.localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
 }
 
-function dataUrlToBlob(dataUrl: string) {
-  const [header, payload] = dataUrl.split(",");
-
-  if (!header || !payload) {
-    return null;
-  }
-
-  const mimeMatch = header.match(/data:(.*?);base64/);
-  const mimeType = mimeMatch?.[1] ?? "application/octet-stream";
-  const binary = window.atob(payload);
-  const bytes = new Uint8Array(binary.length);
-
-  for (let index = 0; index < binary.length; index += 1) {
-    bytes[index] = binary.charCodeAt(index);
-  }
-
-  return new Blob([bytes], { type: mimeType });
-}
-
-function openBlobInNewTab(blob: Blob) {
-  const blobUrl = URL.createObjectURL(blob);
-  const anchor = document.createElement("a");
-  anchor.href = blobUrl;
-  anchor.target = "_blank";
-  anchor.rel = "noopener noreferrer";
-  anchor.click();
-  window.setTimeout(() => URL.revokeObjectURL(blobUrl), 60_000);
-}
-
 export function PoseLibraryManager() {
   const formSectionRef = useRef<HTMLElement | null>(null);
   const titleInputRef = useRef<HTMLInputElement | null>(null);
@@ -72,12 +40,7 @@ export function PoseLibraryManager() {
   const [size, setSize] = useState("8");
   const [notes, setNotes] = useState("");
   const [imageUrl, setImageUrl] = useState("");
-  const [pdfUrl, setPdfUrl] = useState("");
-  const [selectedFileName, setSelectedFileName] = useState("");
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadError, setUploadError] = useState("");
   const [zoomedPose, setZoomedPose] = useState<PoseItem | null>(null);
-  const cloudinaryReady = Boolean(cloudName && uploadPreset);
 
   const filteredPoses = filterSize ? poses.filter((item) => item.size === filterSize) : poses;
 
@@ -91,79 +54,10 @@ export function PoseLibraryManager() {
     setSize("8");
     setNotes("");
     setImageUrl("");
-    setPdfUrl("");
-    setSelectedFileName("");
-    setUploadError("");
-    setIsUploading(false);
-  }
-
-  function looksLikePdf(value: string) {
-    const normalizedValue = value.trim().toLowerCase();
-
-    return (
-      normalizedValue.endsWith(".pdf") ||
-      normalizedValue.includes(".pdf?") ||
-      normalizedValue.startsWith("data:application/pdf")
-    );
-  }
-
-  function handleFileChange(event: React.ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
-
-    if (!file) return;
-
-    setSelectedFileName(file.name);
-    setUploadError("");
-
-    if (!cloudinaryReady) {
-      setUploadError("Falta configurar Cloudinary para subir archivos desde esta pantalla.");
-      event.target.value = "";
-      return;
-    }
-
-    setIsUploading(true);
-
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", uploadPreset);
-    formData.append("folder", "ecobridal/poses");
-    formData.append("public_id", `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, "-")}`);
-
-    fetch(`https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`, {
-      method: "POST",
-      body: formData,
-    })
-      .then(async (response) => {
-        const payload = (await response.json()) as {
-          secure_url?: string;
-          error?: { message?: string };
-        };
-
-        if (!response.ok || !payload.secure_url) {
-          throw new Error(payload.error?.message ?? "No se pudo subir el archivo.");
-        }
-
-        if (file.type === "application/pdf" || looksLikePdf(payload.secure_url)) {
-          setPdfUrl(payload.secure_url);
-          setImageUrl("");
-        } else {
-          setImageUrl(payload.secure_url);
-          setPdfUrl("");
-        }
-      })
-      .catch((error: unknown) => {
-        setUploadError(
-          error instanceof Error ? error.message : "No se pudo subir el archivo a Cloudinary.",
-        );
-      })
-      .finally(() => {
-        setIsUploading(false);
-        event.target.value = "";
-      });
   }
 
   function handleSave() {
-    if (!title.trim() || (!imageUrl.trim() && !pdfUrl.trim()) || isUploading) {
+    if (!title.trim() || !imageUrl.trim()) {
       return;
     }
 
@@ -173,7 +67,6 @@ export function PoseLibraryManager() {
       size,
       notes: notes.trim(),
       imageUrl: imageUrl.trim(),
-      pdfUrl: pdfUrl.trim() || null,
     };
 
     const nextPoses = editingId
@@ -191,7 +84,6 @@ export function PoseLibraryManager() {
     setSize(item.size);
     setNotes(item.notes);
     setImageUrl(item.imageUrl);
-    setPdfUrl(item.pdfUrl ?? "");
     formSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     window.setTimeout(() => {
       titleInputRef.current?.focus();
@@ -218,61 +110,6 @@ export function PoseLibraryManager() {
     const nextIndex =
       zoomedPoseIndex === filteredPoses.length - 1 ? 0 : zoomedPoseIndex + 1;
     setZoomedPose(filteredPoses[nextIndex]);
-  }
-
-  function openPdf(pose: PoseItem) {
-    if (!pose.pdfUrl) {
-      return;
-    }
-
-    if (pose.pdfUrl.startsWith("data:application/pdf")) {
-      const blob = dataUrlToBlob(pose.pdfUrl);
-
-      if (!blob) {
-        return;
-      }
-
-      openBlobInNewTab(blob);
-      return;
-    }
-
-    const anchor = document.createElement("a");
-    anchor.href = pose.pdfUrl;
-    anchor.target = "_blank";
-    anchor.rel = "noopener noreferrer";
-    anchor.click();
-  }
-
-  function downloadPdf(pose: PoseItem) {
-    if (!pose.pdfUrl) {
-      return;
-    }
-
-    const fileName = `${pose.title || "pose"}-${pose.size}.pdf`
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "");
-
-    if (pose.pdfUrl.startsWith("data:application/pdf")) {
-      const blob = dataUrlToBlob(pose.pdfUrl);
-
-      if (!blob) {
-        return;
-      }
-
-      const blobUrl = URL.createObjectURL(blob);
-      const anchor = document.createElement("a");
-      anchor.href = blobUrl;
-      anchor.download = `${fileName || "pose"}.pdf`;
-      anchor.click();
-      window.setTimeout(() => URL.revokeObjectURL(blobUrl), 60_000);
-      return;
-    }
-
-    const anchor = document.createElement("a");
-    anchor.href = pose.pdfUrl;
-    anchor.download = `${fileName || "pose"}.pdf`;
-    anchor.click();
   }
 
   useEffect(() => {
@@ -355,56 +192,15 @@ export function PoseLibraryManager() {
               </select>
             </label>
 
-            <label className="grid gap-2 text-sm text-foreground/75">
-              Subir imagen
-              <input
-                type="file"
-                accept="image/*,application/pdf"
-                onChange={handleFileChange}
-                className="rounded-2xl border border-line bg-white px-4 py-3 text-sm"
-              />
-            </label>
-
             <label className="grid gap-2 text-sm text-foreground/75 lg:col-span-2">
-              O pegar link de imagen o PDF
+              Link de la imagen
               <input
-                value={pdfUrl || imageUrl}
-                onChange={(event) => {
-                  const nextValue = event.target.value;
-
-                  if (looksLikePdf(nextValue)) {
-                    setPdfUrl(nextValue);
-                    setImageUrl("");
-                    return;
-                  }
-
-                  setImageUrl(nextValue);
-                  setPdfUrl("");
-                }}
-                placeholder="https://... pose modelo o guia.pdf"
+                value={imageUrl}
+                onChange={(event) => setImageUrl(event.target.value)}
+                placeholder="https://... pose modelo"
                 className="app-field"
               />
             </label>
-
-            {selectedFileName ? (
-              <div className="rounded-xl border border-line bg-surface px-4 py-3 text-sm text-foreground/72 lg:col-span-2">
-                Archivo elegido: {selectedFileName}
-                {isUploading ? " · Subiendo a Cloudinary..." : null}
-              </div>
-            ) : null}
-
-            {uploadError ? (
-              <div className="rounded-xl border border-support-coral/20 bg-support-coral/8 px-4 py-3 text-sm text-support-coral lg:col-span-2">
-                {uploadError}
-              </div>
-            ) : null}
-
-            {!cloudinaryReady ? (
-              <div className="rounded-xl border border-support-coral/20 bg-support-coral/8 px-4 py-3 text-sm text-foreground lg:col-span-2">
-                Faltan `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` y `NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET`
-                para subir archivos directo desde `Poses`.
-              </div>
-            ) : null}
 
             <label className="grid gap-2 text-sm text-foreground/75 lg:col-span-2">
               Notas
@@ -418,12 +214,7 @@ export function PoseLibraryManager() {
             </label>
 
             <div className="flex flex-wrap gap-3 lg:col-span-2">
-              <button
-                type="button"
-                onClick={handleSave}
-                disabled={isUploading}
-                className="app-button-primary disabled:cursor-not-allowed disabled:opacity-60"
-              >
+              <button type="button" onClick={handleSave} className="app-button-primary">
                 {editingId ? "Guardar cambio" : "Guardar pose"}
               </button>
               {editingId ? (
@@ -463,53 +254,23 @@ export function PoseLibraryManager() {
             {filteredPoses.map((pose) => (
               <article key={pose.id} className="app-card overflow-hidden">
                 <div className="flex min-h-[20rem] items-center justify-center overflow-hidden bg-[linear-gradient(180deg,rgba(239,241,250,0.95),rgba(232,227,221,0.92))] p-4 sm:min-h-[24rem] sm:p-6">
-                  {pose.pdfUrl ? (
-                    <div className="flex w-full flex-col items-center justify-center gap-4 rounded-[1.2rem] border border-line bg-white px-6 py-8 text-center shadow-[0_18px_40px_rgba(15,23,42,0.08)]">
-                      <p className="font-heading text-2xl leading-none text-foreground">
-                        PDF de poses
-                      </p>
-                      <p className="text-sm leading-6 text-foreground/68">
-                        Abre la guía en una pestaña nueva.
-                      </p>
-                      <div className="flex flex-wrap justify-center gap-3">
-                        <button
-                          type="button"
-                          onClick={() => openPdf(pose)}
-                          className="app-button-primary"
-                        >
-                          Abrir PDF
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => downloadPdf(pose)}
-                          className="app-button-secondary"
-                        >
-                          Descargar PDF
-                        </button>
-                      </div>
-                    </div>
-                  ) : (
-                    <button
-                      type="button"
-                      onClick={() => setZoomedPose(pose)}
-                      className="flex w-full items-center justify-center"
-                    >
-                      <img
-                        src={pose.imageUrl}
-                        alt={pose.title}
-                        className="max-h-[16rem] w-full rounded-[1.2rem] object-contain shadow-[0_18px_40px_rgba(15,23,42,0.08)] transition duration-200 hover:scale-[1.01] sm:max-h-[22rem]"
-                      />
-                    </button>
-                  )}
+                  <button
+                    type="button"
+                    onClick={() => setZoomedPose(pose)}
+                    className="flex w-full items-center justify-center"
+                  >
+                    <img
+                      src={pose.imageUrl}
+                      alt={pose.title}
+                      className="max-h-[16rem] w-full rounded-[1.2rem] object-contain shadow-[0_18px_40px_rgba(15,23,42,0.08)] transition duration-200 hover:scale-[1.01] sm:max-h-[22rem]"
+                    />
+                  </button>
                 </div>
                 <div className="grid gap-4 p-5">
                   <div className="flex items-center justify-between gap-3">
                     <p className="font-heading text-2xl leading-none text-foreground">{pose.title}</p>
                     <span className="app-badge bg-slate-200 text-slate-700">Talla {pose.size}</span>
                   </div>
-                  <p className="text-xs uppercase tracking-[0.2em] text-foreground/52">
-                    {pose.pdfUrl ? "Formato PDF" : "Formato imagen"}
-                  </p>
                   <p className="text-sm leading-7 text-foreground/72">{pose.notes || "Sin notas"}</p>
                   <div className="flex gap-3">
                     <button
@@ -540,7 +301,7 @@ export function PoseLibraryManager() {
         </article>
       </section>
 
-      {zoomedPose && !zoomedPose.pdfUrl ? (
+      {zoomedPose ? (
         <div
           className="fixed inset-0 z-[120] flex items-center justify-center bg-black/78 px-3 py-4 sm:px-6 sm:py-10"
           role="dialog"
