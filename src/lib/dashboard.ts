@@ -67,7 +67,7 @@ function buildDashboardExcelLinks(
 
     return {
       key: item.key,
-      label: record?.label ?? item.label,
+      label: item.label,
       url: record?.url ?? "",
     };
   });
