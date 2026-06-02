@@ -47,12 +47,12 @@ export type DashboardData = {
 const defaultDashboardLinks: DashboardExcelLink[] = [
   {
     key: "excel_1",
-    label: "Excel 1",
+    label: "Excel nuestro ecobridal -> morfo",
     url: "",
   },
   {
     key: "excel_2",
-    label: "Excel 2",
+    label: "Excel de ecobridal Xime",
     url: "",
   },
 ];
@@ -150,13 +150,19 @@ export async function getDashboardData(): Promise<DashboardData> {
     ]);
 
     const folderDressIds = new Set(photoFolders.map((item) => item.dressId));
-    const instagramDressIds = new Set(instagramPosts.map((item) => item.dressId));
+    const instagramDressIds = new Set(
+      instagramPosts.map((item) => item.dressId),
+    );
 
     const pendingPhoto = dresses.filter((dress) =>
-      ["PENDING_PHOTOS", "MODEL_ASSIGNED", "IN_SESSION"].includes(dress.workflowStatus),
+      ["PENDING_PHOTOS", "MODEL_ASSIGNED", "IN_SESSION"].includes(
+        dress.workflowStatus,
+      ),
     );
     const readyForFolder = dresses.filter((dress) =>
-      ["PHOTOGRAPHED", "EDITED", "READY_TO_POST", "PUBLISHED"].includes(dress.workflowStatus),
+      ["PHOTOGRAPHED", "EDITED", "READY_TO_POST", "PUBLISHED"].includes(
+        dress.workflowStatus,
+      ),
     );
     const readyForInstagram = dresses.filter(
       (dress) => dress.instagramStatus !== "PUBLISHED",
@@ -221,27 +227,32 @@ export async function getDashboardData(): Promise<DashboardData> {
 }
 
 function buildDemoDashboardData(): DashboardData {
-  const assignments = Object.entries(demoDressAssignments).flatMap(([dressId, items]) =>
-    items
-      .filter((item) => item.scheduledDate)
-      .map((item) => {
-      const dress = demoDresses.find((entry) => entry.id === dressId);
+  const assignments = Object.entries(demoDressAssignments).flatMap(
+    ([dressId, items]) =>
+      items
+        .filter((item) => item.scheduledDate)
+        .map((item) => {
+          const dress = demoDresses.find((entry) => entry.id === dressId);
 
-      return {
-        dressId,
-        dressName: dress?.name ?? "Vestido",
-        modelName: item.model?.name ?? "Modelo pendiente",
-        scheduledDate: item.scheduledDate,
-        href: dress ? `/vestidos/${dress.id}` : "/vestidos",
-      };
-      }),
+          return {
+            dressId,
+            dressName: dress?.name ?? "Vestido",
+            modelName: item.model?.name ?? "Modelo pendiente",
+            scheduledDate: item.scheduledDate,
+            href: dress ? `/vestidos/${dress.id}` : "/vestidos",
+          };
+        }),
   );
 
   const pendingPhoto = demoDresses.filter((dress) =>
-    ["PENDING_PHOTOS", "MODEL_ASSIGNED", "IN_SESSION"].includes(dress.workflowStatus),
+    ["PENDING_PHOTOS", "MODEL_ASSIGNED", "IN_SESSION"].includes(
+      dress.workflowStatus,
+    ),
   );
   const readyForFolder = demoDresses.filter((dress) =>
-    ["PHOTOGRAPHED", "EDITED", "READY_TO_POST", "PUBLISHED"].includes(dress.workflowStatus),
+    ["PHOTOGRAPHED", "EDITED", "READY_TO_POST", "PUBLISHED"].includes(
+      dress.workflowStatus,
+    ),
   );
   const readyForInstagram = demoDresses.filter(
     (dress) => dress.instagramStatus !== "PUBLISHED",
@@ -277,7 +288,7 @@ function buildDemoDashboardData(): DashboardData {
       href: `/vestidos/${dress.id}`,
     })),
     missingAssets: readyForFolder
-      .filter((dress) => !(demoDressFolders[dress.id]?.length))
+      .filter((dress) => !demoDressFolders[dress.id]?.length)
       .slice(0, 4)
       .map((dress) => ({
         title: `${dress.name} sin carpeta editada`,
@@ -286,7 +297,7 @@ function buildDemoDashboardData(): DashboardData {
       })),
     upcomingAssignments: assignments.slice(0, 5),
     publicationQueue: readyForInstagram
-      .filter((dress) => !(demoInstagramPosts[dress.id]?.length))
+      .filter((dress) => !demoInstagramPosts[dress.id]?.length)
       .map((dress) => ({
         title: `${dress.name} pendiente de Instagram`,
         subtitle: `${dress.internalCode} ya está listo para registrar su publicación.`,
