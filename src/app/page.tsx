@@ -37,7 +37,7 @@ export default async function Home() {
             href="https://morfo-hub.vercel.app/dashboard.html"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex min-h-[10rem] w-full max-w-[10rem] items-center justify-center rounded-[1.8rem] border border-line bg-[rgba(250,248,244,0.98)] p-6 transition hover:border-accent hover:bg-white lg:min-h-[13rem]"
+            className="flex min-h-[12rem] w-full max-w-[20rem] items-center justify-center rounded-[1.8rem] border border-line bg-[rgba(250,248,244,0.98)] p-6 transition hover:border-accent hover:bg-white lg:min-h-[13rem]"
           >
             <img
               src="/logo-ecobridal.png"
