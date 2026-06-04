@@ -30,6 +30,19 @@ export default async function Home() {
               modifica la información.
             </p>
           </div>
+
+          <a
+            href="https://morfo-hub.vercel.app/dashboard.html"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex min-h-[12rem] w-full max-w-[24rem] items-center justify-center rounded-[1.8rem] border border-line bg-[rgba(250,248,244,0.98)] p-6 transition hover:border-accent hover:bg-white lg:min-h-[13rem]"
+          >
+            <img
+              src="/logo-ecobridal.png"
+              alt="Ir a Morfo Hub"
+              className="max-h-[4.5rem] w-auto object-contain sm:max-h-[5.5rem]"
+            />
+          </a>
         </div>
 
         <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
