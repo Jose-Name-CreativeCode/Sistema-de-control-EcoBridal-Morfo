@@ -6,7 +6,11 @@ import {
   demoInstagramPosts,
   workflowStatusLabels,
 } from "@/lib/dresses";
-import { demoDressAssignments, demoModels } from "@/lib/models";
+import {
+  assignmentStatusLabels,
+  demoDressAssignments,
+  demoModels,
+} from "@/lib/models";
 
 type DashboardMetric = {
   label: string;
@@ -21,10 +25,13 @@ type DashboardTask = {
 };
 
 type DashboardAssignment = {
+  id: string;
   dressId: string;
   dressName: string;
   modelName: string;
+  assignmentStatus: keyof typeof assignmentStatusLabels;
   scheduledDate: Date | null;
+  notes: string | null;
   href: string;
 };
 
@@ -138,6 +145,7 @@ export async function getDashboardData(): Promise<DashboardData> {
         include: {
           dress: {
             select: {
+              id: true,
               name: true,
             },
           },
@@ -227,10 +235,13 @@ export async function getDashboardData(): Promise<DashboardData> {
           href: `/vestidos/${dress.id}`,
         })),
       upcomingAssignments: assignments.map((assignment) => ({
+        id: assignment.id,
         dressId: assignment.dressId,
         dressName: assignment.dress.name,
         modelName: assignment.model?.name ?? "Modelo pendiente",
+        assignmentStatus: assignment.assignmentStatus,
         scheduledDate: assignment.scheduledDate,
+        notes: assignment.notes,
         href: `/vestidos/${assignment.dressId}`,
       })),
       publicationQueue: readyForInstagram
@@ -256,10 +267,13 @@ function buildDemoDashboardData(): DashboardData {
           const dress = demoDresses.find((entry) => entry.id === dressId);
 
           return {
+            id: item.id,
             dressId,
             dressName: dress?.name ?? "Vestido",
             modelName: item.model?.name ?? "Modelo pendiente",
+            assignmentStatus: item.assignmentStatus,
             scheduledDate: item.scheduledDate,
+            notes: item.notes,
             href: dress ? `/vestidos/${dress.id}` : "/vestidos",
           };
         }),

@@ -34,3 +34,81 @@ export async function saveDashboardLinkAction(formData: FormData) {
   revalidatePath("/");
   redirect("/");
 }
+
+export async function updateDashboardAssignmentAction(formData: FormData) {
+  const assignmentId = String(formData.get("assignmentId") ?? "").trim();
+  const assignmentStatus = String(
+    formData.get("assignmentStatus") ?? "SUGGESTED",
+  ).trim();
+  const scheduledDateValue = String(formData.get("scheduledDate") ?? "").trim();
+  const notesValue = String(formData.get("notes") ?? "").trim();
+
+  if (!isDatabaseConfigured()) {
+    redirect("/?demo=1");
+  }
+
+  if (!assignmentId) {
+    redirect("/");
+  }
+
+  const assignment = await prisma.dressAssignment.findUnique({
+    where: { id: assignmentId },
+    select: {
+      id: true,
+      dressId: true,
+    },
+  });
+
+  if (!assignment) {
+    redirect("/");
+  }
+
+  await prisma.dressAssignment.update({
+    where: { id: assignmentId },
+    data: {
+      assignmentStatus: assignmentStatus as
+        | "SUGGESTED"
+        | "CONFIRMED"
+        | "COMPLETED"
+        | "CANCELLED",
+      scheduledDate: scheduledDateValue ? new Date(scheduledDateValue) : null,
+      notes: notesValue || null,
+    },
+  });
+
+  revalidatePath("/");
+  revalidatePath(`/vestidos/${assignment.dressId}`);
+  redirect("/");
+}
+
+export async function removeDashboardAssignmentAction(formData: FormData) {
+  const assignmentId = String(formData.get("assignmentId") ?? "").trim();
+
+  if (!isDatabaseConfigured()) {
+    redirect("/?demo=1");
+  }
+
+  if (!assignmentId) {
+    redirect("/");
+  }
+
+  const assignment = await prisma.dressAssignment.findUnique({
+    where: { id: assignmentId },
+    select: {
+      id: true,
+      dressId: true,
+    },
+  });
+
+  if (!assignment) {
+    redirect("/");
+  }
+
+  await prisma.dressAssignment.delete({
+    where: { id: assignmentId },
+  });
+
+  revalidatePath("/");
+  revalidatePath(`/vestidos/${assignment.dressId}`);
+  redirect("/");
+}

@@ -1,7 +1,12 @@
 import Link from "next/link";
-import { saveDashboardLinkAction } from "@/app/dashboard-actions";
+import {
+  removeDashboardAssignmentAction,
+  saveDashboardLinkAction,
+  updateDashboardAssignmentAction,
+} from "@/app/dashboard-actions";
 import { DashboardReminders } from "@/components/dashboard-reminders";
 import { getDashboardData } from "@/lib/dashboard";
+import { assignmentStatusLabels } from "@/lib/models";
 
 function formatDate(value: Date | null) {
   if (!value) return "Sin fecha";
@@ -11,6 +16,15 @@ function formatDate(value: Date | null) {
     month: "short",
     year: "numeric",
   }).format(value);
+}
+
+function formatDateInput(value: Date | null) {
+  if (!value) return "";
+
+  const year = value.getFullYear();
+  const month = String(value.getMonth() + 1).padStart(2, "0");
+  const day = String(value.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 }
 
 export default async function Home() {
@@ -77,19 +91,117 @@ export default async function Home() {
             <div className="mt-5 grid gap-3">
               {dashboard.upcomingAssignments.length > 0 ? (
                 dashboard.upcomingAssignments.map((assignment) => (
-                  <Link
-                    key={`${assignment.dressId}-${assignment.modelName}-${assignment.scheduledDate?.toISOString() ?? "sin-fecha"}`}
-                    href={assignment.href}
-                    className="rounded-[1.15rem] border border-line bg-[rgba(250,248,244,0.98)] px-4 py-4 transition hover:border-accent hover:bg-white"
+                  <div
+                    key={assignment.id}
+                    className="rounded-[1.15rem] border border-line bg-[rgba(250,248,244,0.98)] px-4 py-4"
                   >
-                    <p className="font-medium text-foreground">
-                      {assignment.modelName}
-                    </p>
-                    <p className="mt-1 text-sm leading-6 text-foreground/72">
-                      {assignment.dressName} ·{" "}
-                      {formatDate(assignment.scheduledDate)}
-                    </p>
-                  </Link>
+                    <div className="flex flex-wrap items-start justify-between gap-3">
+                      <div>
+                        <p className="font-medium text-foreground">
+                          {assignment.modelName}
+                        </p>
+                        <p className="mt-1 text-sm leading-6 text-foreground/72">
+                          {assignment.dressName} ·{" "}
+                          {formatDate(assignment.scheduledDate)}
+                        </p>
+                        <p className="mt-1 text-xs uppercase tracking-[0.18em] text-foreground/55">
+                          {assignmentStatusLabels[assignment.assignmentStatus]}
+                        </p>
+                        <p className="mt-2 text-sm leading-6 text-foreground/68">
+                          {assignment.notes ?? "Sin notas de asignación"}
+                        </p>
+                      </div>
+
+                      <Link
+                        href={assignment.href}
+                        className="app-button-secondary px-4 py-2"
+                      >
+                        Ver vestido
+                      </Link>
+                    </div>
+
+                    <details className="mt-4 rounded-[1rem] border border-line bg-white/70 px-4 py-3">
+                      <summary className="cursor-pointer list-none text-sm font-medium text-accent">
+                        Editar cita
+                      </summary>
+
+                      <form
+                        action={updateDashboardAssignmentAction}
+                        className="mt-4 grid gap-3"
+                      >
+                        <input
+                          type="hidden"
+                          name="assignmentId"
+                          value={assignment.id}
+                        />
+
+                        <div className="grid gap-3 sm:grid-cols-2">
+                          <label className="grid gap-2 text-sm text-foreground/75">
+                            Estado
+                            <select
+                              name="assignmentStatus"
+                              defaultValue={assignment.assignmentStatus}
+                              className="app-field"
+                            >
+                              <option value="CONFIRMED">Programada</option>
+                              <option value="SUGGESTED">Pendiente</option>
+                              <option value="CANCELLED">Cancelada</option>
+                              <option value="COMPLETED">En espera</option>
+                            </select>
+                          </label>
+
+                          <label className="grid gap-2 text-sm text-foreground/75">
+                            Fecha programada
+                            <input
+                              type="date"
+                              name="scheduledDate"
+                              defaultValue={formatDateInput(
+                                assignment.scheduledDate,
+                              )}
+                              className="app-field"
+                            />
+                          </label>
+                        </div>
+
+                        <label className="grid gap-2 text-sm text-foreground/75">
+                          Notas
+                          <textarea
+                            name="notes"
+                            rows={3}
+                            defaultValue={assignment.notes ?? ""}
+                            placeholder="Ajustes de horario, cambios o comentarios."
+                            className="app-field min-h-28 resize-y"
+                          />
+                        </label>
+
+                        <div className="flex flex-wrap gap-3">
+                          <button
+                            type="submit"
+                            className="app-button-primary w-full sm:w-auto"
+                          >
+                            Guardar cambios
+                          </button>
+                        </div>
+                      </form>
+
+                      <form
+                        action={removeDashboardAssignmentAction}
+                        className="mt-3"
+                      >
+                        <input
+                          type="hidden"
+                          name="assignmentId"
+                          value={assignment.id}
+                        />
+                        <button
+                          type="submit"
+                          className="rounded-xl border border-support-coral/30 px-4 py-3 text-sm font-medium text-support-coral transition hover:bg-support-coral hover:text-white"
+                        >
+                          Quitar cita
+                        </button>
+                      </form>
+                    </details>
+                  </div>
                 ))
               ) : (
                 <div className="rounded-[1.15rem] border border-dashed border-line bg-[rgba(250,248,244,0.88)] px-4 py-5 text-sm text-foreground/72">
