@@ -172,7 +172,7 @@ export default async function Home() {
             </div>
 
             <div className="mt-5 grid gap-5 lg:grid-cols-2">
-              <div className="grid gap-3">
+              <div className="grid max-h-[24rem] gap-3 overflow-y-auto pr-1">
                 <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">
                   Listos para editar
                 </p>
@@ -182,7 +182,7 @@ export default async function Home() {
                 />
               </div>
 
-              <div className="grid gap-3">
+              <div className="grid max-h-[24rem] gap-3 overflow-y-auto pr-1">
                 <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">
                   Listos para publicar
                 </p>
