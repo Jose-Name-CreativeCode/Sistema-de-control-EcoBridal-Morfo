@@ -280,6 +280,9 @@ export async function getDashboardData(): Promise<DashboardData> {
           dress.workflowStatus === "READY_TO_POST") &&
         dress.instagramStatus !== "PUBLISHED",
     );
+    const dressesNeedingPublication = dresses.filter(
+      (dress) => dress.instagramStatus !== "PUBLISHED",
+    );
     const dressesNeedingModel = dresses.filter(
       (dress) => !activeAssignmentDressIds.has(dress.id),
     );
@@ -387,7 +390,7 @@ export async function getDashboardData(): Promise<DashboardData> {
           .map((dress) =>
             buildOperationalItem(dress, "Falta carpeta o entrega editada"),
           ),
-        needsPublication: readyForInstagram
+        needsPublication: dressesNeedingPublication
           .filter((dress) => !instagramDressIds.has(dress.id))
           .slice(0, 8)
           .map((dress) =>
@@ -474,6 +477,9 @@ function buildDemoDashboardData(): DashboardData {
       (dress.workflowStatus === "EDITED" ||
         dress.workflowStatus === "READY_TO_POST") &&
       dress.instagramStatus !== "PUBLISHED",
+  );
+  const dressesNeedingPublication = demoDresses.filter(
+    (dress) => dress.instagramStatus !== "PUBLISHED",
   );
 
   function buildOperationalItem(
@@ -570,7 +576,7 @@ function buildDemoDashboardData(): DashboardData {
         .map((dress) =>
           buildOperationalItem(dress, "Falta carpeta o entrega editada"),
         ),
-      needsPublication: readyForInstagram
+      needsPublication: dressesNeedingPublication
         .filter((dress) => !demoInstagramPosts[dress.id]?.length)
         .slice(0, 8)
         .map((dress) =>

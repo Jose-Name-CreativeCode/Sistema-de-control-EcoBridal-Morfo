@@ -437,7 +437,7 @@ export default async function Home() {
             </div>
 
             <div className="mt-5 grid gap-5 xl:grid-cols-5">
-              <div className="grid gap-3">
+              <div className="grid max-h-[26rem] gap-3 overflow-y-auto pr-1">
                 <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">
                   Necesita modelo
                 </p>
@@ -447,7 +447,7 @@ export default async function Home() {
                 />
               </div>
 
-              <div className="grid gap-3">
+              <div className="grid max-h-[26rem] gap-3 overflow-y-auto pr-1">
                 <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">
                   Necesita fecha
                 </p>
@@ -457,7 +457,7 @@ export default async function Home() {
                 />
               </div>
 
-              <div className="grid gap-3">
+              <div className="grid max-h-[26rem] gap-3 overflow-y-auto pr-1">
                 <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">
                   Necesita fotos
                 </p>
@@ -503,7 +503,7 @@ export default async function Home() {
                 )}
               </div>
 
-              <div className="grid gap-3">
+              <div className="grid max-h-[26rem] gap-3 overflow-y-auto pr-1">
                 <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">
                   Necesita carpeta
                 </p>
@@ -513,7 +513,7 @@ export default async function Home() {
                 />
               </div>
 
-              <div className="grid gap-3">
+              <div className="grid max-h-[26rem] gap-3 overflow-y-auto pr-1">
                 <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">
                   Necesita publicación
                 </p>
