@@ -1,6 +1,7 @@
 import { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
 import { isDatabaseConfigured } from "@/lib/database";
+import { demoDressAssignments } from "@/lib/models";
 import importedDressNames from "@/data/initial-dresses.json";
 
 export const workflowStatusOptions = [
@@ -25,6 +26,16 @@ export type WorkflowStatus = (typeof workflowStatusOptions)[number];
 export type InstagramStatus = (typeof instagramStatusOptions)[number];
 export type DressCondition = "USED" | "NEW" | "SAMPLE";
 export type DressSortOption = "name-asc" | "name-desc" | "code-asc" | "code-desc";
+export type DressOperationFilter =
+  | ""
+  | "needs_model"
+  | "needs_date"
+  | "needs_photos"
+  | "needs_folder"
+  | "ready_to_edit"
+  | "ready_to_publish"
+  | "session_this_week"
+  | "without_publish";
 
 export const dressSortOptions = [
   "name-asc",
@@ -39,6 +50,7 @@ export type DressFilters = {
   size?: string;
   workflowStatus?: WorkflowStatus | "";
   instagramStatus?: InstagramStatus | "";
+  operation?: DressOperationFilter;
   novelty?:
     | "all"
     | "new"
@@ -204,6 +216,80 @@ const pendingWorkflowStatuses: WorkflowStatus[] = [
   "MODEL_ASSIGNED",
   "IN_SESSION",
 ];
+
+export const dressProgressStageLabels = [
+  "Registrado",
+  "Modelo asignada",
+  "Sesión programada",
+  "Fotografiado",
+  "Editado",
+  "Publicado",
+] as const;
+
+export function getWorkflowStageIndex(
+  workflowStatus: WorkflowStatus,
+  instagramStatus: InstagramStatus,
+) {
+  if (instagramStatus === "PUBLISHED" || workflowStatus === "PUBLISHED") {
+    return 5;
+  }
+
+  if (workflowStatus === "EDITED" || workflowStatus === "READY_TO_POST") {
+    return 4;
+  }
+
+  if (workflowStatus === "PHOTOGRAPHED") {
+    return 3;
+  }
+
+  if (workflowStatus === "IN_SESSION") {
+    return 2;
+  }
+
+  if (workflowStatus === "MODEL_ASSIGNED") {
+    return 1;
+  }
+
+  return 0;
+}
+
+export function isDressReadyToEdit(workflowStatus: WorkflowStatus) {
+  return workflowStatus === "PHOTOGRAPHED";
+}
+
+export function isDressReadyToPublish(
+  workflowStatus: WorkflowStatus,
+  instagramStatus: InstagramStatus,
+) {
+  return (
+    ["EDITED", "READY_TO_POST"].includes(workflowStatus) &&
+    instagramStatus !== "PUBLISHED"
+  );
+}
+
+function getCurrentWeekRange() {
+  const now = new Date();
+  const start = new Date(now);
+  start.setHours(0, 0, 0, 0);
+  const day = start.getDay();
+  const offsetToMonday = day === 0 ? -6 : 1 - day;
+  start.setDate(start.getDate() + offsetToMonday);
+
+  const end = new Date(start);
+  end.setDate(end.getDate() + 7);
+
+  return { start, end };
+}
+
+function normalizeAndConditions(
+  andConditions: Prisma.DressWhereInput["AND"],
+): Prisma.DressWhereInput[] {
+  if (!andConditions) {
+    return [];
+  }
+
+  return Array.isArray(andConditions) ? andConditions : [andConditions];
+}
 
 export const workflowStatusLabels: Record<WorkflowStatus, string> = {
   DRAFT: "Borrador",
@@ -777,6 +863,90 @@ function buildDressWhere(filters: DressFilters): Prisma.DressWhereInput {
     where.instagramStatus = filters.instagramStatus;
   }
 
+  if (filters.operation === "needs_model") {
+    where.assignments = {
+      none: {
+        assignmentStatus: {
+          in: ["SUGGESTED", "CONFIRMED"],
+        },
+      },
+    };
+  }
+
+  if (filters.operation === "needs_date") {
+    where.assignments = {
+      some: {
+        assignmentStatus: {
+          in: ["SUGGESTED", "CONFIRMED"],
+        },
+        scheduledDate: null,
+      },
+    };
+  }
+
+  if (filters.operation === "needs_photos") {
+    where.workflowStatus = {
+      in: ["PENDING_PHOTOS", "MODEL_ASSIGNED", "IN_SESSION"],
+    };
+  }
+
+  if (filters.operation === "needs_folder") {
+    where.AND = [
+      ...normalizeAndConditions(where.AND),
+      {
+        workflowStatus: {
+          in: ["PHOTOGRAPHED", "EDITED", "READY_TO_POST", "PUBLISHED"],
+        },
+      },
+      {
+        photoFolders: {
+          none: {},
+        },
+      },
+    ];
+  }
+
+  if (filters.operation === "ready_to_edit") {
+    where.workflowStatus = "PHOTOGRAPHED";
+  }
+
+  if (filters.operation === "ready_to_publish") {
+    where.AND = [
+      ...normalizeAndConditions(where.AND),
+      {
+        workflowStatus: {
+          in: ["EDITED", "READY_TO_POST"],
+        },
+      },
+      {
+        instagramStatus: {
+          not: "PUBLISHED",
+        },
+      },
+    ];
+  }
+
+  if (filters.operation === "session_this_week") {
+    const { start, end } = getCurrentWeekRange();
+    where.assignments = {
+      some: {
+        assignmentStatus: {
+          in: ["SUGGESTED", "CONFIRMED", "COMPLETED"],
+        },
+        scheduledDate: {
+          gte: start,
+          lt: end,
+        },
+      },
+    };
+  }
+
+  if (filters.operation === "without_publish") {
+    where.instagramStatus = {
+      not: "PUBLISHED",
+    };
+  }
+
   if (filters.novelty === "new") {
     where.isNew = true;
   }
@@ -891,6 +1061,65 @@ function applyDemoFilters(dresses: DressListItem[], filters: DressFilters) {
 
     if (filters.instagramStatus && dress.instagramStatus !== filters.instagramStatus) {
       return false;
+    }
+
+    if (filters.operation === "needs_photos" && !pendingWorkflowStatuses.includes(dress.workflowStatus)) {
+      return false;
+    }
+
+    if (filters.operation === "ready_to_edit" && !isDressReadyToEdit(dress.workflowStatus)) {
+      return false;
+    }
+
+    if (
+      filters.operation === "ready_to_publish" &&
+      !isDressReadyToPublish(dress.workflowStatus, dress.instagramStatus)
+    ) {
+      return false;
+    }
+
+    if (filters.operation === "without_publish" && dress.instagramStatus === "PUBLISHED") {
+      return false;
+    }
+
+    if (filters.operation === "needs_folder" && demoDressFolders[dress.id]?.length) {
+      return false;
+    }
+
+    if (filters.operation === "needs_folder" && !["PHOTOGRAPHED", "EDITED", "READY_TO_POST", "PUBLISHED"].includes(dress.workflowStatus)) {
+      return false;
+    }
+
+    const activeAssignments = demoDressAssignments[dress.id] ?? [];
+
+    if (filters.operation === "needs_model" && activeAssignments.some((assignment) => ["SUGGESTED", "CONFIRMED"].includes(assignment.assignmentStatus))) {
+      return false;
+    }
+
+    if (
+      filters.operation === "needs_date" &&
+      !activeAssignments.some(
+        (assignment) =>
+          ["SUGGESTED", "CONFIRMED"].includes(assignment.assignmentStatus) &&
+          !assignment.scheduledDate,
+      )
+    ) {
+      return false;
+    }
+
+    if (filters.operation === "session_this_week") {
+      const { start, end } = getCurrentWeekRange();
+      const hasSessionThisWeek = activeAssignments.some((assignment) => {
+        if (!assignment.scheduledDate) {
+          return false;
+        }
+
+        return assignment.scheduledDate >= start && assignment.scheduledDate < end;
+      });
+
+      if (!hasSessionThisWeek) {
+        return false;
+      }
     }
 
     if (filters.novelty === "new" && !dress.isNew) {

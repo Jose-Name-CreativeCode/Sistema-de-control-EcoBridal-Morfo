@@ -203,10 +203,31 @@ export async function addDressPhotoFolderAction(formData: FormData) {
         },
       },
     });
+
+    const dress = await tx.dress.findUnique({
+      where: { id: dressId },
+      select: {
+        workflowStatus: true,
+      },
+    });
+
+    if (
+      dress &&
+      ["DRAFT", "PENDING_PHOTOS", "MODEL_ASSIGNED", "IN_SESSION", "PHOTOGRAPHED"]
+        .includes(dress.workflowStatus)
+    ) {
+      await tx.dress.update({
+        where: { id: dressId },
+        data: {
+          workflowStatus: "EDITED",
+        },
+      });
+    }
   });
 
   revalidatePath(`/vestidos/${dressId}`);
   revalidatePath("/vestidos");
+  revalidatePath("/");
   redirect(`/vestidos/${dressId}?folderSaved=1`);
 }
 
@@ -274,10 +295,19 @@ export async function addDressInstagramPostAction(formData: FormData) {
         },
       },
     });
+
+    await tx.dress.update({
+      where: { id: dressId },
+      data: {
+        instagramStatus: publishedAtValue ? "PUBLISHED" : "SCHEDULED",
+        workflowStatus: publishedAtValue ? "PUBLISHED" : "READY_TO_POST",
+      },
+    });
   });
 
   revalidatePath(`/vestidos/${dressId}`);
   revalidatePath("/vestidos");
+  revalidatePath("/");
   redirect(`/vestidos/${dressId}?instagramSaved=1`);
 }
 
@@ -429,7 +459,35 @@ export async function saveDressGalleryLinksAction(formData: FormData) {
     }
   }
 
+  const hasAnyGalleryPhoto = slots.some((slot) =>
+    Boolean(String(formData.get(slot.field) ?? "").trim()),
+  );
+
+  if (hasAnyGalleryPhoto) {
+    const dress = await prisma.dress.findUnique({
+      where: { id: dressId },
+      select: {
+        workflowStatus: true,
+      },
+    });
+
+    if (
+      dress &&
+      ["DRAFT", "PENDING_PHOTOS", "MODEL_ASSIGNED", "IN_SESSION"].includes(
+        dress.workflowStatus,
+      )
+    ) {
+      await prisma.dress.update({
+        where: { id: dressId },
+        data: {
+          workflowStatus: "PHOTOGRAPHED",
+        },
+      });
+    }
+  }
+
   revalidatePath(`/vestidos/${dressId}`);
+  revalidatePath("/");
   redirect(`/vestidos/${dressId}?gallerySaved=1`);
 }
 
@@ -469,6 +527,7 @@ export async function updateDressStatusesAction(formData: FormData) {
 
   revalidatePath(`/vestidos/${dressId}`);
   revalidatePath("/vestidos");
+  revalidatePath("/");
   redirect(`/vestidos/${dressId}?statusSaved=1`);
 }
 
@@ -547,6 +606,7 @@ export async function assignModelToDressAction(formData: FormData) {
 
   revalidatePath(`/vestidos/${dressId}`);
   revalidatePath("/vestidos");
+  revalidatePath("/");
   redirect(`/vestidos/${dressId}?assignmentSaved=1`);
 }
 
@@ -576,6 +636,7 @@ export async function removeDressAssignmentAction(formData: FormData) {
 
   revalidatePath(`/vestidos/${dressId}`);
   revalidatePath("/vestidos");
+  revalidatePath("/");
   redirect(`/vestidos/${dressId}?assignmentRemoved=1&edit=1`);
 }
 
@@ -620,6 +681,7 @@ export async function updateDressAssignmentAction(formData: FormData) {
 
   revalidatePath(`/vestidos/${dressId}`);
   revalidatePath("/vestidos");
+  revalidatePath("/");
   redirect(`/vestidos/${dressId}?assignmentUpdated=1&edit=1`);
 }
 

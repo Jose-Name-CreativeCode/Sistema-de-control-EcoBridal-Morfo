@@ -1,7 +1,9 @@
 import Link from "next/link";
 import {
   removeDashboardAssignmentAction,
+  saveDashboardInstagramPostAction,
   saveDashboardLinkAction,
+  updateDashboardDressWorkflowAction,
   updateDashboardAssignmentAction,
 } from "@/app/dashboard-actions";
 import { DashboardReminders } from "@/components/dashboard-reminders";
@@ -25,6 +27,44 @@ function formatDateInput(value: Date | null) {
   const month = String(value.getMonth() + 1).padStart(2, "0");
   const day = String(value.getDate()).padStart(2, "0");
   return `${year}-${month}-${day}`;
+}
+
+function DashboardOperationalList({
+  items,
+  emptyLabel,
+}: {
+  items: Array<{
+    id: string;
+    title: string;
+    subtitle: string;
+    href: string;
+  }>;
+  emptyLabel: string;
+}) {
+  if (items.length === 0) {
+    return (
+      <div className="rounded-[1.15rem] border border-dashed border-line bg-[rgba(250,248,244,0.88)] px-4 py-5 text-sm text-foreground/72">
+        {emptyLabel}
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid gap-3">
+      {items.map((item) => (
+        <Link
+          key={item.id}
+          href={item.href}
+          className="rounded-[1.15rem] border border-line bg-[rgba(250,248,244,0.98)] px-4 py-4 transition hover:border-accent hover:bg-white"
+        >
+          <p className="font-medium text-foreground">{item.title}</p>
+          <p className="mt-1 text-sm leading-6 text-foreground/72">
+            {item.subtitle}
+          </p>
+        </Link>
+      ))}
+    </div>
+  );
 }
 
 export default async function Home() {
@@ -75,6 +115,84 @@ export default async function Home() {
               </p>
             </article>
           ))}
+        </div>
+
+        <div className="mt-8 grid gap-6 xl:grid-cols-2">
+          <article className="app-card p-5">
+            <div className="border-b border-line pb-4">
+              <p className="text-sm uppercase tracking-[0.2em] text-foreground/55">
+                Trabajo por tiempo
+              </p>
+              <h2 className="mt-2 font-heading text-3xl text-foreground sm:text-4xl">
+                Sesiones de hoy y semana
+              </h2>
+            </div>
+
+            <div className="mt-5 grid gap-5 lg:grid-cols-2">
+              <div className="grid gap-3">
+                <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">
+                  Hoy
+                </p>
+                <DashboardOperationalList
+                  items={dashboard.todayAssignments.map((assignment) => ({
+                    id: assignment.id,
+                    title: `${assignment.modelName} · ${assignment.dressName}`,
+                    subtitle: formatDate(assignment.scheduledDate),
+                    href: assignment.href,
+                  }))}
+                  emptyLabel="No hay sesiones programadas para hoy."
+                />
+              </div>
+
+              <div className="grid gap-3">
+                <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">
+                  Esta semana
+                </p>
+                <DashboardOperationalList
+                  items={dashboard.weekAssignments.map((assignment) => ({
+                    id: assignment.id,
+                    title: `${assignment.modelName} · ${assignment.dressName}`,
+                    subtitle: formatDate(assignment.scheduledDate),
+                    href: assignment.href,
+                  }))}
+                  emptyLabel="No hay sesiones programadas esta semana."
+                />
+              </div>
+            </div>
+          </article>
+
+          <article className="app-card p-5">
+            <div className="border-b border-line pb-4">
+              <p className="text-sm uppercase tracking-[0.2em] text-foreground/55">
+                Producción inmediata
+              </p>
+              <h2 className="mt-2 font-heading text-3xl text-foreground sm:text-4xl">
+                Listos para avanzar
+              </h2>
+            </div>
+
+            <div className="mt-5 grid gap-5 lg:grid-cols-2">
+              <div className="grid gap-3">
+                <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">
+                  Listos para editar
+                </p>
+                <DashboardOperationalList
+                  items={dashboard.readyToEdit}
+                  emptyLabel="Todavía no hay vestidos listos para editar."
+                />
+              </div>
+
+              <div className="grid gap-3">
+                <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">
+                  Listos para publicar
+                </p>
+                <DashboardOperationalList
+                  items={dashboard.readyToPublish}
+                  emptyLabel="Todavía no hay vestidos listos para publicar."
+                />
+              </div>
+            </div>
+          </article>
         </div>
 
         <div className="mt-8 grid gap-6 lg:grid-cols-2">
@@ -224,22 +342,186 @@ export default async function Home() {
             <div className="mt-5 grid max-h-[28rem] gap-3 overflow-y-auto pr-1">
               {dashboard.publicationQueue.length > 0 ? (
                 dashboard.publicationQueue.map((task) => (
-                  <Link
+                  <div
                     key={task.href}
-                    href={task.href}
-                    className="rounded-[1.15rem] border border-line bg-[rgba(250,248,244,0.98)] px-4 py-4 transition hover:border-accent hover:bg-white"
+                    className="rounded-[1.15rem] border border-line bg-[rgba(250,248,244,0.98)] px-4 py-4"
                   >
-                    <p className="font-medium text-foreground">{task.title}</p>
-                    <p className="mt-1 text-sm leading-6 text-foreground/72">
-                      {task.subtitle}
-                    </p>
-                  </Link>
+                    <Link
+                      href={task.href}
+                      className="block transition hover:text-accent"
+                    >
+                      <p className="font-medium text-foreground">{task.title}</p>
+                      <p className="mt-1 text-sm leading-6 text-foreground/72">
+                        {task.subtitle}
+                      </p>
+                    </Link>
+
+                    <details className="mt-4 rounded-[1rem] border border-line bg-white/70 px-4 py-3">
+                      <summary className="cursor-pointer list-none text-sm font-medium text-accent">
+                        Registrar publicación rápida
+                      </summary>
+
+                      <form
+                        action={saveDashboardInstagramPostAction}
+                        className="mt-4 grid gap-3"
+                      >
+                        <input
+                          type="hidden"
+                          name="dressId"
+                          value={task.href.split("/")[2]?.split("?")[0] ?? ""}
+                        />
+                        <label className="grid gap-2 text-sm text-foreground/75">
+                          Link de Instagram
+                          <input
+                            type="url"
+                            name="instagramUrl"
+                            required
+                            placeholder="https://instagram.com/..."
+                            className="app-field"
+                          />
+                        </label>
+                        <div className="grid gap-3 sm:grid-cols-2">
+                          <label className="grid gap-2 text-sm text-foreground/75">
+                            Cuenta
+                            <input
+                              name="accountName"
+                              placeholder="@ecobridalmorfo"
+                              className="app-field"
+                            />
+                          </label>
+                          <label className="grid gap-2 text-sm text-foreground/75">
+                            Fecha
+                            <input
+                              type="date"
+                              name="publishedAt"
+                              className="app-field"
+                            />
+                          </label>
+                        </div>
+                        <label className="grid gap-2 text-sm text-foreground/75">
+                          Notas
+                          <input
+                            name="captionNotes"
+                            placeholder="Comentario interno o caption"
+                            className="app-field"
+                          />
+                        </label>
+                        <button
+                          type="submit"
+                          className="app-button-primary w-full sm:w-auto"
+                        >
+                          Guardar publicación
+                        </button>
+                      </form>
+                    </details>
+                  </div>
                 ))
               ) : (
                 <div className="rounded-[1.15rem] border border-dashed border-line bg-[rgba(250,248,244,0.88)] px-4 py-5 text-sm text-foreground/72">
                   No hay vestidos pendientes de publicación.
                 </div>
               )}
+            </div>
+          </article>
+        </div>
+
+        <div className="mt-8">
+          <article className="app-card p-5">
+            <div className="border-b border-line pb-4">
+              <p className="text-sm uppercase tracking-[0.2em] text-foreground/55">
+                Pendientes reales
+              </p>
+              <h2 className="mt-2 font-heading text-3xl text-foreground sm:text-4xl">
+                Bandeja operativa
+              </h2>
+            </div>
+
+            <div className="mt-5 grid gap-5 xl:grid-cols-5">
+              <div className="grid gap-3">
+                <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">
+                  Necesita modelo
+                </p>
+                <DashboardOperationalList
+                  items={dashboard.operationalQueues.needsModel}
+                  emptyLabel="Todo lo de esta bandeja ya tiene modelo."
+                />
+              </div>
+
+              <div className="grid gap-3">
+                <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">
+                  Necesita fecha
+                </p>
+                <DashboardOperationalList
+                  items={dashboard.operationalQueues.needsDate}
+                  emptyLabel="No hay modelos sin fecha."
+                />
+              </div>
+
+              <div className="grid gap-3">
+                <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">
+                  Necesita fotos
+                </p>
+                {dashboard.operationalQueues.needsPhotos.length > 0 ? (
+                  <div className="grid gap-3">
+                    {dashboard.operationalQueues.needsPhotos.map((item) => (
+                      <div
+                        key={item.id}
+                        className="rounded-[1.15rem] border border-line bg-[rgba(250,248,244,0.98)] px-4 py-4"
+                      >
+                        <Link href={item.href} className="block">
+                          <p className="font-medium text-foreground">
+                            {item.title}
+                          </p>
+                          <p className="mt-1 text-sm leading-6 text-foreground/72">
+                            {item.subtitle}
+                          </p>
+                        </Link>
+                        <form
+                          action={updateDashboardDressWorkflowAction}
+                          className="mt-3"
+                        >
+                          <input type="hidden" name="dressId" value={item.id} />
+                          <input
+                            type="hidden"
+                            name="workflowStatus"
+                            value="PHOTOGRAPHED"
+                          />
+                          <button
+                            type="submit"
+                            className="app-button-secondary w-full"
+                          >
+                            Marcar fotografiado
+                          </button>
+                        </form>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="rounded-[1.15rem] border border-dashed border-line bg-[rgba(250,248,244,0.88)] px-4 py-5 text-sm text-foreground/72">
+                    No hay vestidos pendientes de foto.
+                  </div>
+                )}
+              </div>
+
+              <div className="grid gap-3">
+                <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">
+                  Necesita carpeta
+                </p>
+                <DashboardOperationalList
+                  items={dashboard.operationalQueues.needsFolder}
+                  emptyLabel="Todo lo editado ya tiene carpeta."
+                />
+              </div>
+
+              <div className="grid gap-3">
+                <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">
+                  Necesita publicación
+                </p>
+                <DashboardOperationalList
+                  items={dashboard.operationalQueues.needsPublication}
+                  emptyLabel="No hay publicaciones pendientes."
+                />
+              </div>
             </div>
           </article>
         </div>

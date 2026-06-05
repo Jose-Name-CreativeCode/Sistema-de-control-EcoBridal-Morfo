@@ -41,6 +41,21 @@ type DashboardExcelLink = {
   url: string;
 };
 
+type DashboardOperationalItem = {
+  id: string;
+  title: string;
+  subtitle: string;
+  href: string;
+};
+
+type DashboardOperationalQueues = {
+  needsModel: DashboardOperationalItem[];
+  needsDate: DashboardOperationalItem[];
+  needsPhotos: DashboardOperationalItem[];
+  needsFolder: DashboardOperationalItem[];
+  needsPublication: DashboardOperationalItem[];
+};
+
 const pendingPhotoWorkflowStatuses = [
   "PENDING_PHOTOS",
   "MODEL_ASSIGNED",
@@ -60,6 +75,11 @@ export type DashboardData = {
   urgentTasks: DashboardTask[];
   missingAssets: DashboardTask[];
   upcomingAssignments: DashboardAssignment[];
+  todayAssignments: DashboardAssignment[];
+  weekAssignments: DashboardAssignment[];
+  readyToEdit: DashboardOperationalItem[];
+  readyToPublish: DashboardOperationalItem[];
+  operationalQueues: DashboardOperationalQueues;
   publicationQueue: DashboardTask[];
   excelLinks: DashboardExcelLink[];
 };
@@ -105,12 +125,38 @@ function isCompletedPhotoWorkflow(status: string) {
   );
 }
 
+function getTodayRange() {
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+
+  const end = new Date(start);
+  end.setDate(end.getDate() + 1);
+
+  return { start, end };
+}
+
+function getWeekRange() {
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+
+  const day = start.getDay();
+  const offsetToMonday = day === 0 ? -6 : 1 - day;
+  start.setDate(start.getDate() + offsetToMonday);
+
+  const end = new Date(start);
+  end.setDate(end.getDate() + 7);
+
+  return { start, end };
+}
+
 export async function getDashboardData(): Promise<DashboardData> {
   if (!isDatabaseConfigured()) {
     return buildDemoDashboardData();
   }
 
   try {
+    const { start: todayStart, end: todayEnd } = getTodayRange();
+    const { start: weekStart, end: weekEnd } = getWeekRange();
     const [
       dresses,
       modelsCount,
@@ -147,6 +193,9 @@ export async function getDashboardData(): Promise<DashboardData> {
             select: {
               id: true,
               name: true,
+              internalCode: true,
+              workflowStatus: true,
+              instagramStatus: true,
             },
           },
           model: {
@@ -158,7 +207,6 @@ export async function getDashboardData(): Promise<DashboardData> {
         orderBy: {
           scheduledDate: "asc",
         },
-        take: 5,
       }),
       prisma.dressPhotoFolder.findMany({
         select: {
@@ -193,9 +241,79 @@ export async function getDashboardData(): Promise<DashboardData> {
     const readyForFolder = dresses.filter((dress) =>
       isCompletedPhotoWorkflow(dress.workflowStatus),
     );
-    const readyForInstagram = dresses.filter(
-      (dress) => dress.instagramStatus !== "PUBLISHED",
+    const activeAssignments = assignments.filter(
+      (assignment) =>
+        assignment.assignmentStatus === "SUGGESTED" ||
+        assignment.assignmentStatus === "CONFIRMED",
     );
+    const activeAssignmentDressIds = new Set(
+      activeAssignments.map((assignment) => assignment.dressId),
+    );
+    const activeAssignmentsWithoutDate = activeAssignments.filter(
+      (assignment) => !assignment.scheduledDate,
+    );
+    const activeAssignmentsWithDate = activeAssignments.filter((assignment) =>
+      Boolean(assignment.scheduledDate),
+    );
+    const todayAssignments = activeAssignmentsWithDate.filter((assignment) => {
+      if (!assignment.scheduledDate) return false;
+
+      return (
+        assignment.scheduledDate >= todayStart &&
+        assignment.scheduledDate < todayEnd
+      );
+    });
+    const weekAssignments = activeAssignmentsWithDate.filter((assignment) => {
+      if (!assignment.scheduledDate) return false;
+
+      return (
+        assignment.scheduledDate >= weekStart &&
+        assignment.scheduledDate < weekEnd
+      );
+    });
+    const readyToEdit = dresses.filter(
+      (dress) => dress.workflowStatus === "PHOTOGRAPHED",
+    );
+    const readyForInstagram = dresses.filter(
+      (dress) =>
+        (dress.workflowStatus === "EDITED" ||
+          dress.workflowStatus === "READY_TO_POST") &&
+        dress.instagramStatus !== "PUBLISHED",
+    );
+    const dressesNeedingModel = dresses.filter(
+      (dress) => !activeAssignmentDressIds.has(dress.id),
+    );
+
+    function mapAssignment(
+      assignment: (typeof assignments)[number],
+    ): DashboardAssignment {
+      return {
+        id: assignment.id,
+        dressId: assignment.dressId,
+        dressName: assignment.dress.name,
+        modelName: assignment.model?.name ?? "Modelo pendiente",
+        assignmentStatus: assignment.assignmentStatus,
+        scheduledDate: assignment.scheduledDate,
+        notes: assignment.notes,
+        href: `/vestidos/${assignment.dressId}`,
+      };
+    }
+
+    function buildOperationalItem(
+      dress: {
+        id: string;
+        name: string;
+        internalCode: string;
+      },
+      subtitle: string,
+    ): DashboardOperationalItem {
+      return {
+        id: dress.id,
+        title: dress.name,
+        subtitle: `${dress.internalCode} · ${subtitle}`,
+        href: `/vestidos/${dress.id}?edit=1`,
+      };
+    }
 
     return {
       databaseReady: true,
@@ -234,16 +352,48 @@ export async function getDashboardData(): Promise<DashboardData> {
           subtitle: `${dress.internalCode} ya avanzó en foto pero falta link de carpeta.`,
           href: `/vestidos/${dress.id}`,
         })),
-      upcomingAssignments: assignments.map((assignment) => ({
-        id: assignment.id,
-        dressId: assignment.dressId,
-        dressName: assignment.dress.name,
-        modelName: assignment.model?.name ?? "Modelo pendiente",
-        assignmentStatus: assignment.assignmentStatus,
-        scheduledDate: assignment.scheduledDate,
-        notes: assignment.notes,
-        href: `/vestidos/${assignment.dressId}`,
-      })),
+      upcomingAssignments: activeAssignmentsWithDate
+        .slice(0, 5)
+        .map(mapAssignment),
+      todayAssignments: todayAssignments.map(mapAssignment),
+      weekAssignments: weekAssignments.slice(0, 8).map(mapAssignment),
+      readyToEdit: readyToEdit.map((dress) =>
+        buildOperationalItem(dress, "Listo para registrar edición o carpeta"),
+      ),
+      readyToPublish: readyForInstagram
+        .filter((dress) => !instagramDressIds.has(dress.id))
+        .map((dress) =>
+          buildOperationalItem(dress, "Listo para registrar publicación"),
+        ),
+      operationalQueues: {
+        needsModel: dressesNeedingModel
+          .slice(0, 8)
+          .map((dress) => buildOperationalItem(dress, "Falta asignar modelo")),
+        needsDate: activeAssignmentsWithoutDate.slice(0, 8).map((assignment) =>
+          buildOperationalItem(
+            assignment.dress,
+            "Hay modelo asignada pero falta fecha",
+          ),
+        ),
+        needsPhotos: pendingPhoto.slice(0, 8).map((dress) =>
+          buildOperationalItem(
+            dress,
+            workflowStatusLabels[dress.workflowStatus],
+          ),
+        ),
+        needsFolder: readyForFolder
+          .filter((dress) => !folderDressIds.has(dress.id))
+          .slice(0, 8)
+          .map((dress) =>
+            buildOperationalItem(dress, "Falta carpeta o entrega editada"),
+          ),
+        needsPublication: readyForInstagram
+          .filter((dress) => !instagramDressIds.has(dress.id))
+          .slice(0, 8)
+          .map((dress) =>
+            buildOperationalItem(dress, "Falta registrar publicación"),
+          ),
+      },
       publicationQueue: readyForInstagram
         .filter((dress) => !instagramDressIds.has(dress.id))
         .map((dress) => ({
@@ -259,24 +409,25 @@ export async function getDashboardData(): Promise<DashboardData> {
 }
 
 function buildDemoDashboardData(): DashboardData {
-  const assignments = Object.entries(demoDressAssignments).flatMap(
+  const { start: todayStart, end: todayEnd } = getTodayRange();
+  const { start: weekStart, end: weekEnd } = getWeekRange();
+  const allAssignments = Object.entries(demoDressAssignments).flatMap(
     ([dressId, items]) =>
-      items
-        .filter((item) => item.scheduledDate)
-        .map((item) => {
-          const dress = demoDresses.find((entry) => entry.id === dressId);
+      items.map((item) => {
+        const dress = demoDresses.find((entry) => entry.id === dressId);
 
-          return {
-            id: item.id,
-            dressId,
-            dressName: dress?.name ?? "Vestido",
-            modelName: item.model?.name ?? "Modelo pendiente",
-            assignmentStatus: item.assignmentStatus,
-            scheduledDate: item.scheduledDate,
-            notes: item.notes,
-            href: dress ? `/vestidos/${dress.id}` : "/vestidos",
-          };
-        }),
+        return {
+          id: item.id,
+          dressId,
+          dressName: dress?.name ?? "Vestido",
+          dressCode: dress?.internalCode ?? "ECO",
+          modelName: item.model?.name ?? "Modelo pendiente",
+          assignmentStatus: item.assignmentStatus,
+          scheduledDate: item.scheduledDate,
+          notes: item.notes,
+          href: dress ? `/vestidos/${dress.id}` : "/vestidos",
+        };
+      }),
   );
 
   const pendingPhoto = demoDresses.filter((dress) =>
@@ -285,9 +436,61 @@ function buildDemoDashboardData(): DashboardData {
   const readyForFolder = demoDresses.filter((dress) =>
     isCompletedPhotoWorkflow(dress.workflowStatus),
   );
-  const readyForInstagram = demoDresses.filter(
-    (dress) => dress.instagramStatus !== "PUBLISHED",
+  const activeAssignments = allAssignments.filter(
+    (assignment) =>
+      assignment.assignmentStatus === "SUGGESTED" ||
+      assignment.assignmentStatus === "CONFIRMED",
   );
+  const activeAssignmentDressIds = new Set(
+    activeAssignments.map((assignment) => assignment.dressId),
+  );
+  const assignments = activeAssignments
+    .filter((assignment) => Boolean(assignment.scheduledDate))
+    .sort(
+      (left, right) =>
+        (left.scheduledDate?.getTime() ?? 0) - (right.scheduledDate?.getTime() ?? 0),
+    );
+  const todayAssignments = assignments.filter((assignment) => {
+    if (!assignment.scheduledDate) return false;
+
+    return (
+      assignment.scheduledDate >= todayStart &&
+      assignment.scheduledDate < todayEnd
+    );
+  });
+  const weekAssignments = assignments.filter((assignment) => {
+    if (!assignment.scheduledDate) return false;
+
+    return (
+      assignment.scheduledDate >= weekStart &&
+      assignment.scheduledDate < weekEnd
+    );
+  });
+  const readyToEdit = demoDresses.filter(
+    (dress) => dress.workflowStatus === "PHOTOGRAPHED",
+  );
+  const readyForInstagram = demoDresses.filter(
+    (dress) =>
+      (dress.workflowStatus === "EDITED" ||
+        dress.workflowStatus === "READY_TO_POST") &&
+      dress.instagramStatus !== "PUBLISHED",
+  );
+
+  function buildOperationalItem(
+    dress: {
+      id: string;
+      name: string;
+      internalCode: string;
+    },
+    subtitle: string,
+  ): DashboardOperationalItem {
+    return {
+      id: dress.id,
+      title: dress.name,
+      subtitle: `${dress.internalCode} · ${subtitle}`,
+      href: `/vestidos/${dress.id}?edit=1`,
+    };
+  }
 
   return {
     databaseReady: false,
@@ -327,6 +530,53 @@ function buildDemoDashboardData(): DashboardData {
         href: `/vestidos/${dress.id}`,
       })),
     upcomingAssignments: assignments.slice(0, 5),
+    todayAssignments: todayAssignments,
+    weekAssignments: weekAssignments.slice(0, 8),
+    readyToEdit: readyToEdit.map((dress) =>
+      buildOperationalItem(dress, "Listo para registrar edición o carpeta"),
+    ),
+    readyToPublish: readyForInstagram
+      .filter((dress) => !demoInstagramPosts[dress.id]?.length)
+      .map((dress) =>
+        buildOperationalItem(dress, "Listo para registrar publicación"),
+      ),
+    operationalQueues: {
+      needsModel: demoDresses
+        .filter((dress) => !activeAssignmentDressIds.has(dress.id))
+        .slice(0, 8)
+        .map((dress) => buildOperationalItem(dress, "Falta asignar modelo")),
+      needsDate: activeAssignments
+        .filter((assignment) => !assignment.scheduledDate)
+        .slice(0, 8)
+        .map((assignment) =>
+          buildOperationalItem(
+            {
+              id: assignment.dressId,
+              name: assignment.dressName,
+              internalCode: assignment.dressCode,
+            },
+            "Hay modelo asignada pero falta fecha",
+          ),
+        ),
+      needsPhotos: pendingPhoto.slice(0, 8).map((dress) =>
+        buildOperationalItem(
+          dress,
+          workflowStatusLabels[dress.workflowStatus],
+        ),
+      ),
+      needsFolder: readyForFolder
+        .filter((dress) => !demoDressFolders[dress.id]?.length)
+        .slice(0, 8)
+        .map((dress) =>
+          buildOperationalItem(dress, "Falta carpeta o entrega editada"),
+        ),
+      needsPublication: readyForInstagram
+        .filter((dress) => !demoInstagramPosts[dress.id]?.length)
+        .slice(0, 8)
+        .map((dress) =>
+          buildOperationalItem(dress, "Falta registrar publicación"),
+        ),
+    },
     publicationQueue: readyForInstagram
       .filter((dress) => !demoInstagramPosts[dress.id]?.length)
       .map((dress) => ({

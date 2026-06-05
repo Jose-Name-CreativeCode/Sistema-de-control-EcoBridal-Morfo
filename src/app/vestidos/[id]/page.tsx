@@ -15,10 +15,12 @@ import { DressGalleryCloudinaryForm } from "@/components/dress-gallery-cloudinar
 import { DressProductGallery } from "@/components/dress-product-gallery";
 import { getDressModelOptions } from "@/lib/models";
 import {
+  dressProgressStageLabels,
   dressConditionLabels,
   folderProviderLabels,
   getDressDetailData,
   getInstagramStatusBadgeClasses,
+  getWorkflowStageIndex,
   getWorkflowStatusBadgeClasses,
   instagramPostTypeLabels,
   instagramStatusLabels,
@@ -137,6 +139,10 @@ export default async function DressDetailPage({
       dress.photos.find((photo) => photo.photoType === "DETAIL")?.imageUrl ??
       "",
   };
+  const currentStageIndex = getWorkflowStageIndex(
+    dress.workflowStatus,
+    dress.instagramStatus,
+  );
 
   return (
     <main className="flex w-full flex-1 flex-col gap-6">
@@ -321,6 +327,39 @@ export default async function DressDetailPage({
             </p>
           </article>
         </div>
+
+        <div className="mt-6 rounded-[1.6rem] border border-line bg-white/80 p-5">
+          <div className="border-b border-line pb-4">
+            <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
+              Flujo visible
+            </p>
+            <h2 className="mt-2 font-heading text-3xl text-foreground sm:text-4xl">
+              Producción del vestido
+            </h2>
+          </div>
+
+          <div className="mt-5 grid gap-3 xl:grid-cols-6">
+            {dressProgressStageLabels.map((label, index) => {
+              const isActive = index <= currentStageIndex;
+
+              return (
+                <div
+                  key={`${dress.id}-${label}`}
+                  className={`rounded-[1.15rem] border px-4 py-4 text-center ${
+                    isActive
+                      ? "border-accent bg-accent text-white"
+                      : "border-line bg-surface text-foreground/60"
+                  }`}
+                >
+                  <p className="text-xs uppercase tracking-[0.2em]">
+                    Etapa {index + 1}
+                  </p>
+                  <p className="mt-2 text-sm font-medium">{label}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
       </section>
 
       {!isEditing ? (
@@ -348,10 +387,10 @@ export default async function DressDetailPage({
             <article className="rounded-[2rem] border border-line bg-white/80 p-6">
               <div className="border-b border-line pb-4">
                 <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
-                  Resumen del vestido
+                  Ficha del vestido
                 </p>
                 <h2 className="font-heading text-4xl text-foreground">
-                  Datos del vestido
+                  Información base
                 </h2>
               </div>
 
@@ -621,6 +660,79 @@ export default async function DressDetailPage({
           <section className="app-page">
             <div className="border-b border-line pb-4">
               <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
+                Acciones rápidas
+              </p>
+              <h2 className="mt-2 font-heading text-3xl text-foreground sm:text-4xl">
+                Flujo de producción
+              </h2>
+            </div>
+
+            <div className="mt-6 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+              <form action={updateDressStatusesAction} className="contents">
+                <input type="hidden" name="dressId" value={dress.id} />
+                <input type="hidden" name="workflowStatus" value="IN_SESSION" />
+                <input
+                  type="hidden"
+                  name="instagramStatus"
+                  value={dress.instagramStatus}
+                />
+                <button type="submit" className="app-button-secondary w-full">
+                  Programar sesión
+                </button>
+              </form>
+
+              <form action={updateDressStatusesAction} className="contents">
+                <input type="hidden" name="dressId" value={dress.id} />
+                <input
+                  type="hidden"
+                  name="workflowStatus"
+                  value="PHOTOGRAPHED"
+                />
+                <input
+                  type="hidden"
+                  name="instagramStatus"
+                  value={dress.instagramStatus}
+                />
+                <button type="submit" className="app-button-secondary w-full">
+                  Marcar fotografiado
+                </button>
+              </form>
+
+              <form action={updateDressStatusesAction} className="contents">
+                <input type="hidden" name="dressId" value={dress.id} />
+                <input type="hidden" name="workflowStatus" value="EDITED" />
+                <input
+                  type="hidden"
+                  name="instagramStatus"
+                  value={dress.instagramStatus}
+                />
+                <button type="submit" className="app-button-secondary w-full">
+                  Marcar editado
+                </button>
+              </form>
+
+              <form action={updateDressStatusesAction} className="contents">
+                <input type="hidden" name="dressId" value={dress.id} />
+                <input
+                  type="hidden"
+                  name="workflowStatus"
+                  value="READY_TO_POST"
+                />
+                <input
+                  type="hidden"
+                  name="instagramStatus"
+                  value="SCHEDULED"
+                />
+                <button type="submit" className="app-button-secondary w-full">
+                  Dejar listo para publicar
+                </button>
+              </form>
+            </div>
+          </section>
+
+          <section className="app-page">
+            <div className="border-b border-line pb-4">
+              <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
                 Galería del vestido
               </p>
               <h2 className="mt-2 font-heading text-3xl text-foreground sm:text-4xl">
@@ -760,10 +872,10 @@ export default async function DressDetailPage({
             <article className="flex min-h-[34rem] h-full flex-col overflow-hidden rounded-[2rem] border border-line bg-white/80 p-6">
               <div className="border-b border-line pb-4">
                 <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
-                  Edición principal
+                  Ficha del vestido
                 </p>
                 <h2 className="font-heading text-4xl text-foreground">
-                  Datos del vestido
+                  Información base
                 </h2>
               </div>
               <form

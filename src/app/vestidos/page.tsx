@@ -2,12 +2,15 @@
 
 import Link from "next/link";
 import {
+  dressProgressStageLabels,
   dressSortOptions,
   getDressCatalogData,
+  getWorkflowStageIndex,
   getInstagramStatusBadgeClasses,
   getWorkflowStatusBadgeClasses,
   instagramStatusLabels,
   instagramStatusOptions,
+  type DressOperationFilter,
   workflowStatusLabels,
   workflowStatusOptions,
 } from "@/lib/dresses";
@@ -20,6 +23,7 @@ type DressesPageProps = {
     workflowStatus?: string;
     instagramStatus?: string;
     novelty?: string;
+    operation?: string;
     sort?: string;
     created?: string;
     deleted?: string;
@@ -68,6 +72,17 @@ export default async function DressesPage({ searchParams }: DressesPageProps) {
       params?.novelty === "in_stock"
         ? params.novelty
         : "all",
+    operation:
+      params?.operation === "needs_model" ||
+      params?.operation === "needs_date" ||
+      params?.operation === "needs_photos" ||
+      params?.operation === "needs_folder" ||
+      params?.operation === "ready_to_edit" ||
+      params?.operation === "ready_to_publish" ||
+      params?.operation === "session_this_week" ||
+      params?.operation === "without_publish"
+        ? (params.operation as DressOperationFilter)
+        : "",
     sort:
       params?.sort &&
       dressSortOptions.includes(
@@ -145,6 +160,9 @@ export default async function DressesPage({ searchParams }: DressesPageProps) {
     }
     if (params?.novelty && params.novelty !== "all") {
       query.set("novelty", params.novelty);
+    }
+    if (params?.operation) {
+      query.set("operation", params.operation);
     }
     if (params?.sort && params.sort !== "name-asc") {
       query.set("sort", params.sort);
@@ -313,6 +331,22 @@ export default async function DressesPage({ searchParams }: DressesPageProps) {
           </select>
 
           <select
+            name="operation"
+            defaultValue={params?.operation ?? ""}
+            className="app-field xl:col-span-2"
+          >
+            <option value="">Toda la operación</option>
+            <option value="needs_model">Sin modelo</option>
+            <option value="needs_date">Sin fecha programada</option>
+            <option value="needs_photos">Sin fotos</option>
+            <option value="needs_folder">Sin carpeta editada</option>
+            <option value="ready_to_edit">Listos para editar</option>
+            <option value="ready_to_publish">Listos para publicar</option>
+            <option value="session_this_week">Con cita esta semana</option>
+            <option value="without_publish">Sin publicar</option>
+          </select>
+
+          <select
             name="sort"
             defaultValue={params?.sort ?? "name-asc"}
             className="app-field xl:col-span-2"
@@ -408,6 +442,35 @@ export default async function DressesPage({ searchParams }: DressesPageProps) {
                     >
                       {instagramStatusLabels[dress.instagramStatus]}
                     </span>
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">
+                    Flujo del vestido
+                  </p>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {dressProgressStageLabels.map((label, index) => {
+                      const isActive =
+                        index <=
+                        getWorkflowStageIndex(
+                          dress.workflowStatus,
+                          dress.instagramStatus,
+                        );
+
+                      return (
+                        <span
+                          key={`${dress.id}-${label}`}
+                          className={`rounded-full px-3 py-2 text-xs font-medium ${
+                            isActive
+                              ? "bg-accent text-white"
+                              : "bg-surface text-foreground/55"
+                          }`}
+                        >
+                          {label}
+                        </span>
+                      );
+                    })}
                   </div>
                 </div>
 
