@@ -370,15 +370,14 @@ export async function getDashboardData(): Promise<DashboardData> {
         ),
       operationalQueues: {
         needsModel: dressesNeedingModel
-          .slice(0, 8)
           .map((dress) => buildOperationalItem(dress, "Falta asignar modelo")),
-        needsDate: activeAssignmentsWithoutDate.slice(0, 8).map((assignment) =>
+        needsDate: activeAssignmentsWithoutDate.map((assignment) =>
           buildOperationalItem(
             assignment.dress,
             "Hay modelo asignada pero falta fecha",
           ),
         ),
-        needsPhotos: pendingPhoto.slice(0, 8).map((dress) =>
+        needsPhotos: pendingPhoto.map((dress) =>
           buildOperationalItem(
             dress,
             workflowStatusLabels[dress.workflowStatus],
@@ -386,13 +385,11 @@ export async function getDashboardData(): Promise<DashboardData> {
         ),
         needsFolder: readyForFolder
           .filter((dress) => !folderDressIds.has(dress.id))
-          .slice(0, 8)
           .map((dress) =>
             buildOperationalItem(dress, "Falta carpeta o entrega editada"),
           ),
         needsPublication: dressesNeedingPublication
           .filter((dress) => !instagramDressIds.has(dress.id))
-          .slice(0, 8)
           .map((dress) =>
             buildOperationalItem(dress, "Falta registrar publicación"),
           ),
@@ -549,11 +546,9 @@ function buildDemoDashboardData(): DashboardData {
     operationalQueues: {
       needsModel: demoDresses
         .filter((dress) => !activeAssignmentDressIds.has(dress.id))
-        .slice(0, 8)
         .map((dress) => buildOperationalItem(dress, "Falta asignar modelo")),
       needsDate: activeAssignments
         .filter((assignment) => !assignment.scheduledDate)
-        .slice(0, 8)
         .map((assignment) =>
           buildOperationalItem(
             {
@@ -564,7 +559,7 @@ function buildDemoDashboardData(): DashboardData {
             "Hay modelo asignada pero falta fecha",
           ),
         ),
-      needsPhotos: pendingPhoto.slice(0, 8).map((dress) =>
+      needsPhotos: pendingPhoto.map((dress) =>
         buildOperationalItem(
           dress,
           workflowStatusLabels[dress.workflowStatus],
@@ -572,13 +567,11 @@ function buildDemoDashboardData(): DashboardData {
       ),
       needsFolder: readyForFolder
         .filter((dress) => !demoDressFolders[dress.id]?.length)
-        .slice(0, 8)
         .map((dress) =>
           buildOperationalItem(dress, "Falta carpeta o entrega editada"),
         ),
       needsPublication: dressesNeedingPublication
         .filter((dress) => !demoInstagramPosts[dress.id]?.length)
-        .slice(0, 8)
         .map((dress) =>
           buildOperationalItem(dress, "Falta registrar publicación"),
         ),
