@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const navigation = [
   { href: "/", label: "Dashboard" },
@@ -45,6 +46,11 @@ export function AppShell({
   const pathname = usePathname();
   const activeHref = getActiveHref(pathname);
   const isLoginPage = pathname === "/login";
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [pathname]);
 
   if (isLoginPage) {
     return <div className="min-h-screen bg-transparent">{children}</div>;
@@ -54,7 +60,81 @@ export function AppShell({
     <div className="min-h-screen bg-transparent">
       <div className="mx-auto flex min-h-screen w-full max-w-[1600px] flex-col gap-3 px-2.5 py-2.5 sm:gap-4 sm:px-4 sm:py-4 xl:px-6 xl:py-6">
         <aside className="app-shell-panel sticky top-2.5 z-40 w-full shrink-0 overflow-hidden bg-[linear-gradient(180deg,rgba(36,39,45,0.98),rgba(31,34,40,0.98))] px-2.5 py-2.5 text-white shadow-[0_18px_40px_rgba(0,0,0,0.2)] sm:top-3 sm:px-4 sm:py-3 lg:px-5 lg:py-3.5">
-          <div className="flex flex-col gap-2.5 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex items-center justify-between gap-3 lg:hidden">
+            <Link
+              href="/"
+              className="inline-flex items-center rounded-xl bg-[rgba(250,248,244,0.96)] px-3 py-1.5 shadow-[0_8px_24px_rgba(0,0,0,0.14)] sm:rounded-2xl sm:px-4 sm:py-2"
+            >
+              <Image
+                src="/logo-ecobridal.png"
+                alt="Logo EcoBridal"
+                width={132}
+                height={44}
+                className="h-9 w-auto object-contain sm:h-11"
+                priority
+              />
+            </Link>
+
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen((current) => !current)}
+              aria-expanded={mobileMenuOpen}
+              aria-label={mobileMenuOpen ? "Cerrar menú" : "Abrir menú"}
+              className="inline-flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/6 text-white/90 transition hover:bg-white/10"
+            >
+              <span className="flex flex-col gap-1.5">
+                <span
+                  className={`block h-0.5 w-5 rounded-full bg-current transition ${
+                    mobileMenuOpen ? "translate-y-2 rotate-45" : ""
+                  }`}
+                />
+                <span
+                  className={`block h-0.5 w-5 rounded-full bg-current transition ${
+                    mobileMenuOpen ? "opacity-0" : ""
+                  }`}
+                />
+                <span
+                  className={`block h-0.5 w-5 rounded-full bg-current transition ${
+                    mobileMenuOpen ? "-translate-y-2 -rotate-45" : ""
+                  }`}
+                />
+              </span>
+            </button>
+          </div>
+
+          {mobileMenuOpen ? (
+            <div className="mt-3 grid gap-3 rounded-[22px] border border-white/8 bg-white/4 p-3 lg:hidden">
+              <nav className="grid gap-2">
+                {navigation.map((item) => {
+                  const active = isActive(activeHref, item.href);
+
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={`rounded-2xl border px-4 py-3 text-left transition ${
+                        active
+                          ? "border-[rgba(87,131,208,0.22)] bg-[rgba(250,248,244,0.98)] text-foreground shadow-[0_10px_24px_rgba(0,0,0,0.12)]"
+                          : "border-white/8 bg-white/5 text-white/86 hover:border-[rgba(88,190,193,0.24)] hover:bg-white/9"
+                      }`}
+                    >
+                      <span
+                        className={`text-[0.95rem] font-semibold ${
+                          active ? "text-foreground" : "text-white/86"
+                        }`}
+                      >
+                        {item.label}
+                      </span>
+                    </Link>
+                  );
+                })}
+              </nav>
+
+              {authSlot ? <div className="border-t border-white/8 pt-3">{authSlot}</div> : null}
+            </div>
+          ) : null}
+
+          <div className="hidden flex-col gap-2.5 lg:flex lg:flex-row lg:items-center lg:justify-between">
             <div className="flex justify-center lg:min-w-[180px] lg:justify-start">
               <Link
                 href="/"
