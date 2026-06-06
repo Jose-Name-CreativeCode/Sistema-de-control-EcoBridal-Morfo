@@ -603,7 +603,7 @@ export default async function Home() {
                   </span>
                 </div>
 
-                <div className="mt-4 grid gap-4">
+                <div className="mt-4 grid gap-4 md:grid-cols-2">
                   {barbaraLinks.map((item) => (
                     <div
                       key={item.key}
