@@ -1,5 +1,5 @@
 "use server";
-
+// asa
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getNextInternalCode } from "@/lib/internal-codes";
@@ -213,8 +213,13 @@ export async function addDressPhotoFolderAction(formData: FormData) {
 
     if (
       dress &&
-      ["DRAFT", "PENDING_PHOTOS", "MODEL_ASSIGNED", "IN_SESSION", "PHOTOGRAPHED"]
-        .includes(dress.workflowStatus)
+      [
+        "DRAFT",
+        "PENDING_PHOTOS",
+        "MODEL_ASSIGNED",
+        "IN_SESSION",
+        "PHOTOGRAPHED",
+      ].includes(dress.workflowStatus)
     ) {
       await tx.dress.update({
         where: { id: dressId },
