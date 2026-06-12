@@ -95,16 +95,6 @@ const defaultDashboardLinks: DashboardExcelLink[] = [
     label: "Excel de Ecobridal Barbara",
     url: "",
   },
-  {
-    key: "barbara_1",
-    label: "Link 1",
-    url: "",
-  },
-  {
-    key: "barbara_2",
-    label: "Link 2",
-    url: "",
-  },
 ];
 
 function buildDashboardExcelLinks(

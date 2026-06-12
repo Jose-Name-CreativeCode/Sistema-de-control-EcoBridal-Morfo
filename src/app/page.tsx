@@ -69,12 +69,6 @@ function DashboardOperationalList({
 
 export default async function Home() {
   const dashboard = await getDashboardData();
-  const standardExcelLinks = dashboard.excelLinks.filter(
-    (item) => item.key !== "barbara_1" && item.key !== "barbara_2",
-  );
-  const barbaraLinks = dashboard.excelLinks.filter(
-    (item) => item.key === "barbara_1" || item.key === "barbara_2",
-  );
 
   return (
     <main className="flex w-full flex-1 flex-col gap-6">
@@ -544,7 +538,7 @@ export default async function Home() {
             </div>
 
             <div className="mt-5 grid gap-4 lg:grid-cols-2">
-              {standardExcelLinks.map((item) => (
+              {dashboard.excelLinks.map((item) => (
                 <div
                   key={item.key}
                   className="rounded-[1.2rem] border border-line bg-[rgba(250,248,244,0.98)] p-4"
@@ -592,70 +586,6 @@ export default async function Home() {
                   </form>
                 </div>
               ))}
-
-              <div className="rounded-[1.2rem] border border-line bg-[rgba(250,248,244,0.98)] p-4">
-                <div className="flex items-center justify-between gap-3">
-                  <p className="font-medium text-foreground">
-                    Concentrado de ecobridal Barbara
-                  </p>
-                  <span className="app-badge bg-slate-200 text-slate-700">
-                    2 links
-                  </span>
-                </div>
-
-                <div className="mt-4 grid gap-4 md:grid-cols-2">
-                  {barbaraLinks.map((item) => (
-                    <div
-                      key={item.key}
-                      className="rounded-[1rem] border border-line bg-white/70 p-4"
-                    >
-                      <div className="flex items-center justify-between gap-3">
-                        <p className="text-sm font-medium text-foreground">
-                          {item.label}
-                        </p>
-                        {item.url ? (
-                          <a
-                            href={item.url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="app-button-primary px-4 py-2"
-                          >
-                            Abrir
-                          </a>
-                        ) : (
-                          <span className="app-badge bg-slate-200 text-slate-700">
-                            Sin link
-                          </span>
-                        )}
-                      </div>
-
-                      <form
-                        action={saveDashboardLinkAction}
-                        className="mt-4 grid gap-3"
-                      >
-                        <input type="hidden" name="key" value={item.key} />
-                        <input type="hidden" name="label" value={item.label} />
-                        <label className="grid gap-2 text-sm text-foreground/75">
-                          {item.label}
-                          <input
-                            type="url"
-                            name="url"
-                            defaultValue={item.url}
-                            placeholder="https://..."
-                            className="app-field"
-                          />
-                        </label>
-                        <button
-                          type="submit"
-                          className="app-button-secondary w-full sm:w-auto"
-                        >
-                          Guardar link
-                        </button>
-                      </form>
-                    </div>
-                  ))}
-                </div>
-              </div>
             </div>
           </article>
         </div>
