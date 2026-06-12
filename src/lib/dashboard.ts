@@ -92,7 +92,7 @@ const defaultDashboardLinks: DashboardExcelLink[] = [
   },
   {
     key: "excel_2",
-    label: "Excel de ecobridal Xime",
+    label: "Excel de Ecobridal Barbara",
     url: "",
   },
   {
