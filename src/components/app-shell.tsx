@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const navigation = [
   { href: "/", label: "Dashboard" },
@@ -47,10 +47,6 @@ export function AppShell({
   const activeHref = getActiveHref(pathname);
   const isLoginPage = pathname === "/login";
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  useEffect(() => {
-    setMobileMenuOpen(false);
-  }, [pathname]);
 
   if (isLoginPage) {
     return <div className="min-h-screen bg-transparent">{children}</div>;
@@ -112,6 +108,7 @@ export function AppShell({
                     <Link
                       key={item.href}
                       href={item.href}
+                      onClick={() => setMobileMenuOpen(false)}
                       className={`rounded-2xl border px-4 py-3 text-left transition ${
                         active
                           ? "border-[rgba(87,131,208,0.22)] bg-[rgba(250,248,244,0.98)] text-foreground shadow-[0_10px_24px_rgba(0,0,0,0.12)]"

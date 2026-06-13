@@ -1,14 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
-  addDressInstagramPostAction,
-  addDressPhotoFolderAction,
   assignModelToDressAction,
   deleteDressAction,
   removeDressAssignmentAction,
-  saveDressGalleryLinksAction,
   updateDressAssignmentAction,
-  updateDressDetailAction,
+  updateDressInformationAction,
   updateDressStatusesAction,
 } from "@/app/vestidos/actions";
 import { DressGalleryCloudinaryForm } from "@/components/dress-gallery-cloudinary-form";
@@ -115,6 +112,7 @@ export default async function DressDetailPage({
 
   const { dress } = data;
   const isEditing = query?.edit === "1";
+  const dressInformationFormId = `dress-information-${dress.id}`;
   const currentPhotoFolder = dress.photoFolders[0] ?? null;
   const currentInstagramPost = dress.instagramPosts[0] ?? null;
   const modelOptions = await getDressModelOptions(dress.id, dress.size);
@@ -657,6 +655,14 @@ export default async function DressDetailPage({
         </>
       ) : (
         <>
+          <form id={dressInformationFormId} action={updateDressInformationAction} />
+          <input
+            type="hidden"
+            name="dressId"
+            value={dress.id}
+            form={dressInformationFormId}
+          />
+
           <section className="app-page">
             <div className="border-b border-line pb-4">
               <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
@@ -765,110 +771,13 @@ export default async function DressDetailPage({
               dressId={dress.id}
               dressCode={dress.internalCode}
               dressName={dress.name}
-              action={saveDressGalleryLinksAction}
               initialPhotos={galleryPhotos}
+              embedded
+              formId={dressInformationFormId}
             />
           </section>
 
-          <section className="mt-8 grid gap-6 lg:grid-cols-2 lg:items-stretch">
-            <article className="flex min-h-[18rem] h-full flex-col overflow-hidden rounded-[2rem] border border-line bg-white/80 p-6">
-              <div className="border-b border-line pb-4">
-                <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
-                  Control operativo
-                </p>
-                <h2 className="font-heading text-4xl text-foreground">
-                  Estados del vestido
-                </h2>
-              </div>
-              <form
-                action={updateDressStatusesAction}
-                className="mt-6 flex flex-1 flex-col justify-between gap-4"
-              >
-                <input type="hidden" name="dressId" value={dress.id} />
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <label className="grid gap-2 text-sm text-foreground/75">
-                    Estado de fotografía
-                    <select
-                      name="workflowStatus"
-                      defaultValue={dress.workflowStatus}
-                      className="rounded-2xl border border-line bg-white px-4 py-3 outline-none transition focus:border-accent"
-                    >
-                      {Object.entries(workflowStatusLabels).map(
-                        ([value, label]) => (
-                          <option key={value} value={value}>
-                            {label}
-                          </option>
-                        ),
-                      )}
-                    </select>
-                  </label>
-                  <label className="grid gap-2 text-sm text-foreground/75">
-                    Estado de Instagram
-                    <select
-                      name="instagramStatus"
-                      defaultValue={dress.instagramStatus}
-                      className="rounded-2xl border border-line bg-white px-4 py-3 outline-none transition focus:border-accent"
-                    >
-                      {Object.entries(instagramStatusLabels).map(
-                        ([value, label]) => (
-                          <option key={value} value={value}>
-                            {label}
-                          </option>
-                        ),
-                      )}
-                    </select>
-                  </label>
-                </div>
-                <button
-                  type="submit"
-                  className="app-button-primary w-full sm:w-auto"
-                >
-                  Guardar estados
-                </button>
-              </form>
-            </article>
-
-            <article className="flex min-h-[18rem] h-full flex-col overflow-hidden rounded-[2rem] border border-line bg-surface-strong p-6">
-              <div className="border-b border-line pb-4">
-                <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
-                  Atajos rápidos
-                </p>
-                <h2 className="font-heading text-4xl text-foreground">
-                  Comprobación externa
-                </h2>
-              </div>
-              <div className="mt-6 flex flex-1 flex-col gap-4">
-                <a
-                  href={dress.photoFolders[0]?.folderUrl ?? "#"}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`rounded-xl border px-5 py-4 text-sm font-medium transition ${
-                    dress.photoFolders[0]
-                      ? "border-line bg-white text-foreground no-underline visited:text-foreground hover:border-foreground hover:bg-foreground hover:!text-white hover:no-underline visited:hover:!text-white"
-                      : "cursor-not-allowed border-dashed border-line bg-white/60 text-foreground/45"
-                  }`}
-                >
-                  {dress.photoFolders[0]
-                    ? "Abrir carpeta de fotos"
-                    : "Todavía no hay carpeta enlazada"}
-                </a>
-                <a
-                  href={dress.instagramPosts[0]?.instagramUrl ?? "#"}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`rounded-xl border px-5 py-4 text-sm font-medium transition ${
-                    dress.instagramPosts[0]
-                      ? "border-line bg-white text-foreground no-underline visited:text-foreground hover:border-foreground hover:bg-foreground hover:!text-white hover:no-underline visited:hover:!text-white"
-                      : "cursor-not-allowed border-dashed border-line bg-white/60 text-foreground/45"
-                  }`}
-                >
-                  {dress.instagramPosts[0]
-                    ? "Abrir publicación de Instagram"
-                    : "Todavía no hay publicación enlazada"}
-                </a>
-              </div>
-            </article>
-
+          <section className="mt-8 grid gap-6 pb-28 lg:grid-cols-2 lg:items-stretch">
             <article className="flex min-h-[34rem] h-full flex-col overflow-hidden rounded-[2rem] border border-line bg-white/80 p-6">
               <div className="border-b border-line pb-4">
                 <p className="text-sm uppercase tracking-[0.2em] text-foreground/60">
@@ -878,11 +787,7 @@ export default async function DressDetailPage({
                   Información base
                 </h2>
               </div>
-              <form
-                action={updateDressDetailAction}
-                className="mt-6 flex flex-1 flex-col gap-4"
-              >
-                <input type="hidden" name="dressId" value={dress.id} />
+              <div className="mt-6 flex flex-1 flex-col gap-4">
                 <div className="grid gap-4 sm:grid-cols-2">
                   <label className="grid gap-2 text-sm text-foreground/75">
                     Nombre del vestido
@@ -890,6 +795,7 @@ export default async function DressDetailPage({
                       required
                       name="name"
                       defaultValue={dress.name}
+                      form={dressInformationFormId}
                       className="app-field"
                     />
                   </label>
@@ -899,6 +805,7 @@ export default async function DressDetailPage({
                       name="brand"
                       defaultValue={dress.brand ?? ""}
                       placeholder="Pronovias"
+                      form={dressInformationFormId}
                       className="app-field"
                     />
                   </label>
@@ -908,6 +815,7 @@ export default async function DressDetailPage({
                       name="size"
                       defaultValue={dress.size}
                       placeholder="8"
+                      form={dressInformationFormId}
                       className="app-field"
                     />
                   </label>
@@ -916,6 +824,7 @@ export default async function DressDetailPage({
                     <select
                       name="condition"
                       defaultValue={dress.condition}
+                      form={dressInformationFormId}
                       className="app-field"
                     >
                       <option value="USED">Usado</option>
@@ -931,6 +840,7 @@ export default async function DressDetailPage({
                       name="price"
                       defaultValue={dress.price ?? ""}
                       placeholder="15999"
+                      form={dressInformationFormId}
                       className="app-field"
                     />
                   </label>
@@ -944,6 +854,7 @@ export default async function DressDetailPage({
                           ? dress.receivedAt.toISOString().slice(0, 10)
                           : ""
                       }
+                      form={dressInformationFormId}
                       className="app-field"
                     />
                   </label>
@@ -953,6 +864,7 @@ export default async function DressDetailPage({
                     type="checkbox"
                     name="isNew"
                     defaultChecked={dress.isNew}
+                    form={dressInformationFormId}
                     className="h-4 w-4 accent-[--color-accent]"
                   />
                   Marcar como vestido nuevo
@@ -964,18 +876,16 @@ export default async function DressDetailPage({
                     rows={4}
                     defaultValue={dress.notes ?? ""}
                     placeholder="Notas internas, detalles de sesión o seguimiento."
+                    form={dressInformationFormId}
                     className="app-field min-h-32 resize-y"
                   />
                 </label>
                 <div className="flex flex-wrap gap-3">
-                  <button type="submit" className="app-button-primary">
-                    Guardar datos del vestido
-                  </button>
                   <span className="app-badge bg-slate-200 text-slate-700">
                     {dressConditionLabels[dress.condition]}
                   </span>
                 </div>
-              </form>
+              </div>
             </article>
 
             <article className="flex min-h-[34rem] h-full flex-col overflow-hidden rounded-[2rem] border border-line bg-white/80 p-6">
@@ -990,15 +900,12 @@ export default async function DressDetailPage({
                 </div>
               </div>
 
-              <form
-                action={addDressPhotoFolderAction}
-                className="mt-6 grid gap-4"
-              >
-                <input type="hidden" name="dressId" value={dress.id} />
+              <div className="mt-6 grid gap-4">
                 <input
                   type="hidden"
                   name="folderId"
                   value={currentPhotoFolder?.id ?? ""}
+                  form={dressInformationFormId}
                 />
                 <div className="grid gap-4 sm:grid-cols-2">
                   <label className="grid gap-2 text-sm text-foreground/75">
@@ -1008,6 +915,7 @@ export default async function DressDetailPage({
                       defaultValue={
                         currentPhotoFolder?.provider ?? "OUTLOOK_ONEDRIVE"
                       }
+                      form={dressInformationFormId}
                       className="rounded-2xl border border-line bg-white px-4 py-3 outline-none transition focus:border-accent"
                     >
                       {Object.entries(folderProviderLabels).map(
@@ -1025,6 +933,7 @@ export default async function DressDetailPage({
                       name="versionLabel"
                       placeholder="Edición final mayo"
                       defaultValue={currentPhotoFolder?.versionLabel ?? ""}
+                      form={dressInformationFormId}
                       className="rounded-2xl border border-line bg-white px-4 py-3 outline-none transition focus:border-accent"
                     />
                   </label>
@@ -1032,33 +941,26 @@ export default async function DressDetailPage({
                 <label className="grid gap-2 text-sm text-foreground/75">
                   Link de carpeta
                   <input
-                    required
                     type="url"
                     name="folderUrl"
                     placeholder="https://..."
                     defaultValue={currentPhotoFolder?.folderUrl ?? ""}
+                    form={dressInformationFormId}
                     className="rounded-2xl border border-line bg-white px-4 py-3 outline-none transition focus:border-accent"
                   />
                 </label>
                 <label className="grid gap-2 text-sm text-foreground/75">
                   Notas
                   <textarea
-                    name="notes"
+                    name="folderNotes"
                     rows={3}
                     placeholder="Qué incluye la carpeta o qué versión está aprobada."
                     defaultValue={currentPhotoFolder?.notes ?? ""}
+                    form={dressInformationFormId}
                     className="rounded-3xl border border-line bg-white px-4 py-3 outline-none transition focus:border-accent"
                   />
                 </label>
-                <button
-                  type="submit"
-                  className="app-button-primary w-full sm:w-auto"
-                >
-                  {currentPhotoFolder
-                    ? "Actualizar carpeta externa"
-                    : "Guardar carpeta externa"}
-                </button>
-              </form>
+              </div>
 
               <div className="mt-6 grid gap-4">
                 {currentPhotoFolder ? (
@@ -1341,15 +1243,12 @@ export default async function DressDetailPage({
                 </div>
               </div>
 
-              <form
-                action={addDressInstagramPostAction}
-                className="mt-6 flex flex-1 flex-col gap-4"
-              >
-                <input type="hidden" name="dressId" value={dress.id} />
+              <div className="mt-6 flex flex-1 flex-col gap-4">
                 <input
                   type="hidden"
                   name="instagramPostId"
                   value={currentInstagramPost?.id ?? ""}
+                  form={dressInformationFormId}
                 />
                 <div className="grid gap-4 sm:grid-cols-2">
                   <label className="grid gap-2 text-sm text-foreground/75">
@@ -1357,6 +1256,7 @@ export default async function DressDetailPage({
                     <select
                       name="postType"
                       defaultValue={currentInstagramPost?.postType ?? "POST"}
+                      form={dressInformationFormId}
                       className="rounded-2xl border border-line bg-white px-4 py-3 outline-none transition focus:border-accent"
                     >
                       {Object.entries(instagramPostTypeLabels).map(
@@ -1374,6 +1274,7 @@ export default async function DressDetailPage({
                       name="accountName"
                       placeholder="@ecobridalmorfo"
                       defaultValue={currentInstagramPost?.accountName ?? ""}
+                      form={dressInformationFormId}
                       className="rounded-2xl border border-line bg-white px-4 py-3 outline-none transition focus:border-accent"
                     />
                   </label>
@@ -1381,11 +1282,11 @@ export default async function DressDetailPage({
                 <label className="grid gap-2 text-sm text-foreground/75">
                   Link de publicación
                   <input
-                    required
                     type="url"
                     name="instagramUrl"
                     placeholder="https://instagram.com/..."
                     defaultValue={currentInstagramPost?.instagramUrl ?? ""}
+                    form={dressInformationFormId}
                     className="rounded-2xl border border-line bg-white px-4 py-3 outline-none transition focus:border-accent"
                   />
                 </label>
@@ -1398,6 +1299,7 @@ export default async function DressDetailPage({
                       defaultValue={formatDateInput(
                         currentInstagramPost?.publishedAt ?? null,
                       )}
+                      form={dressInformationFormId}
                       className="rounded-2xl border border-line bg-white px-4 py-3 outline-none transition focus:border-accent"
                     />
                   </label>
@@ -1407,19 +1309,15 @@ export default async function DressDetailPage({
                       name="captionNotes"
                       placeholder="Caption, formato o comentario interno."
                       defaultValue={currentInstagramPost?.captionNotes ?? ""}
+                      form={dressInformationFormId}
                       className="rounded-2xl border border-line bg-white px-4 py-3 outline-none transition focus:border-accent"
                     />
                   </label>
                 </div>
-                <button
-                  type="submit"
-                  className="app-button-primary w-full sm:w-auto"
-                >
-                  {currentInstagramPost
-                    ? "Actualizar publicación de Instagram"
-                    : "Guardar publicación de Instagram"}
-                </button>
-              </form>
+                <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm leading-6 text-emerald-900">
+                  Si guardas con un link de Instagram, el vestido se marcará como publicado automáticamente.
+                </div>
+              </div>
 
               <div className="mt-6 grid gap-4">
                 {currentInstagramPost ? (
@@ -1467,6 +1365,21 @@ export default async function DressDetailPage({
               </div>
             </article>
           </section>
+
+          <div className="fixed inset-x-0 bottom-4 z-40 flex justify-center px-4">
+            <div className="flex w-full max-w-3xl flex-col gap-3 rounded-[1.5rem] border border-line bg-white/95 p-3 shadow-[0_18px_60px_rgba(25,28,38,0.24)] backdrop-blur sm:flex-row sm:items-center sm:justify-between">
+              <p className="px-2 text-sm leading-6 text-foreground/72">
+                Guarda datos, fotos, carpeta e Instagram en una sola acción.
+              </p>
+              <button
+                type="submit"
+                form={dressInformationFormId}
+                className="app-button-primary w-full sm:w-auto"
+              >
+                Guardar información
+              </button>
+            </div>
+          </div>
         </>
       )}
     </main>

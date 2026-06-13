@@ -1,0 +1,320 @@
+{
+  "dryRun": true,
+  "foldersWithOriginals": 127,
+  "uniqueFolderNames": 123,
+  "deleted": [
+    {
+      "name": "Arlette",
+      "internalCode": "ECO-092"
+    },
+    {
+      "name": "Barcaza",
+      "internalCode": "ECO-038"
+    },
+    {
+      "name": "CAPA Vic",
+      "internalCode": "ECO-002"
+    },
+    {
+      "name": "Camelia",
+      "internalCode": "ECO-101"
+    },
+    {
+      "name": "Cayla",
+      "internalCode": "ECO-021"
+    },
+    {
+      "name": "Dulce y Baikal",
+      "internalCode": "ECO-XLS-091"
+    },
+    {
+      "name": "Estefani",
+      "internalCode": "ECO-124"
+    },
+    {
+      "name": "Jessi",
+      "internalCode": "ECO-133"
+    },
+    {
+      "name": "Karol",
+      "internalCode": "ECO-117"
+    },
+    {
+      "name": "Laura",
+      "internalCode": "ECO-016"
+    },
+    {
+      "name": "Mariana",
+      "internalCode": "ECO-008"
+    }
+  ],
+  "uploaded": [
+    {
+      "name": "Albionix",
+      "folder": "ALBIONIX",
+      "dateKey": "2025-11-26",
+      "frontFile": "DSC00919.JPG",
+      "backFile": "DSC00958.JPG"
+    },
+    {
+      "name": "Alexa",
+      "folder": "ALEXA",
+      "dateKey": "2026-01-17",
+      "frontFile": "DSC05778.JPG",
+      "backFile": "DSC05895.JPG"
+    },
+    {
+      "name": "Amanda",
+      "folder": "AMANDA",
+      "dateKey": "2026-05-09",
+      "frontFile": "DSC08383.JPG",
+      "backFile": "DSC08449.JPG"
+    },
+    {
+      "name": "Amparo",
+      "folder": "AMPARO",
+      "dateKey": "2026-01-17",
+      "frontFile": "DSC05562.JPG",
+      "backFile": "DSC05573.JPG"
+    },
+    {
+      "name": "Angélica",
+      "folder": "ANGELICA",
+      "dateKey": "2026-03-01",
+      "frontFile": "DSC00614.JPG",
+      "backFile": "DSC00489.JPG"
+    },
+    {
+      "name": "Annie",
+      "folder": "ANNIE",
+      "dateKey": "2026-03-01",
+      "frontFile": "DSC09348.JPG",
+      "backFile": "DSC09387.JPG"
+    },
+    {
+      "name": "Aurora",
+      "folder": "AURORA",
+      "dateKey": "2026-05-09",
+      "frontFile": "DSC07904.JPG",
+      "backFile": "DSC07997.JPG"
+    },
+    {
+      "name": "Bangioc",
+      "folder": "BANGIOC toma",
+      "dateKey": "2025-10-03",
+      "frontFile": "DSC03844.JPG",
+      "backFile": "DSC03894.JPG"
+    },
+    {
+      "name": "Caity",
+      "folder": "CAITY",
+      "dateKey": "2025-12-05",
+      "frontFile": "DSC04324.JPG",
+      "backFile": "DSC04388.JPG"
+    },
+    {
+      "name": "Carlota",
+      "folder": "CARLOTA",
+      "dateKey": "2026-05-09",
+      "frontFile": "DSC08239.JPG",
+      "backFile": "DSC08317.JPG"
+    },
+    {
+      "name": "Carolina",
+      "folder": "CAROLINA",
+      "dateKey": "2026-03-02",
+      "frontFile": "DSC01186.JPG",
+      "backFile": "DSC01217.JPG"
+    },
+    {
+      "name": "Clara",
+      "folder": "CLARA",
+      "dateKey": "2026-01-27",
+      "frontFile": "DSC08316.JPG",
+      "backFile": "DSC08239.JPG"
+    },
+    {
+      "name": "Conjunto de Encaje",
+      "folder": "CONJUNTO_ENCAJE",
+      "dateKey": "2026-01-21",
+      "frontFile": "f22787072.jpg",
+      "backFile": "f23706624.jpg"
+    },
+    {
+      "name": "Dalia",
+      "folder": "DALIA",
+      "dateKey": "2026-04-22",
+      "frontFile": "DSC05196.JPG",
+      "backFile": "DSC05221.JPG"
+    },
+    {
+      "name": "Eleonora",
+      "folder": "ELEONORA",
+      "dateKey": "2026-01-27",
+      "frontFile": "DSC08931.JPG",
+      "backFile": "DSC08955.JPG"
+    },
+    {
+      "name": "Elyse",
+      "folder": "ELYSE",
+      "dateKey": "2026-01-21",
+      "frontFile": "DSC06822.JPG",
+      "backFile": "DSC07027.JPG"
+    },
+    {
+      "name": "Ema",
+      "folder": "EMA",
+      "dateKey": "2026-01-17",
+      "frontFile": "DSC06235.JPG",
+      "backFile": "DSC06372.JPG"
+    },
+    {
+      "name": "Emma",
+      "folder": "EMMA",
+      "dateKey": "2026-01-17",
+      "frontFile": "DSC06235.JPG",
+      "backFile": "DSC06372.JPG"
+    },
+    {
+      "name": "Evany",
+      "folder": "EVANY",
+      "dateKey": "2026-01-17",
+      "frontFile": "DSC05623.JPG",
+      "backFile": "DSC05680.JPG"
+    },
+    {
+      "name": "Gabriela",
+      "folder": "GABRIELA",
+      "dateKey": "2026-05-20",
+      "frontFile": "DSC09772.JPG",
+      "backFile": "DSC09811.JPG"
+    },
+    {
+      "name": "Gabriela",
+      "folder": "GABRIELA",
+      "dateKey": "2026-05-20",
+      "frontFile": "DSC09772.JPG",
+      "backFile": "DSC09811.JPG"
+    },
+    {
+      "name": "Gypsy",
+      "folder": "GYPSY",
+      "dateKey": "2026-03-02",
+      "frontFile": "DSC09788.JPG",
+      "backFile": "DSC09805.JPG"
+    },
+    {
+      "name": "Irina",
+      "folder": "IRINA",
+      "dateKey": "2026-03-02",
+      "frontFile": "DSC00316.JPG",
+      "backFile": "DSC00452.JPG"
+    },
+    {
+      "name": "Jolene",
+      "folder": "JOLENE",
+      "dateKey": "2026-01-17",
+      "frontFile": "DSC06043.JPG",
+      "backFile": "DSC06094.JPG"
+    },
+    {
+      "name": "Karen",
+      "folder": "KAREN",
+      "dateKey": "2026-03-02",
+      "frontFile": "DSC00678.JPG",
+      "backFile": "DSC00709.JPG"
+    },
+    {
+      "name": "La Divine",
+      "folder": "LA DIVINE",
+      "dateKey": "2025-12-05",
+      "frontFile": "DSC02960.JPG",
+      "backFile": "DSC03089.JPG"
+    },
+    {
+      "name": "Lola",
+      "folder": "LOLA",
+      "dateKey": "2026-03-02",
+      "frontFile": "DSC09924.JPG",
+      "backFile": "DSC09966.JPG"
+    },
+    {
+      "name": "Lorea",
+      "folder": "LOREA",
+      "dateKey": "2026-04-22",
+      "frontFile": "DSC05130.JPG",
+      "backFile": "DSC05057.JPG"
+    },
+    {
+      "name": "Lucrecia",
+      "folder": "LUCRECIA",
+      "dateKey": "2026-01-21",
+      "frontFile": "DSC05061.JPG",
+      "backFile": "DSC05127.JPG"
+    },
+    {
+      "name": "Lucrecia",
+      "folder": "LUCRECIA",
+      "dateKey": "2026-01-21",
+      "frontFile": "DSC05061.JPG",
+      "backFile": "DSC05127.JPG"
+    },
+    {
+      "name": "Lulú",
+      "folder": "LÚLU",
+      "dateKey": "2026-03-02",
+      "frontFile": "DSC00768.JPG",
+      "backFile": "DSC00836.JPG"
+    },
+    {
+      "name": "Nancy",
+      "folder": "NANCY",
+      "dateKey": "2026-05-09",
+      "frontFile": "DSC03592.JPG",
+      "backFile": "DSC03653.JPG"
+    },
+    {
+      "name": "Peiky mediano",
+      "folder": "PEIKY-MEDIANO",
+      "dateKey": "2026-03-10",
+      "frontFile": "DSC02932.JPG",
+      "backFile": "DSC03011.JPG"
+    },
+    {
+      "name": "Perla",
+      "folder": "PERLA",
+      "dateKey": "2026-01-27",
+      "frontFile": "DSC07896.JPG",
+      "backFile": "DSC07963_edited.jpg"
+    },
+    {
+      "name": "Rafaella",
+      "folder": "RAFAELLA",
+      "dateKey": "2026-05-09",
+      "frontFile": "DSC08161.JPG",
+      "backFile": "DSC08212.JPG"
+    },
+    {
+      "name": "Rosa",
+      "folder": "ROSA",
+      "dateKey": "2026-04-23",
+      "frontFile": "DSC05531.JPG",
+      "backFile": "DSC05592.JPG"
+    },
+    {
+      "name": "Saville",
+      "folder": "SAVILLE",
+      "dateKey": "2025-12-05",
+      "frontFile": "DSC03941.JPG",
+      "backFile": "DSC04026.JPG"
+    },
+    {
+      "name": "Tania",
+      "folder": "TANIA",
+      "dateKey": "2026-03-02",
+      "frontFile": "DSC00092.JPG",
+      "backFile": "DSC09985.JPG"
+    }
+  ],
+  "skippedUpload": []
+}

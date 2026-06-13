@@ -1,0 +1,47 @@
+(node:81352) Warning: SECURITY WARNING: The SSL modes 'prefer', 'require', and 'verify-ca' are treated as aliases for 'verify-full'.
+In the next major version (pg-connection-string v3.0.0 and pg v9.0.0), these modes will adopt standard libpq semantics, which have weaker security guarantees.
+
+To prepare for this change:
+- If you want the current behavior, explicitly use 'sslmode=verify-full'
+- If you want libpq compatibility now, use 'uselibpqcompat=true&sslmode=require'
+
+See https://www.postgresql.org/docs/current/libpq-ssl.html for libpq SSL mode definitions.
+(Use `node --trace-warnings ...` to show where the warning was created)
+Uploading Albionix from 2025-11-26
+Uploading Alexa from 2026-01-17
+Uploading Amanda from 2026-05-09
+Uploading Amparo from 2026-01-17
+Uploading Angélica from 2026-03-01
+Uploading Annie from 2026-03-01
+Uploading Aurora from 2026-05-09
+Uploading Bangioc from 2025-10-03
+Uploading Caity from 2025-12-05
+Uploading Carlota from 2026-05-09
+Uploading Carolina from 2026-03-02
+Uploading Clara from 2026-01-27
+Uploading Conjunto de Encaje from 2026-01-21
+Uploading Dalia from 2026-04-22
+Uploading Eleonora from 2026-01-27
+Uploading Elyse from 2026-01-21
+Uploading Ema from 2026-01-17
+Uploading Emma from 2026-01-17
+Uploading Evany from 2026-01-17
+Uploading Gabriela from 2026-05-20
+Uploading Gabriela from 2026-05-20
+Uploading Gypsy from 2026-03-02
+Uploading Irina from 2026-03-02
+Uploading Jolene from 2026-01-17
+Uploading Karen from 2026-03-02
+Uploading La Divine from 2025-12-05
+Uploading Lola from 2026-03-02
+Uploading Lorea from 2026-04-22
+Uploading Lucrecia from 2026-01-21
+Uploading Lucrecia from 2026-01-21
+Uploading Lulú from 2026-03-02
+Uploading Nancy from 2026-05-09
+Uploading Peiky mediano from 2026-03-10
+Uploading Perla from 2026-01-27
+Uploading Rafaella from 2026-05-09
+Uploading Rosa from 2026-04-23
+Uploading Saville from 2025-12-05
+Uploading Tania from 2026-03-02

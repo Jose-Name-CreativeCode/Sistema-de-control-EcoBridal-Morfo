@@ -13,8 +13,10 @@ type DressGalleryCloudinaryFormProps = {
   dressId: string;
   dressCode: string;
   dressName: string;
-  action: (formData: FormData) => void | Promise<void>;
+  action?: (formData: FormData) => void | Promise<void>;
   initialPhotos: Record<GallerySlot["field"], string>;
+  embedded?: boolean;
+  formId?: string;
 };
 
 type SlotState = {
@@ -80,6 +82,8 @@ export function DressGalleryCloudinaryForm({
   dressName,
   action,
   initialPhotos,
+  embedded = false,
+  formId,
 }: DressGalleryCloudinaryFormProps) {
   const [slotState, setSlotState] = useState(() => buildInitialState(initialPhotos));
 
@@ -185,13 +189,13 @@ export function DressGalleryCloudinaryForm({
     }));
   }
 
-  return (
-    <form action={action} className="mt-6 grid gap-5">
-      <input type="hidden" name="dressId" value={dressId} />
+  const content = (
+    <>
+      {!embedded ? <input type="hidden" name="dressId" value={dressId} /> : null}
 
       <div className="rounded-2xl border border-line bg-surface px-4 py-4 text-sm leading-7 text-foreground/72">
         Elige las 4 fotos desde aquí y el sistema las sube a Cloudinary por ti. Después
-        solo guardas una vez.
+        guardas una sola vez con el botón flotante.
       </div>
 
       {!cloudinaryReady ? (
@@ -211,7 +215,12 @@ export function DressGalleryCloudinaryForm({
               key={slot.field}
               className="rounded-[1.35rem] border border-line bg-[rgba(250,248,244,0.98)] p-4 shadow-[0_10px_28px_rgba(25,28,38,0.05)]"
             >
-              <input type="hidden" name={slot.field} value={current.url} />
+              <input
+                type="hidden"
+                name={slot.field}
+                value={current.url}
+                form={formId}
+              />
 
               <div className="flex items-start justify-between gap-3">
                 <div>
@@ -279,15 +288,17 @@ export function DressGalleryCloudinaryForm({
         })}
       </div>
 
-      <div className="flex flex-wrap gap-3">
-        <button
-          type="submit"
-          disabled={isUploading}
-          className="app-button-primary w-full disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
-        >
-          {isUploading ? "Espera a que terminen de subir" : "Guardar galería del vestido"}
-        </button>
-      </div>
+      {!embedded ? (
+        <div className="flex flex-wrap gap-3">
+          <button
+            type="submit"
+            disabled={isUploading}
+            className="app-button-primary w-full disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+          >
+            {isUploading ? "Espera a que terminen de subir" : "Guardar galería del vestido"}
+          </button>
+        </div>
+      ) : null}
 
       <details className="rounded-2xl border border-line bg-surface px-4 py-4">
         <summary className="cursor-pointer list-none text-sm font-medium text-foreground">
@@ -317,6 +328,16 @@ export function DressGalleryCloudinaryForm({
           ))}
         </div>
       </details>
+    </>
+  );
+
+  if (embedded) {
+    return <div className="mt-6 grid gap-5">{content}</div>;
+  }
+
+  return (
+    <form action={action} className="mt-6 grid gap-5">
+      {content}
     </form>
   );
 }

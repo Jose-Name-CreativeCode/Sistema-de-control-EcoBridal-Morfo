@@ -120,6 +120,255 @@ export async function updateDressDetailAction(formData: FormData) {
   redirect(`/vestidos/${dressId}?detailsSaved=1`);
 }
 
+export async function updateDressInformationAction(formData: FormData) {
+  const dressId = String(formData.get("dressId") ?? "").trim();
+
+  if (!isDatabaseConfigured()) {
+    redirect(`/vestidos/${dressId}?demo=1`);
+  }
+
+  const name = String(formData.get("name") ?? "").trim();
+  const brand = parseOptionalString(formData.get("brand"));
+  const size = parseOptionalString(formData.get("size")) ?? "Por definir";
+  const condition = String(formData.get("condition") ?? "USED");
+  const price = parseOptionalNumber(formData.get("price"));
+  const notes = parseOptionalString(formData.get("notes"));
+  const receivedAtValue = String(formData.get("receivedAt") ?? "").trim();
+  const isNew = formData.get("isNew") === "on";
+
+  if (!name) {
+    redirect(`/vestidos/${dressId}?missing=1&edit=1`);
+  }
+
+  const gallerySlots = [
+    { field: "coverUrl", type: "COVER" as const },
+    { field: "frontUrl", type: "FRONT" as const },
+    { field: "backUrl", type: "BACK" as const },
+    { field: "detailUrl", type: "DETAIL" as const },
+  ];
+  const folderUrl = String(formData.get("folderUrl") ?? "").trim();
+  const folderId = parseOptionalString(formData.get("folderId"));
+  const instagramUrl = String(formData.get("instagramUrl") ?? "").trim();
+  const instagramPostId = parseOptionalString(formData.get("instagramPostId"));
+
+  await prisma.$transaction(async (tx) => {
+    const existingPhotos = await tx.dressPhoto.findMany({
+      where: {
+        dressId,
+        photoType: {
+          in: gallerySlots.map((slot) => slot.type),
+        },
+      },
+      orderBy: {
+        createdAt: "asc",
+      },
+    });
+
+    for (const [index, slot] of gallerySlots.entries()) {
+      const imageUrl = String(formData.get(slot.field) ?? "").trim();
+      const existingPhoto = existingPhotos.find(
+        (photo) => photo.photoType === slot.type,
+      );
+
+      if (!imageUrl) {
+        if (existingPhoto) {
+          await tx.dressPhoto.delete({
+            where: { id: existingPhoto.id },
+          });
+        }
+
+        continue;
+      }
+
+      if (existingPhoto) {
+        await tx.dressPhoto.update({
+          where: { id: existingPhoto.id },
+          data: {
+            imageUrl,
+            sortOrder: index + 1,
+          },
+        });
+      } else {
+        await tx.dressPhoto.create({
+          data: {
+            dressId,
+            photoType: slot.type,
+            imageUrl,
+            sortOrder: index + 1,
+          },
+        });
+      }
+    }
+
+    const existingFolder = folderId
+      ? await tx.dressPhotoFolder.findFirst({
+          where: {
+            id: folderId,
+            dressId,
+          },
+        })
+      : await tx.dressPhotoFolder.findFirst({
+          where: { dressId },
+          orderBy: {
+            createdAt: "desc",
+          },
+        });
+
+    if (folderUrl) {
+      const provider = String(formData.get("provider") ?? "OUTLOOK_ONEDRIVE");
+      const versionLabel = parseOptionalString(formData.get("versionLabel"));
+      const folderNotes = parseOptionalString(formData.get("folderNotes"));
+
+      const savedFolder = existingFolder
+        ? await tx.dressPhotoFolder.update({
+            where: { id: existingFolder.id },
+            data: {
+              provider: provider as
+                | "OUTLOOK_ONEDRIVE"
+                | "SHAREPOINT"
+                | "GOOGLE_DRIVE"
+                | "OTHER",
+              folderUrl,
+              versionLabel,
+              notes: folderNotes,
+            },
+          })
+        : await tx.dressPhotoFolder.create({
+            data: {
+              dressId,
+              provider: provider as
+                | "OUTLOOK_ONEDRIVE"
+                | "SHAREPOINT"
+                | "GOOGLE_DRIVE"
+                | "OTHER",
+              folderUrl,
+              versionLabel,
+              notes: folderNotes,
+            },
+          });
+
+      await tx.dressPhotoFolder.deleteMany({
+        where: {
+          dressId,
+          id: {
+            not: savedFolder.id,
+          },
+        },
+      });
+    } else if (existingFolder) {
+      await tx.dressPhotoFolder.delete({
+        where: { id: existingFolder.id },
+      });
+    }
+
+    if (instagramUrl) {
+      const postType = String(formData.get("postType") ?? "POST");
+      const accountName = parseOptionalString(formData.get("accountName"));
+      const captionNotes = parseOptionalString(formData.get("captionNotes"));
+      const publishedAtValue = String(formData.get("publishedAt") ?? "").trim();
+      const publishedAt = publishedAtValue
+        ? new Date(publishedAtValue)
+        : new Date();
+      const existingPost = instagramPostId
+        ? await tx.dressInstagramPost.findFirst({
+            where: {
+              id: instagramPostId,
+              dressId,
+            },
+          })
+        : await tx.dressInstagramPost.findFirst({
+            where: { dressId },
+            orderBy: [
+              {
+                publishedAt: "desc",
+              },
+              {
+                createdAt: "desc",
+              },
+            ],
+          });
+
+      const savedPost = existingPost
+        ? await tx.dressInstagramPost.update({
+            where: { id: existingPost.id },
+            data: {
+              postType: postType as "POST" | "REEL" | "STORY" | "CAROUSEL",
+              instagramUrl,
+              accountName,
+              captionNotes,
+              publishedAt,
+            },
+          })
+        : await tx.dressInstagramPost.create({
+            data: {
+              dressId,
+              postType: postType as "POST" | "REEL" | "STORY" | "CAROUSEL",
+              instagramUrl,
+              accountName,
+              captionNotes,
+              publishedAt,
+            },
+          });
+
+      await tx.dressInstagramPost.deleteMany({
+        where: {
+          dressId,
+          id: {
+            not: savedPost.id,
+          },
+        },
+      });
+    } else if (instagramPostId) {
+      await tx.dressInstagramPost.deleteMany({
+        where: {
+          id: instagramPostId,
+          dressId,
+        },
+      });
+    }
+
+    const hasGalleryPhoto = gallerySlots.some((slot) =>
+      Boolean(String(formData.get(slot.field) ?? "").trim()),
+    );
+    const workflowStatusPatch = instagramUrl
+      ? {
+          instagramStatus: "PUBLISHED" as const,
+          workflowStatus: "PUBLISHED" as const,
+        }
+      : folderUrl
+        ? {
+            instagramStatus: "NOT_PUBLISHED" as const,
+            workflowStatus: "EDITED" as const,
+          }
+        : hasGalleryPhoto
+          ? {
+              instagramStatus: "NOT_PUBLISHED" as const,
+              workflowStatus: "PHOTOGRAPHED" as const,
+            }
+          : { instagramStatus: "NOT_PUBLISHED" as const };
+
+    await tx.dress.update({
+      where: { id: dressId },
+      data: {
+        name,
+        brand,
+        size,
+        condition: condition as "USED" | "NEW" | "SAMPLE",
+        price,
+        notes,
+        receivedAt: receivedAtValue ? new Date(receivedAtValue) : null,
+        isNew,
+        ...workflowStatusPatch,
+      },
+    });
+  });
+
+  revalidatePath("/vestidos");
+  revalidatePath(`/vestidos/${dressId}`);
+  revalidatePath("/");
+  redirect(`/vestidos/${dressId}?detailsSaved=1&edit=1`);
+}
+
 export async function deleteDressAction(formData: FormData) {
   const dressId = String(formData.get("dressId") ?? "").trim();
 

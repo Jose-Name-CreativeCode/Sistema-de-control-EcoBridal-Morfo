@@ -1,0 +1,396 @@
+{
+  "dryRun": false,
+  "foldersWithOriginals": 127,
+  "uniqueFolderNames": 123,
+  "deleted": [
+    {
+      "name": "Arlette",
+      "internalCode": "ECO-092"
+    },
+    {
+      "name": "Barcaza",
+      "internalCode": "ECO-038"
+    },
+    {
+      "name": "CAPA Vic",
+      "internalCode": "ECO-002"
+    },
+    {
+      "name": "Camelia",
+      "internalCode": "ECO-101"
+    },
+    {
+      "name": "Cayla",
+      "internalCode": "ECO-021"
+    },
+    {
+      "name": "Dulce y Baikal",
+      "internalCode": "ECO-XLS-091"
+    },
+    {
+      "name": "Estefani",
+      "internalCode": "ECO-124"
+    },
+    {
+      "name": "Jessi",
+      "internalCode": "ECO-133"
+    },
+    {
+      "name": "Karol",
+      "internalCode": "ECO-117"
+    },
+    {
+      "name": "Laura",
+      "internalCode": "ECO-016"
+    },
+    {
+      "name": "Mariana",
+      "internalCode": "ECO-008"
+    }
+  ],
+  "uploaded": [
+    {
+      "name": "Albionix",
+      "folder": "ALBIONIX",
+      "dateKey": "2025-11-26",
+      "frontFile": "DSC00919.JPG",
+      "backFile": "DSC00958.JPG",
+      "frontUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781306682/ecobridal/dresses/albionix/cover.jpg",
+      "backUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781306682/ecobridal/dresses/albionix/back.jpg"
+    },
+    {
+      "name": "Alexa",
+      "folder": "ALEXA",
+      "dateKey": "2026-01-17",
+      "frontFile": "DSC05778.JPG",
+      "backFile": "DSC05895.JPG",
+      "frontUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781306715/ecobridal/dresses/alexa/cover.jpg",
+      "backUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781306714/ecobridal/dresses/alexa/back.jpg"
+    },
+    {
+      "name": "Amanda",
+      "folder": "AMANDA",
+      "dateKey": "2026-05-09",
+      "frontFile": "DSC08383.JPG",
+      "backFile": "DSC08449.JPG",
+      "frontUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781306741/ecobridal/dresses/amanda/cover.jpg",
+      "backUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781306741/ecobridal/dresses/amanda/back.jpg"
+    },
+    {
+      "name": "Amparo",
+      "folder": "AMPARO",
+      "dateKey": "2026-01-17",
+      "frontFile": "DSC05562.JPG",
+      "backFile": "DSC05573.JPG",
+      "frontUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781306755/ecobridal/dresses/amparo/cover.jpg",
+      "backUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781306755/ecobridal/dresses/amparo/back.jpg"
+    },
+    {
+      "name": "Angélica",
+      "folder": "ANGELICA",
+      "dateKey": "2026-03-01",
+      "frontFile": "DSC00614.JPG",
+      "backFile": "DSC00489.JPG",
+      "frontUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781306779/ecobridal/dresses/angelica/cover.jpg",
+      "backUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781306779/ecobridal/dresses/angelica/back.jpg"
+    },
+    {
+      "name": "Annie",
+      "folder": "ANNIE",
+      "dateKey": "2026-03-01",
+      "frontFile": "DSC09348.JPG",
+      "backFile": "DSC09387.JPG",
+      "frontUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781306795/ecobridal/dresses/annie/cover.jpg",
+      "backUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781306795/ecobridal/dresses/annie/back.jpg"
+    },
+    {
+      "name": "Aurora",
+      "folder": "AURORA",
+      "dateKey": "2026-05-09",
+      "frontFile": "DSC07904.JPG",
+      "backFile": "DSC07997.JPG",
+      "frontUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781306814/ecobridal/dresses/aurora/cover.jpg",
+      "backUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781306814/ecobridal/dresses/aurora/back.jpg"
+    },
+    {
+      "name": "Bangioc",
+      "folder": "BANGIOC toma",
+      "dateKey": "2025-10-03",
+      "frontFile": "DSC03844.JPG",
+      "backFile": "DSC03894.JPG",
+      "frontUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781306824/ecobridal/dresses/bangioc/cover.jpg",
+      "backUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781306825/ecobridal/dresses/bangioc/back.jpg"
+    },
+    {
+      "name": "Caity",
+      "folder": "CAITY",
+      "dateKey": "2025-12-05",
+      "frontFile": "DSC04324.JPG",
+      "backFile": "DSC04388.JPG",
+      "frontUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781306853/ecobridal/dresses/caity/cover.jpg",
+      "backUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781306853/ecobridal/dresses/caity/back.jpg"
+    },
+    {
+      "name": "Carlota",
+      "folder": "CARLOTA",
+      "dateKey": "2026-05-09",
+      "frontFile": "DSC08239.JPG",
+      "backFile": "DSC08317.JPG",
+      "frontUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781306875/ecobridal/dresses/carlota/cover.jpg",
+      "backUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781306875/ecobridal/dresses/carlota/back.jpg"
+    },
+    {
+      "name": "Carolina",
+      "folder": "CAROLINA",
+      "dateKey": "2026-03-02",
+      "frontFile": "DSC01186.JPG",
+      "backFile": "DSC01217.JPG",
+      "frontUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781306885/ecobridal/dresses/carolina/cover.jpg",
+      "backUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781306885/ecobridal/dresses/carolina/back.jpg"
+    },
+    {
+      "name": "Clara",
+      "folder": "CLARA",
+      "dateKey": "2026-01-27",
+      "frontFile": "DSC08316.JPG",
+      "backFile": "DSC08239.JPG",
+      "frontUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781306907/ecobridal/dresses/clara/cover.jpg",
+      "backUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781306907/ecobridal/dresses/clara/back.jpg"
+    },
+    {
+      "name": "Conjunto de Encaje",
+      "folder": "CONJUNTO_ENCAJE",
+      "dateKey": "2026-01-21",
+      "frontFile": "f22787072.jpg",
+      "backFile": "f23706624.jpg",
+      "frontUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781306938/ecobridal/dresses/conjuntoencaje/cover.jpg",
+      "backUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781306938/ecobridal/dresses/conjuntoencaje/back.jpg"
+    },
+    {
+      "name": "Dalia",
+      "folder": "DALIA",
+      "dateKey": "2026-04-22",
+      "frontFile": "DSC05196.JPG",
+      "backFile": "DSC05221.JPG",
+      "frontUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781306956/ecobridal/dresses/dalia/cover.jpg",
+      "backUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781306956/ecobridal/dresses/dalia/back.jpg"
+    },
+    {
+      "name": "Eleonora",
+      "folder": "ELEONORA",
+      "dateKey": "2026-01-27",
+      "frontFile": "DSC08931.JPG",
+      "backFile": "DSC08955.JPG",
+      "frontUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781306972/ecobridal/dresses/eleonora/cover.jpg",
+      "backUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781306972/ecobridal/dresses/eleonora/back.jpg"
+    },
+    {
+      "name": "Elyse",
+      "folder": "ELYSE",
+      "dateKey": "2026-01-21",
+      "frontFile": "DSC06822.JPG",
+      "backFile": "DSC07027.JPG",
+      "frontUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781307017/ecobridal/dresses/elyse/cover.jpg",
+      "backUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781307017/ecobridal/dresses/elyse/back.jpg"
+    },
+    {
+      "name": "Ema",
+      "folder": "EMA",
+      "dateKey": "2026-01-17",
+      "frontFile": "DSC06235.JPG",
+      "backFile": "DSC06372.JPG",
+      "frontUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781307043/ecobridal/dresses/ema/cover.jpg",
+      "backUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781307043/ecobridal/dresses/ema/back.jpg"
+    },
+    {
+      "name": "Emma",
+      "folder": "EMMA",
+      "dateKey": "2026-01-17",
+      "frontFile": "DSC06235.JPG",
+      "backFile": "DSC06372.JPG",
+      "frontUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781307071/ecobridal/dresses/emma/cover.jpg",
+      "backUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781307071/ecobridal/dresses/emma/back.jpg"
+    },
+    {
+      "name": "Evany",
+      "folder": "EVANY",
+      "dateKey": "2026-01-17",
+      "frontFile": "DSC05623.JPG",
+      "backFile": "DSC05680.JPG",
+      "frontUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781307093/ecobridal/dresses/evany/cover.jpg",
+      "backUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781307093/ecobridal/dresses/evany/back.jpg"
+    },
+    {
+      "name": "Gabriela",
+      "folder": "GABRIELA",
+      "dateKey": "2026-05-20",
+      "frontFile": "DSC09772.JPG",
+      "backFile": "DSC09811.JPG",
+      "frontUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781307123/ecobridal/dresses/gabriela/cover.jpg",
+      "backUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781307123/ecobridal/dresses/gabriela/back.jpg"
+    },
+    {
+      "name": "Gabriela",
+      "folder": "GABRIELA",
+      "dateKey": "2026-05-20",
+      "frontFile": "DSC09772.JPG",
+      "backFile": "DSC09811.JPG",
+      "frontUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781307123/ecobridal/dresses/gabriela/cover.jpg",
+      "backUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781307123/ecobridal/dresses/gabriela/back.jpg"
+    },
+    {
+      "name": "Gypsy",
+      "folder": "GYPSY",
+      "dateKey": "2026-03-02",
+      "frontFile": "DSC09788.JPG",
+      "backFile": "DSC09805.JPG",
+      "frontUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781307174/ecobridal/dresses/gypsy/cover.jpg",
+      "backUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781307174/ecobridal/dresses/gypsy/back.jpg"
+    },
+    {
+      "name": "Irina",
+      "folder": "IRINA",
+      "dateKey": "2026-03-02",
+      "frontFile": "DSC00316.JPG",
+      "backFile": "DSC00452.JPG",
+      "frontUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781307187/ecobridal/dresses/irina/cover.jpg",
+      "backUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781307187/ecobridal/dresses/irina/back.jpg"
+    },
+    {
+      "name": "Jolene",
+      "folder": "JOLENE",
+      "dateKey": "2026-01-17",
+      "frontFile": "DSC06043.JPG",
+      "backFile": "DSC06094.JPG",
+      "frontUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781307207/ecobridal/dresses/jolene/cover.jpg",
+      "backUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781307207/ecobridal/dresses/jolene/back.jpg"
+    },
+    {
+      "name": "Karen",
+      "folder": "KAREN",
+      "dateKey": "2026-03-02",
+      "frontFile": "DSC00678.JPG",
+      "backFile": "DSC00709.JPG",
+      "frontUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781307217/ecobridal/dresses/karen/cover.jpg",
+      "backUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781307217/ecobridal/dresses/karen/back.jpg"
+    },
+    {
+      "name": "La Divine",
+      "folder": "LA DIVINE",
+      "dateKey": "2025-12-05",
+      "frontFile": "DSC02960.JPG",
+      "backFile": "DSC03089.JPG",
+      "frontUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781307246/ecobridal/dresses/ladivine/cover.jpg",
+      "backUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781307246/ecobridal/dresses/ladivine/back.jpg"
+    },
+    {
+      "name": "Lola",
+      "folder": "LOLA",
+      "dateKey": "2026-03-02",
+      "frontFile": "DSC09924.JPG",
+      "backFile": "DSC09966.JPG",
+      "frontUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781307260/ecobridal/dresses/lola/cover.jpg",
+      "backUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781307260/ecobridal/dresses/lola/back.jpg"
+    },
+    {
+      "name": "Lorea",
+      "folder": "LOREA",
+      "dateKey": "2026-04-22",
+      "frontFile": "DSC05130.JPG",
+      "backFile": "DSC05057.JPG",
+      "frontUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781307280/ecobridal/dresses/lorea/cover.jpg",
+      "backUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781307280/ecobridal/dresses/lorea/back.jpg"
+    },
+    {
+      "name": "Lucrecia",
+      "folder": "LUCRECIA",
+      "dateKey": "2026-01-21",
+      "frontFile": "DSC05061.JPG",
+      "backFile": "DSC05127.JPG",
+      "frontUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781307302/ecobridal/dresses/lucrecia/cover.jpg",
+      "backUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781307303/ecobridal/dresses/lucrecia/back.jpg"
+    },
+    {
+      "name": "Lucrecia",
+      "folder": "LUCRECIA",
+      "dateKey": "2026-01-21",
+      "frontFile": "DSC05061.JPG",
+      "backFile": "DSC05127.JPG",
+      "frontUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781307302/ecobridal/dresses/lucrecia/cover.jpg",
+      "backUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781307303/ecobridal/dresses/lucrecia/back.jpg"
+    },
+    {
+      "name": "Lulú",
+      "folder": "LÚLU",
+      "dateKey": "2026-03-02",
+      "frontFile": "DSC00768.JPG",
+      "backFile": "DSC00836.JPG",
+      "frontUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781307338/ecobridal/dresses/lulu/cover.jpg",
+      "backUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781307338/ecobridal/dresses/lulu/back.jpg"
+    },
+    {
+      "name": "Nancy",
+      "folder": "NANCY",
+      "dateKey": "2026-05-09",
+      "frontFile": "DSC03592.JPG",
+      "backFile": "DSC03653.JPG",
+      "frontUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781307359/ecobridal/dresses/nancy/cover.jpg",
+      "backUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781307359/ecobridal/dresses/nancy/back.jpg"
+    },
+    {
+      "name": "Peiky mediano",
+      "folder": "PEIKY-MEDIANO",
+      "dateKey": "2026-03-10",
+      "frontFile": "DSC02932.JPG",
+      "backFile": "DSC03011.JPG",
+      "frontUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781307370/ecobridal/dresses/peikymediano/cover.jpg",
+      "backUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781307370/ecobridal/dresses/peikymediano/back.jpg"
+    },
+    {
+      "name": "Perla",
+      "folder": "PERLA",
+      "dateKey": "2026-01-27",
+      "frontFile": "DSC07896.JPG",
+      "backFile": "DSC07963_edited.jpg",
+      "frontUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781307388/ecobridal/dresses/perla/cover.jpg",
+      "backUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781307388/ecobridal/dresses/perla/back.jpg"
+    },
+    {
+      "name": "Rafaella",
+      "folder": "RAFAELLA",
+      "dateKey": "2026-05-09",
+      "frontFile": "DSC08161.JPG",
+      "backFile": "DSC08212.JPG",
+      "frontUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781307426/ecobridal/dresses/rafaella/cover.jpg",
+      "backUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781307426/ecobridal/dresses/rafaella/back.jpg"
+    },
+    {
+      "name": "Rosa",
+      "folder": "ROSA",
+      "dateKey": "2026-04-23",
+      "frontFile": "DSC05531.JPG",
+      "backFile": "DSC05592.JPG",
+      "frontUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781307451/ecobridal/dresses/rosa/cover.jpg",
+      "backUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781307451/ecobridal/dresses/rosa/back.jpg"
+    },
+    {
+      "name": "Saville",
+      "folder": "SAVILLE",
+      "dateKey": "2025-12-05",
+      "frontFile": "DSC03941.JPG",
+      "backFile": "DSC04026.JPG",
+      "frontUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781307479/ecobridal/dresses/saville/cover.jpg",
+      "backUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781307479/ecobridal/dresses/saville/back.jpg"
+    },
+    {
+      "name": "Tania",
+      "folder": "TANIA",
+      "dateKey": "2026-03-02",
+      "frontFile": "DSC00092.JPG",
+      "backFile": "DSC09985.JPG",
+      "frontUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781307502/ecobridal/dresses/tania/cover.jpg",
+      "backUrl": "https://res.cloudinary.com/dinuvdpmz/image/upload/v1781307502/ecobridal/dresses/tania/back.jpg"
+    }
+  ],
+  "skippedUpload": []
+}
