@@ -271,17 +271,14 @@ export async function getDashboardData(): Promise<DashboardData> {
         assignment.scheduledDate < weekEnd
       );
     });
-    const readyToEdit = dresses.filter(
-      (dress) => dress.workflowStatus === "PHOTOGRAPHED",
+    const hasPublishedInstagram = (dress: (typeof dresses)[number]) =>
+      dress.instagramStatus === "PUBLISHED" || instagramDressIds.has(dress.id);
+    const readyToEdit = readyForFolder.filter(
+      (dress) => !folderDressIds.has(dress.id),
     );
     const readyForInstagram = dresses.filter(
       (dress) =>
-        (dress.workflowStatus === "EDITED" ||
-          dress.workflowStatus === "READY_TO_POST") &&
-        dress.instagramStatus !== "PUBLISHED",
-    );
-    const dressesNeedingPublication = dresses.filter(
-      (dress) => dress.instagramStatus !== "PUBLISHED",
+        folderDressIds.has(dress.id) && !hasPublishedInstagram(dress),
     );
     const dressesNeedingModel = dresses.filter(
       (dress) => !activeAssignmentDressIds.has(dress.id),
@@ -361,13 +358,11 @@ export async function getDashboardData(): Promise<DashboardData> {
       todayAssignments: todayAssignments.map(mapAssignment),
       weekAssignments: weekAssignments.slice(0, 8).map(mapAssignment),
       readyToEdit: readyToEdit.map((dress) =>
-        buildOperationalItem(dress, "Listo para registrar edición o carpeta"),
+        buildOperationalItem(dress, "Falta link de carpeta editada"),
       ),
-      readyToPublish: readyForInstagram
-        .filter((dress) => !instagramDressIds.has(dress.id))
-        .map((dress) =>
-          buildOperationalItem(dress, "Listo para registrar publicación"),
-        ),
+      readyToPublish: readyForInstagram.map((dress) =>
+        buildOperationalItem(dress, "Listo para registrar publicación"),
+      ),
       operationalQueues: {
         needsModel: dressesNeedingModel
           .map((dress) => buildOperationalItem(dress, "Falta asignar modelo")),
@@ -388,15 +383,11 @@ export async function getDashboardData(): Promise<DashboardData> {
           .map((dress) =>
             buildOperationalItem(dress, "Falta carpeta o entrega editada"),
           ),
-        needsPublication: dressesNeedingPublication
-          .filter((dress) => !instagramDressIds.has(dress.id))
-          .map((dress) =>
-            buildOperationalItem(dress, "Falta registrar publicación"),
-          ),
+        needsPublication: readyForInstagram.map((dress) =>
+          buildOperationalItem(dress, "Falta registrar publicación"),
+        ),
       },
-      publicationQueue: readyForInstagram
-        .filter((dress) => !instagramDressIds.has(dress.id))
-        .map((dress) => ({
+      publicationQueue: readyForInstagram.map((dress) => ({
           title: `${dress.name} pendiente de Instagram`,
           subtitle: `${dress.internalCode} ya está listo para registrar su publicación.`,
           href: `/vestidos/${dress.id}`,
