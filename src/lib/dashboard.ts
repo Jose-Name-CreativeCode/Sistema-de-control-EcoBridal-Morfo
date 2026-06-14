@@ -9,7 +9,6 @@ import {
 import {
   assignmentStatusLabels,
   demoDressAssignments,
-  demoModels,
 } from "@/lib/models";
 
 type DashboardMetric = {
@@ -159,7 +158,6 @@ export async function getDashboardData(): Promise<DashboardData> {
     const { start: weekStart, end: weekEnd } = getWeekRange();
     const [
       dresses,
-      modelsCount,
       assignments,
       photoFolders,
       instagramPosts,
@@ -172,13 +170,11 @@ export async function getDashboardData(): Promise<DashboardData> {
           internalCode: true,
           workflowStatus: true,
           instagramStatus: true,
-          isNew: true,
         },
         orderBy: {
           createdAt: "desc",
         },
       }),
-      prisma.modelProfile.count(),
       prisma.dressAssignment.findMany({
         where: {
           assignmentStatus: {
@@ -329,14 +325,14 @@ export async function getDashboardData(): Promise<DashboardData> {
           note: "Requieren sesión o avance",
         },
         {
-          label: "Modelos registradas",
-          value: String(modelsCount),
-          note: "Base de casting disponible",
+          label: "Pendientes por subir a Outlook",
+          value: String(readyToEdit.length),
+          note: "Falta link de carpeta editada",
         },
         {
-          label: "Vestidos nuevos",
-          value: String(dresses.filter((dress) => dress.isNew).length),
-          note: "Ingresos recientes",
+          label: "Pendientes por publicar Instagram",
+          value: String(readyForInstagram.length),
+          note: "Falta registrar publicación",
         },
       ],
       urgentTasks: pendingPhoto.slice(0, 4).map((dress) => ({
@@ -500,14 +496,14 @@ function buildDemoDashboardData(): DashboardData {
         note: "Listos para programar",
       },
       {
-        label: "Modelos registradas",
-        value: String(demoModels.length),
-        note: "Casting disponible",
+        label: "Pendientes por subir a Outlook",
+        value: String(readyToEdit.length),
+        note: "Falta link de carpeta editada",
       },
       {
-        label: "Vestidos nuevos",
-        value: String(demoDresses.filter((dress) => dress.isNew).length),
-        note: "Ingresos recientes",
+        label: "Pendientes por publicar Instagram",
+        value: String(readyForInstagram.length),
+        note: "Falta registrar publicación",
       },
     ],
     urgentTasks: pendingPhoto.slice(0, 4).map((dress) => ({
