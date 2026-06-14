@@ -450,18 +450,22 @@ export const demoPhotoCounts: Record<string, number> = {
 };
 
 export function getWorkflowStatusBadgeClasses(status: WorkflowStatus) {
-  if (status === "PENDING_PHOTOS") return "bg-amber-100 text-amber-900";
-  if (status === "MODEL_ASSIGNED") return "bg-orange-100 text-orange-900";
-  if (status === "IN_SESSION") return "bg-rose-100 text-rose-900";
-  if (status === "PUBLISHED") return "bg-emerald-100 text-emerald-900";
-  return "bg-stone-200 text-stone-800";
+  const isPhotographed = [
+    "PHOTOGRAPHED",
+    "EDITED",
+    "READY_TO_POST",
+    "PUBLISHED",
+  ].includes(status);
+
+  return isPhotographed
+    ? "bg-emerald-100 text-emerald-900"
+    : "bg-red-100 text-red-900";
 }
 
 export function getInstagramStatusBadgeClasses(status: InstagramStatus) {
-  if (status === "PUBLISHED") return "bg-emerald-100 text-emerald-900";
-  if (status === "SCHEDULED") return "bg-sky-100 text-sky-900";
-  if (status === "ARCHIVED") return "bg-stone-300 text-stone-900";
-  return "bg-stone-200 text-stone-800";
+  return status === "PUBLISHED"
+    ? "bg-emerald-100 text-emerald-900"
+    : "bg-red-100 text-red-900";
 }
 
 export function hasDressTag(notes: string | null | undefined, tag: "VENDIDO" | "DEVUELTO") {
