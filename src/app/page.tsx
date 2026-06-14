@@ -3,7 +3,6 @@ import {
   removeDashboardAssignmentAction,
   saveDashboardInstagramPostAction,
   saveDashboardLinkAction,
-  updateDashboardDressWorkflowAction,
   updateDashboardAssignmentAction,
 } from "@/app/dashboard-actions";
 import { DashboardReminders } from "@/components/dashboard-reminders";
@@ -421,107 +420,6 @@ export default async function Home() {
                   No hay vestidos pendientes de publicación.
                 </div>
               )}
-            </div>
-          </article>
-        </div>
-
-        <div className="mt-8">
-          <article className="app-card p-5">
-            <div className="border-b border-line pb-4">
-              <p className="text-sm uppercase tracking-[0.2em] text-foreground/55">
-                Pendientes reales
-              </p>
-              <h2 className="mt-2 font-heading text-3xl text-foreground sm:text-4xl">
-                Bandeja operativa
-              </h2>
-            </div>
-
-            <div className="mt-5 grid gap-5 xl:grid-cols-5">
-              <div className="grid max-h-[26rem] gap-3 overflow-y-auto pr-1">
-                <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">
-                  Necesita modelo
-                </p>
-                <DashboardOperationalList
-                  items={dashboard.operationalQueues.needsModel}
-                  emptyLabel="Todo lo de esta bandeja ya tiene modelo."
-                />
-              </div>
-
-              <div className="grid max-h-[26rem] gap-3 overflow-y-auto pr-1">
-                <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">
-                  Necesita fecha
-                </p>
-                <DashboardOperationalList
-                  items={dashboard.operationalQueues.needsDate}
-                  emptyLabel="No hay modelos sin fecha."
-                />
-              </div>
-
-              <div className="grid max-h-[26rem] gap-3 overflow-y-auto pr-1">
-                <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">
-                  Necesita fotos
-                </p>
-                {dashboard.operationalQueues.needsPhotos.length > 0 ? (
-                  <div className="grid gap-3">
-                    {dashboard.operationalQueues.needsPhotos.map((item) => (
-                      <div
-                        key={item.id}
-                        className="rounded-[1.15rem] border border-line bg-[rgba(250,248,244,0.98)] px-4 py-4"
-                      >
-                        <Link href={item.href} className="block">
-                          <p className="font-medium text-foreground">
-                            {item.title}
-                          </p>
-                          <p className="mt-1 text-sm leading-6 text-foreground/72">
-                            {item.subtitle}
-                          </p>
-                        </Link>
-                        <form
-                          action={updateDashboardDressWorkflowAction}
-                          className="mt-3"
-                        >
-                          <input type="hidden" name="dressId" value={item.id} />
-                          <input
-                            type="hidden"
-                            name="workflowStatus"
-                            value="PHOTOGRAPHED"
-                          />
-                          <button
-                            type="submit"
-                            className="app-button-secondary w-full"
-                          >
-                            Marcar fotografiado
-                          </button>
-                        </form>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="rounded-[1.15rem] border border-dashed border-line bg-[rgba(250,248,244,0.88)] px-4 py-5 text-sm text-foreground/72">
-                    No hay vestidos pendientes de foto.
-                  </div>
-                )}
-              </div>
-
-              <div className="grid max-h-[26rem] gap-3 overflow-y-auto pr-1">
-                <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">
-                  Necesita carpeta
-                </p>
-                <DashboardOperationalList
-                  items={dashboard.operationalQueues.needsFolder}
-                  emptyLabel="Todo lo editado ya tiene carpeta."
-                />
-              </div>
-
-              <div className="grid max-h-[26rem] gap-3 overflow-y-auto pr-1">
-                <p className="text-xs uppercase tracking-[0.2em] text-foreground/55">
-                  Necesita publicación
-                </p>
-                <DashboardOperationalList
-                  items={dashboard.operationalQueues.needsPublication}
-                  emptyLabel="No hay publicaciones pendientes."
-                />
-              </div>
             </div>
           </article>
         </div>

@@ -47,14 +47,6 @@ type DashboardOperationalItem = {
   href: string;
 };
 
-type DashboardOperationalQueues = {
-  needsModel: DashboardOperationalItem[];
-  needsDate: DashboardOperationalItem[];
-  needsPhotos: DashboardOperationalItem[];
-  needsFolder: DashboardOperationalItem[];
-  needsPublication: DashboardOperationalItem[];
-};
-
 const pendingPhotoWorkflowStatuses = [
   "PENDING_PHOTOS",
   "MODEL_ASSIGNED",
@@ -78,7 +70,6 @@ export type DashboardData = {
   weekAssignments: DashboardAssignment[];
   readyToEdit: DashboardOperationalItem[];
   readyToPublish: DashboardOperationalItem[];
-  operationalQueues: DashboardOperationalQueues;
   publicationQueue: DashboardTask[];
   excelLinks: DashboardExcelLink[];
 };
@@ -242,12 +233,6 @@ export async function getDashboardData(): Promise<DashboardData> {
         assignment.assignmentStatus === "SUGGESTED" ||
         assignment.assignmentStatus === "CONFIRMED",
     );
-    const activeAssignmentDressIds = new Set(
-      activeAssignments.map((assignment) => assignment.dressId),
-    );
-    const activeAssignmentsWithoutDate = activeAssignments.filter(
-      (assignment) => !assignment.scheduledDate,
-    );
     const activeAssignmentsWithDate = activeAssignments.filter((assignment) =>
       Boolean(assignment.scheduledDate),
     );
@@ -275,9 +260,6 @@ export async function getDashboardData(): Promise<DashboardData> {
     const readyForInstagram = dresses.filter(
       (dress) =>
         folderDressIds.has(dress.id) && !hasPublishedInstagram(dress),
-    );
-    const dressesNeedingModel = dresses.filter(
-      (dress) => !activeAssignmentDressIds.has(dress.id),
     );
 
     function mapAssignment(
@@ -359,35 +341,11 @@ export async function getDashboardData(): Promise<DashboardData> {
       readyToPublish: readyForInstagram.map((dress) =>
         buildOperationalItem(dress, "Listo para registrar publicación"),
       ),
-      operationalQueues: {
-        needsModel: dressesNeedingModel
-          .map((dress) => buildOperationalItem(dress, "Falta asignar modelo")),
-        needsDate: activeAssignmentsWithoutDate.map((assignment) =>
-          buildOperationalItem(
-            assignment.dress,
-            "Hay modelo asignada pero falta fecha",
-          ),
-        ),
-        needsPhotos: pendingPhoto.map((dress) =>
-          buildOperationalItem(
-            dress,
-            workflowStatusLabels[dress.workflowStatus],
-          ),
-        ),
-        needsFolder: readyForFolder
-          .filter((dress) => !folderDressIds.has(dress.id))
-          .map((dress) =>
-            buildOperationalItem(dress, "Falta carpeta o entrega editada"),
-          ),
-        needsPublication: readyForInstagram.map((dress) =>
-          buildOperationalItem(dress, "Falta registrar publicación"),
-        ),
-      },
       publicationQueue: readyForInstagram.map((dress) => ({
-          title: `${dress.name} pendiente de Instagram`,
-          subtitle: `${dress.internalCode} ya está listo para registrar su publicación.`,
-          href: `/vestidos/${dress.id}`,
-        })),
+        title: `${dress.name} pendiente de Instagram`,
+        subtitle: `${dress.internalCode} ya está listo para registrar su publicación.`,
+        href: `/vestidos/${dress.id}`,
+      })),
       excelLinks: buildDashboardExcelLinks(dashboardLinks),
     };
   } catch {
@@ -428,9 +386,6 @@ function buildDemoDashboardData(): DashboardData {
       assignment.assignmentStatus === "SUGGESTED" ||
       assignment.assignmentStatus === "CONFIRMED",
   );
-  const activeAssignmentDressIds = new Set(
-    activeAssignments.map((assignment) => assignment.dressId),
-  );
   const assignments = activeAssignments
     .filter((assignment) => Boolean(assignment.scheduledDate))
     .sort(
@@ -462,10 +417,6 @@ function buildDemoDashboardData(): DashboardData {
         dress.workflowStatus === "READY_TO_POST") &&
       dress.instagramStatus !== "PUBLISHED",
   );
-  const dressesNeedingPublication = demoDresses.filter(
-    (dress) => dress.instagramStatus !== "PUBLISHED",
-  );
-
   function buildOperationalItem(
     dress: {
       id: string;
@@ -530,39 +481,6 @@ function buildDemoDashboardData(): DashboardData {
       .map((dress) =>
         buildOperationalItem(dress, "Listo para registrar publicación"),
       ),
-    operationalQueues: {
-      needsModel: demoDresses
-        .filter((dress) => !activeAssignmentDressIds.has(dress.id))
-        .map((dress) => buildOperationalItem(dress, "Falta asignar modelo")),
-      needsDate: activeAssignments
-        .filter((assignment) => !assignment.scheduledDate)
-        .map((assignment) =>
-          buildOperationalItem(
-            {
-              id: assignment.dressId,
-              name: assignment.dressName,
-              internalCode: assignment.dressCode,
-            },
-            "Hay modelo asignada pero falta fecha",
-          ),
-        ),
-      needsPhotos: pendingPhoto.map((dress) =>
-        buildOperationalItem(
-          dress,
-          workflowStatusLabels[dress.workflowStatus],
-        ),
-      ),
-      needsFolder: readyForFolder
-        .filter((dress) => !demoDressFolders[dress.id]?.length)
-        .map((dress) =>
-          buildOperationalItem(dress, "Falta carpeta o entrega editada"),
-        ),
-      needsPublication: dressesNeedingPublication
-        .filter((dress) => !demoInstagramPosts[dress.id]?.length)
-        .map((dress) =>
-          buildOperationalItem(dress, "Falta registrar publicación"),
-        ),
-    },
     publicationQueue: readyForInstagram
       .filter((dress) => !demoInstagramPosts[dress.id]?.length)
       .map((dress) => ({
